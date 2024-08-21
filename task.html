@@ -37,6 +37,14 @@
             top: 20px;
             right: 20px;
             z-index: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .balance {
+            font-size: 14px;
+            color: gold;
+            margin-right: 20px;
         }
 
         .top-right-buttons .button {
@@ -119,17 +127,12 @@
             background-color: #ffd700;
             transform: scale(1.1);
         }
-
-        .claimed {
-            background-color: green;
-            color: white;
-        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>MY DAILY2K Task</h1>
+        <h1> </h1>
     </div>
 
     <div class="top-left-icon">
@@ -137,6 +140,7 @@
     </div>
 
     <div class="top-right-buttons">
+        <span class="balance">Balance: <span id="balanceAmount">0</span> naira</span>
         <button class="button" onclick="window.location.href='withdraw.html'">Withdraw</button>
         <button class="button" onclick="window.location.href='profile.html'">Profile</button>
     </div>
@@ -145,14 +149,17 @@
         <div class="task-list">
             <h2>Available Tasks</h2>
             <ul id="taskList">
-                <!-- Task items will be dynamically added here -->
+                <li>
+                    Subscribe to this channel: <a href="https://www.youtube.com/channel/UCVE8IqYGPknuX4xnwm3FXKA" target="_blank">Click here</a> - 200 naira
+                    <button onclick="startTask('subscribe')">Claim</button>
+                </li>
             </ul>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
@@ -166,44 +173,44 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        
+        let userBalance = 0;
 
         document.addEventListener("DOMContentLoaded", async () => {
-            await loadTasks();
+            await loadBalance();
         });
 
-        async function loadTasks() {
-            const taskListElement = document.getElementById("taskList");
+        async function loadBalance() {
+            const userId = "user_telegram_id"; // Update this with Telegram user ID
+            const userDocRef = doc(db, "users", userId);
+            const userDoc = await getDoc(userDocRef);
 
-            const youtubeTask = {
-                name: "Subscribe to this YouTube Channel",
-                reward: "200 naira",
-                youtubeId: "UCVE8IqYGPknuX4xnwm3FXKA"
-            };
+            if (userDoc.exists()) {
+                userBalance = userDoc.data().balance || 0;
+                document.getElementById("balanceAmount").innerText = userBalance;
+            } else {
+                console.log("No such document!");
+            }
+        }
 
-            const listItem = document.createElement("li");
-            listItem.innerHTML = `
-                ${youtubeTask.name} - ${youtubeTask.reward}
-                <button id="subscribeButton">Subscribe</button>
-                <button id="claimButton" style="display: none;" class="claimed">Claim</button>
-            `;
-            taskListElement.appendChild(listItem);
+        function startTask(taskName) {
+            setTimeout(() => {
+                document.querySelector(`button[onclick="startTask('${taskName}')"]`).innerText = 'Claim';
+                document.querySelector(`button[onclick="startTask('${taskName}')"]`).onclick = () => claimTask(taskName);
+            }, 20000); // 20 seconds delay
+        }
 
-            const subscribeButton = document.getElementById('subscribeButton');
-            const claimButton = document.getElementById('claimButton');
+        async function claimTask(taskName) {
+            userBalance += 200;
+            document.getElementById("balanceAmount").innerText = userBalance;
 
-            subscribeButton.addEventListener('click', () => {
-                window.open(`https://www.youtube.com/channel/${youtubeTask.youtubeId}`, '_blank');
-                subscribeButton.innerText = 'Checking...';
-
-                setTimeout(() => {
-                    subscribeButton.style.display = 'none';
-                    claimButton.style.display = 'block';
-                }, 20000); // 20 seconds delay
+            const userId = "user_telegram_id"; // Update this with Telegram user ID
+            const userDocRef = doc(db, "users", userId);
+            await updateDoc(userDocRef, {
+                balance: userBalance
             });
 
-            claimButton.addEventListener('click', () => {
-                alert(`You have claimed 200 naira for subscribing to the channel!`);
-            });
+            alert(`Task ${taskName} completed! You earned 200 naira.`);
         }
     </script>
 </body>
