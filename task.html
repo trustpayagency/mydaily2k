@@ -71,7 +71,7 @@
         }
 
         .content {
-            margin-top: 80px; /* Adjust for fixed header */
+            margin-top: 80px;
             padding: 20px;
             text-align: center;
         }
@@ -119,12 +119,17 @@
             background-color: #ffd700;
             transform: scale(1.1);
         }
+
+        .claimed {
+            background-color: green;
+            color: white;
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1> </h1>
+        <h1>MY DAILY2K Task</h1>
     </div>
 
     <div class="top-left-icon">
@@ -159,7 +164,6 @@
             measurementId: "G-2VNDPK8V4J"
         };
 
-
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
@@ -169,22 +173,37 @@
 
         async function loadTasks() {
             const taskListElement = document.getElementById("taskList");
-            const tasksSnapshot = await getDocs(collection(db, "tasks"));
 
-            tasksSnapshot.forEach(doc => {
-                const task = doc.data();
-                const listItem = document.createElement("li");
-                listItem.innerHTML = `
-                    ${task.name} - ${task.reward} points
-                    <button onclick="completeTask('${doc.id}')">Complete</button>
-                `;
-                taskListElement.appendChild(listItem);
+            const youtubeTask = {
+                name: "Subscribe to this YouTube Channel",
+                reward: "200 naira",
+                youtubeId: "UCVE8IqYGPknuX4xnwm3FXKA"
+            };
+
+            const listItem = document.createElement("li");
+            listItem.innerHTML = `
+                ${youtubeTask.name} - ${youtubeTask.reward}
+                <button id="subscribeButton">Subscribe</button>
+                <button id="claimButton" style="display: none;" class="claimed">Claim</button>
+            `;
+            taskListElement.appendChild(listItem);
+
+            const subscribeButton = document.getElementById('subscribeButton');
+            const claimButton = document.getElementById('claimButton');
+
+            subscribeButton.addEventListener('click', () => {
+                window.open(`https://www.youtube.com/channel/${youtubeTask.youtubeId}`, '_blank');
+                subscribeButton.innerText = 'Checking...';
+
+                setTimeout(() => {
+                    subscribeButton.style.display = 'none';
+                    claimButton.style.display = 'block';
+                }, 20000); // 20 seconds delay
             });
-        }
 
-        async function completeTask(taskId) {
-            // Handle task completion logic here
-            alert(`Task ${taskId} completed!`);
+            claimButton.addEventListener('click', () => {
+                alert(`You have claimed 200 naira for subscribing to the channel!`);
+            });
         }
     </script>
 </body>
