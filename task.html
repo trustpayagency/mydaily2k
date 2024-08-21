@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY DAILY2K Task</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #ff6f61, #dce35b);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            width: 100%;
+            padding: 20px;
+            background-color: #333;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .header h1 {
+            color: gold;
+            font-size: 24px;
+            margin: 0;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        .top-right-buttons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1;
+        }
+
+        .top-right-buttons .button {
+            background-color: gold;
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            padding: 10px 20px;
+            font-size: 18px;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-left: 10px;
+        }
+
+        .top-right-buttons .button:hover {
+            background-color: #ffd700;
+            transform: scale(1.1);
+        }
+
+        .top-left-icon {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1;
+        }
+
+        .top-left-icon a {
+            color: gold;
+            font-size: 24px;
+            text-decoration: none;
+        }
+
+        .content {
+            margin-top: 80px; /* Adjust for fixed header */
+            padding: 20px;
+            text-align: center;
+        }
+
+        .task-list {
+            background-color: #444;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .task-list h2 {
+            margin: 0;
+            font-size: 20px;
+            color: gold;
+        }
+
+        .task-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .task-list li {
+            background-color: #555;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-list li button {
+            background-color: gold;
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            padding: 5px 15px;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .task-list li button:hover {
+            background-color: #ffd700;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>MY DAILY2K</h1>
+    </div>
+
+    <div class="top-left-icon">
+        <a href="dashboard.html"><i class="fas fa-home"></i></a>
+    </div>
+
+    <div class="top-right-buttons">
+        <button class="button" onclick="window.location.href='withdraw.html'">Withdraw</button>
+        <button class="button" onclick="window.location.href='profile.html'">Profile</button>
+    </div>
+
+    <div class="content">
+        <div class="task-list">
+            <h2>Available Tasks</h2>
+            <ul id="taskList">
+                <!-- Task items will be dynamically added here -->
+            </ul>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
+            authDomain: "mydaily2kbot.firebaseapp.com",
+            projectId: "mydaily2kbot",
+            storageBucket: "mydaily2kbot.appspot.com",
+            messagingSenderId: "967002689133",
+            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
+            measurementId: "G-2VNDPK8V4J"
+        };
+
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            await loadTasks();
+        });
+
+        async function loadTasks() {
+            const taskListElement = document.getElementById("taskList");
+            const tasksSnapshot = await getDocs(collection(db, "tasks"));
+
+            tasksSnapshot.forEach(doc => {
+                const task = doc.data();
+                const listItem = document.createElement("li");
+                listItem.innerHTML = `
+                    ${task.name} - ${task.reward} points
+                    <button onclick="completeTask('${doc.id}')">Complete</button>
+                `;
+                taskListElement.appendChild(listItem);
+            });
+        }
+
+        async function completeTask(taskId) {
+            // Handle task completion logic here
+            alert(`Task ${taskId} completed!`);
+        }
+    </script>
+</body>
+</html>

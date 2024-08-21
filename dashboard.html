@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY DAILY2K Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #ff6f61, #dce35b);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Prevents overflow for mobile view */
+        }
+
+        .top-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            align-items: center;
+        }
+
+        .top-container .header-left {
+            color: gold;
+            font-size: 20px;
+            font-weight: bold;
+            font-family: 'Comic Sans MS', cursive, sans-serif; /* Fun and professional font */
+            display: flex;
+            align-items: center;
+        }
+
+        .top-container .header-left .fa-coins {
+            font-size: 24px;
+            margin-right: 5px;
+        }
+
+        .top-container .header-right {
+            display: flex;
+        }
+
+        .top-container .button {
+            background-color: gold;
+            color: #000;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin: 0 5px;
+            width: 40px;
+            height: 40px;
+        }
+
+        .top-container .button:hover {
+            background-color: #ffd700;
+        }
+
+        .balance-container {
+            margin-top: 80px; /* Adjusted for mobile view */
+            text-align: center;
+        }
+
+        .balance {
+            font-size: 32px; /* Larger for visibility on mobile */
+            margin: 10px 0;
+        }
+
+        .middle-container {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .button {
+            width: 60px;
+            height: 60px;
+            background-color: gold;
+            color: #000;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 10px;
+        }
+
+        .button:hover {
+            background-color: #ffd700;
+        }
+
+        footer {
+            padding: 10px;
+            background-color: #333;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+
+        .icon {
+            font-size: 28px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-container">
+        <div class="header-left">
+            <i class="fa-solid fa-coins"></i> MY DAILY2K
+        </div>
+        <div class="header-right">
+            <button class="button" onclick="window.location.href='profile.html'">
+                <i class="fas fa-user icon"></i>
+            </button>
+            <button class="button" onclick="window.location.href='withdraw.html'">
+                <i class="fas fa-wallet icon"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="balance-container">
+        <p class="balance">₦<span id="balance">0</span></p>
+    </div>
+
+    <div class="middle-container">
+        <button class="button" onclick="window.location.href='task.html'">
+            <i class="fas fa-tasks icon"></i>
+        </button>
+        <button class="button" onclick="loadAdgramAd()">
+            <i class="fas fa-tv icon"></i>
+        </button>
+    </div>
+
+    <footer>
+        &copy; 2024 MY DAILY2K
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
+            authDomain: "mydaily2kbot.firebaseapp.com",
+            projectId: "mydaily2kbot",
+            storageBucket: "mydaily2kbot.appspot.com",
+            messagingSenderId: "967002689133",
+            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
+            measurementId: "G-2VNDPK8V4J"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const telegramUsername = "sampleTelegramUser"; // Replace with actual Telegram username
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            await loadUserData(telegramUsername);
+        });
+
+        async function loadUserData(username) {
+            const userDocRef = doc(db, "users", username);
+            const docSnap = await getDoc(userDocRef);
+
+            if (docSnap.exists()) {
+                document.getElementById("balance").textContent = docSnap.data().balance || 0;
+            } else {
+                console.error("User not found");
+            }
+        }
+
+        async function loadAdgramAd() {
+            // Add Adgram ad logic here
+            alert("Loading Adgram ad...");
+            // Example Adgram ad code: 
+            // window.location.href = 'https://adgram.com'; // Replace with actual Adgram ad URL
+        }
+    </script>
+</body>
+</html>
