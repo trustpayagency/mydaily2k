@@ -147,7 +147,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-        import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
@@ -158,6 +158,7 @@
             appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
             measurementId: "G-2VNDPK8V4J"
         };
+
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -173,41 +174,18 @@
             tasksSnapshot.forEach(doc => {
                 const task = doc.data();
                 const listItem = document.createElement("li");
-                
-                let buttonLabel = task.claimed ? "Claimed" : "Complete";
-                let buttonDisabled = task.claimed ? "disabled" : "";
-
                 listItem.innerHTML = `
-                    <span><a href="${task.link}" target="_blank">${task.name}</a> - ${task.reward} points</span>
-                    <button onclick="completeTask('${doc.id}', ${task.reward})" ${buttonDisabled}>${buttonLabel}</button>
+                    ${task.name} - ${task.reward} points
+                    <button onclick="completeTask('${doc.id}')">Complete</button>
                 `;
                 taskListElement.appendChild(listItem);
             });
         }
 
-        async function completeTask(taskId, reward) {
-            const taskRef = doc(db, "tasks", taskId);
-            await updateDoc(taskRef, { claimed: true });
-
-            alert(`Task ${taskId} completed! You earned ${reward} points.`);
-
-            // Refresh tasks to reflect the claimed status
-            document.getElementById("taskList").innerHTML = "";
-            await loadTasks();
+        async function completeTask(taskId) {
+            // Handle task completion logic here
+            alert(`Task ${taskId} completed!`);
         }
-
-        // Add the YouTube subscription task
-        document.addEventListener("DOMContentLoaded", () => {
-            const taskListElement = document.getElementById("taskList");
-
-            const listItem = document.createElement("li");
-            listItem.innerHTML = `
-                <span><a href="https://www.youtube.com/channel/UCVE8IqYGPknuX4xnwm3FXKA" target="_blank">Subscribe to MY DAILY2K Channel</a> - 10 points</span>
-                <button onclick="completeTask('youtube-subscription', 10)">Complete</button>
-            `;
-
-            taskListElement.appendChild(listItem);
-        });
     </script>
 </body>
-</html>
+</html> 
