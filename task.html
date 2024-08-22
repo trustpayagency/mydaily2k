@@ -119,17 +119,12 @@
             background-color: #ffd700;
             transform: scale(1.1);
         }
-
-        .task-list li button:disabled {
-            background-color: #777;
-            cursor: not-allowed;
-        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1> </h1>
+        <h1>MY DAILY2K</h1>
     </div>
 
     <div class="top-left-icon">
@@ -152,7 +147,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
@@ -166,7 +161,6 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const username = "yourTelegramUsername"; // Replace this with the actual Telegram username from the Telegram API
 
         document.addEventListener("DOMContentLoaded", async () => {
             await loadTasks();
@@ -179,40 +173,41 @@
             tasksSnapshot.forEach(doc => {
                 const task = doc.data();
                 const listItem = document.createElement("li");
-                const isClaimed = task.claimedUsers && task.claimedUsers.includes(username);
+                
+                let buttonLabel = task.claimed ? "Claimed" : "Complete";
+                let buttonDisabled = task.claimed ? "disabled" : "";
 
                 listItem.innerHTML = `
-                    ${task.name} - ${task.reward} points
-                    <button ${isClaimed ? 'disabled' : ''} onclick="completeTask('${doc.id}', this)">
-                        ${isClaimed ? 'Claimed' : 'Complete'}
-                    </button>
+                    <span><a href="${task.link}" target="_blank">${task.name}</a> - ${task.reward} points</span>
+                    <button onclick="completeTask('${doc.id}', ${task.reward})" ${buttonDisabled}>${buttonLabel}</button>
                 `;
                 taskListElement.appendChild(listItem);
             });
         }
 
-        async function completeTask(taskId, buttonElement) {
-            // Update Firestore to mark the task as claimed by the user
+        async function completeTask(taskId, reward) {
             const taskRef = doc(db, "tasks", taskId);
-            const taskSnapshot = await getDocs(collection(db, "tasks"));
-            const taskData = taskSnapshot.docs.map(doc => doc.data());
+            await updateDoc(taskRef, { claimed: true });
 
-            if (taskData.claimedUsers && taskData.claimedUsers.includes(username)) {
-                alert("You have already claimed this task.");
-                return;
-            }
+            alert(`Task ${taskId} completed! You earned ${reward} points.`);
 
-            // Update task to mark as claimed
-            await updateDoc(taskRef, {
-                claimedUsers: taskData.claimedUsers ? [...taskData.claimedUsers, username] : [username]
-            });
-
-            // Update button UI
-            buttonElement.innerText = "Claimed";
-            buttonElement.disabled = true;
-
-            alert(`Task ${taskId} completed!`);
+            // Refresh tasks to reflect the claimed status
+            document.getElementById("taskList").innerHTML = "";
+            await loadTasks();
         }
+
+        // Add the YouTube subscription task
+        document.addEventListener("DOMContentLoaded", () => {
+            const taskListElement = document.getElementById("taskList");
+
+            const listItem = document.createElement("li");
+            listItem.innerHTML = `
+                <span><a href="https://www.youtube.com/channel/UCVE8IqYGPknuX4xnwm3FXKA" target="_blank">Subscribe to MY DAILY2K Channel</a> - 10 points</span>
+                <button onclick="completeTask('youtube-subscription', 10)">Complete</button>
+            `;
+
+            taskListElement.appendChild(listItem);
+        });
     </script>
 </body>
 </html>
