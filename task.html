@@ -71,7 +71,7 @@
         }
 
         .content {
-            margin-top: 80px;
+            margin-top: 80px; /* Adjust for fixed header */
             padding: 20px;
             text-align: center;
         }
@@ -120,20 +120,20 @@
             transform: scale(1.1);
         }
 
-        .claimed {
-            background-color: green;
-            color: white;
+        .task-list li button:disabled {
+            background-color: #777;
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>MY DAILY2K Task</h1>
+        <h1> </h1>
     </div>
 
     <div class="top-left-icon">
-        <a href="index.html"><i class="fas fa-home"></i></a>
+        <a href="dashboard.html"><i class="fas fa-home"></i></a>
     </div>
 
     <div class="top-right-buttons">
@@ -152,7 +152,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
@@ -166,6 +166,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const username = "yourTelegramUsername"; // Replace this with the actual Telegram username from the Telegram API
 
         document.addEventListener("DOMContentLoaded", async () => {
             await loadTasks();
@@ -173,37 +174,44 @@
 
         async function loadTasks() {
             const taskListElement = document.getElementById("taskList");
+            const tasksSnapshot = await getDocs(collection(db, "tasks"));
 
-            const youtubeTask = {
-                name: "Subscribe to this YouTube Channel",
-                reward: "200 naira",
-                youtubeId: "UCVE8IqYGPknuX4xnwm3FXKA"
-            };
+            tasksSnapshot.forEach(doc => {
+                const task = doc.data();
+                const listItem = document.createElement("li");
+                const isClaimed = task.claimedUsers && task.claimedUsers.includes(username);
 
-            const listItem = document.createElement("li");
-            listItem.innerHTML = `
-                ${youtubeTask.name} - ${youtubeTask.reward}
-                <button id="subscribeButton">Subscribe</button>
-                <button id="claimButton" style="display: none;" class="claimed">Claim</button>
-            `;
-            taskListElement.appendChild(listItem);
+                listItem.innerHTML = `
+                    ${task.name} - ${task.reward} points
+                    <button ${isClaimed ? 'disabled' : ''} onclick="completeTask('${doc.id}', this)">
+                        ${isClaimed ? 'Claimed' : 'Complete'}
+                    </button>
+                `;
+                taskListElement.appendChild(listItem);
+            });
+        }
 
-            const subscribeButton = document.getElementById('subscribeButton');
-            const claimButton = document.getElementById('claimButton');
+        async function completeTask(taskId, buttonElement) {
+            // Update Firestore to mark the task as claimed by the user
+            const taskRef = doc(db, "tasks", taskId);
+            const taskSnapshot = await getDocs(collection(db, "tasks"));
+            const taskData = taskSnapshot.docs.map(doc => doc.data());
 
-            subscribeButton.addEventListener('click', () => {
-                window.open(`https://www.youtube.com/channel/${youtubeTask.youtubeId}`, '_blank');
-                subscribeButton.innerText = 'Checking...';
+            if (taskData.claimedUsers && taskData.claimedUsers.includes(username)) {
+                alert("You have already claimed this task.");
+                return;
+            }
 
-                setTimeout(() => {
-                    subscribeButton.style.display = 'none';
-                    claimButton.style.display = 'block';
-                }, 20000); // 20 seconds delay
+            // Update task to mark as claimed
+            await updateDoc(taskRef, {
+                claimedUsers: taskData.claimedUsers ? [...taskData.claimedUsers, username] : [username]
             });
 
-            claimButton.addEventListener('click', () => {
-                alert(`You have claimed 200 naira for subscribing to the channel!`);
-            });
+            // Update button UI
+            buttonElement.innerText = "Claimed";
+            buttonElement.disabled = true;
+
+            alert(`Task ${taskId} completed!`);
         }
     </script>
 </body>
