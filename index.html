@@ -24,7 +24,7 @@
             display: flex;
             justify-content: space-between;
             width: 100%;
-            padding: 10px;
+            padding: 30px;
             background-color: #333;
             position: fixed;
             top: 0;
@@ -35,9 +35,9 @@
 
         .top-container .header-left {
             color: rgb(218, 206, 50);
-            font-size: 20px;
+            font-size: 50px;
             font-weight: bold;
-            font-family: 'comic sans ms' sans-serif;
+            font-family: 'inverted squares' Arial, Helvetica, sans-serif;
             display: flex;
             align-items: center;
         }
@@ -139,70 +139,91 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
+        // Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
-            authDomain: "mydaily2kbot.firebaseapp.com",
-            projectId: "mydaily2kbot",
-            storageBucket: "mydaily2kbot.appspot.com",
-            messagingSenderId: "967002689133",
-            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
-            measurementId: "G-2VNDPK8V4J"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID",
+            measurementId: "YOUR_MEASUREMENT_ID"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
         document.addEventListener("DOMContentLoaded", async () => {
             const tg = window.Telegram.WebApp;
+
+            // Check if Telegram WebApp is available
+            if (!tg) {
+                alert("Telegram WebApp is not available.");
+                return;
+            }
+
+            // Fetch the Telegram username
             const telegramUsername = tg.initDataUnsafe?.user?.username || "unknownUser";
             console.log("Telegram Username: ", telegramUsername);
 
             if (telegramUsername !== "unknownUser") {
                 await loadUserData(telegramUsername);
             } else {
-                alert("Failed to get Telegram username.");
+                alert("Failed to get Telegram username. Make sure the bot is correctly configured.");
             }
         });
 
+        // Function to load user data from Firestore
         async function loadUserData(username) {
-            const userDocRef = doc(db, "users", username);
-            const docSnap = await getDoc(userDocRef);
+            try {
+                const userDocRef = doc(db, "users", username);
+                const docSnap = await getDoc(userDocRef);
 
-            if (docSnap.exists()) {
-                document.getElementById("balance").textContent = docSnap.data().balance || 0;
-            } else {
-                console.error("User not found");
+                if (docSnap.exists()) {
+                    document.getElementById("balance").textContent = docSnap.data().balance || 0;
+                } else {
+                    console.error("User not found in Firestore.");
+                }
+            } catch (error) {
+                console.error("Error loading user data: ", error);
             }
         }
 
+        // Function to store user activity in Firestore
         async function storeUserActivity(username, activity) {
-            const userDocRef = doc(db, "users", username);
-            const userDoc = await getDoc(userDocRef);
+            try {
+                const userDocRef = doc(db, "users", username);
+                const userDoc = await getDoc(userDocRef);
 
-            if (userDoc.exists()) {
-                await updateDoc(userDocRef, {
-                    activities: arrayUnion({
-                        type: activity,
-                        timestamp: new Date()
-                    })
-                });
-            } else {
-                await setDoc(userDocRef, {
-                    username: username,
-                    balance: 0,
-                    activities: [{
-                        type: activity,
-                        timestamp: new Date()
-                    }]
-                });
+                if (userDoc.exists()) {
+                    await updateDoc(userDocRef, {
+                        activities: arrayUnion({
+                            type: activity,
+                            timestamp: new Date()
+                        })
+                    });
+                } else {
+                    await setDoc(userDocRef, {
+                        username: username,
+                        balance: 0,
+                        activities: [{
+                            type: activity,
+                            timestamp: new Date()
+                        }]
+                    });
+                }
+            } catch (error) {
+                console.error("Error storing user activity: ", error);
             }
         }
 
+        // Function to load Adgram Ad
         async function loadAdgramAd() {
             alert("Loading Adgram ad...");
             const tg = window.Telegram.WebApp;
             const telegramUsername = tg.initDataUnsafe?.user?.username || "unknownUser";
-            
+
             if (telegramUsername !== "unknownUser") {
                 await storeUserActivity(telegramUsername, "watched_ad");
             } else {
