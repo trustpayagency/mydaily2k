@@ -32,92 +32,110 @@
             font-family: 'Comic Sans MS', cursive, sans-serif;
         }
 
-        .top-right-buttons {
+        .content {
+            margin-top: 120px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .profile-info h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: gold;
+        }
+
+        .info-container {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-container p {
+            font-size: 18px;
+            margin: 0;
+        }
+
+        /* Black bottom banner */
+        .bottom-banner {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
             z-index: 1;
         }
 
-        .top-right-buttons .button {
+        .bottom-banner .button {
             background-color: gold;
             color: #000;
             border: none;
-            border-radius: 25px;
+            border-radius: 50%;
             cursor: pointer;
-            padding: 10px 20px;
+            padding: 15px;
             font-size: 18px;
             text-align: center;
             transition: background-color 0.3s, transform 0.3s;
-            margin-left: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 60px;
+            height: 60px;
         }
 
-        .top-right-buttons .button:hover {
+        .bottom-banner .button:hover {
             background-color: #ffd700;
             transform: scale(1.1);
         }
 
-        .top-left-icon {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1;
-        }
-
-        .top-left-icon a {
-            color: gold;
+        .bottom-banner i {
             font-size: 24px;
-            text-decoration: none;
-        }
-
-        .content {
-            margin-top: 80px; /* Adjust for fixed header */
-            padding: 20px;
-            text-align: center;
-        }
-
-        .profile-info {
-            background-color: #444;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .profile-info h2 {
-            margin: 0;
-            font-size: 20px;
-            color: gold;
-        }
-
-        .profile-info p {
-            font-size: 18px;
-            margin: 10px 0;
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1> </h1>
-    </div>
-
-    <div class="top-left-icon">
-        <a href="index.html"><i class="fas fa-home"></i></a>
-    </div>
-
-    <div class="top-right-buttons">
-        <button class="button" onclick="window.location.href='withdraw.html'">Withdraw</button>
-        <button class="button" onclick="window.location.href='task.html'">Task</button>
+        <h1>MY DAILY2K Profile</h1>
     </div>
 
     <div class="content">
         <div class="profile-info">
             <h2>Profile Information</h2>
-            <p><strong>Username:</strong> <span id="username">sampleTelegramUser</span></p>
-            <p><strong>Total Amount Made:</strong> <span id="totalMade">0</span> 2K Points</p>
-            <p><strong>Total Withdrawn:</strong> <span id="totalWithdrawn">0</span> 2K Points</p>
-            <p><strong>People Invited:</strong> <span id="peopleInvited">0</span></p>
+
+            <div class="info-container">
+                <p><strong>Username:</strong> <span id="username">sampleTelegramUser</span></p>
+            </div>
+
+            <div class="info-container">
+                <p><strong>Total Amount Made:</strong> <span id="totalMade">0</span> 2K Points</p>
+            </div>
+
+            <div class="info-container">
+                <p><strong>Total Withdrawn:</strong> <span id="totalWithdrawn">0</span> 2K Points</p>
+            </div>
+
+            <div class="info-container">
+                <p><strong>People Invited:</strong> <span id="peopleInvited">0</span></p>
+            </div>
         </div>
+    </div>
+
+    <!-- Black bottom banner containing the buttons -->
+    <div class="bottom-banner">
+        <button class="button" onclick="window.location.href='index.html'">
+            <i class="fas fa-home"></i>
+        </button>
+        <button class="button" onclick="window.location.href='withdraw.html'">
+            <i class="fas fa-money-bill-wave"></i>
+        </button>
+        <button class="button" onclick="window.location.href='task.html'">
+            <i class="fas fa-tasks"></i>
+        </button>
     </div>
 
     <script type="module">
@@ -133,7 +151,6 @@
             appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
             measurementId: "G-2VNDPK8V4J"
         };
-
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
