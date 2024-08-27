@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +34,7 @@
         }
 
         .content {
-            margin-top: 120px;
+            margin-top: 80px;
             padding: 20px;
             text-align: center;
         }
@@ -97,6 +98,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="header">
@@ -108,15 +110,15 @@
             <h2>Profile Information</h2>
 
             <div class="info-container">
-                <p><strong>Username:</strong> <span id="username">sampleTelegramUser</span></p>
+                <p><strong>Username:</strong> <span id="username">Loading...</span></p>
             </div>
 
             <div class="info-container">
-                <p><strong>Total Amount Made:</strong> <span id="totalMade">0</span> 2K Points</p>
+                <p><strong>Total Amount Made:</strong> <span id="totalMade">0</span> 2K Coins</p>
             </div>
 
             <div class="info-container">
-                <p><strong>Total Withdrawn:</strong> <span id="totalWithdrawn">0</span> 2K Points</p>
+                <p><strong>Total Withdrawn:</strong> <span id="totalWithdrawn">0</span> 2K Coins</p>
             </div>
 
             <div class="info-container">
@@ -127,21 +129,23 @@
 
     <!-- Black bottom banner containing the buttons -->
     <div class="bottom-banner">
-        <button class="button" onclick="window.location.href='index.html'">
+        <button class="button" onclick="window.location.href='dashboard.html'">
             <i class="fas fa-home"></i>
         </button>
         <button class="button" onclick="window.location.href='withdraw.html'">
-            <i class="fas fa-money-bill-wave"></i>
+            <i class="fas fa-wallet"></i>
         </button>
         <button class="button" onclick="window.location.href='friends.html'">
-            <i class="fas fa-user-friends icon"></i>
+            <i class="fas fa-user-friends"></i>
         </button>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
             authDomain: "mydaily2kbot.firebaseapp.com",
@@ -152,13 +156,22 @@
             measurementId: "G-2VNDPK8V4J"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const telegramUsername = "sampleTelegramUser"; // Replace with actual Telegram username
+        document.addEventListener("DOMContentLoaded", () => {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const email = user.email;
+                    const username = email.split('@')[0]; // Assuming username is part of email
 
-        document.addEventListener("DOMContentLoaded", async () => {
-            await loadUserProfile(telegramUsername);
+                    await loadUserProfile(username);
+                } else {
+                    window.location.href = 'login.html'; // Redirect to login page if not authenticated
+                }
+            });
         });
 
         async function loadUserProfile(username) {
@@ -166,12 +179,18 @@
             const docSnap = await getDoc(userDocRef);
 
             if (docSnap.exists()) {
-                document.getElementById("username").textContent = docSnap.data().username || 'N/A';
-                document.getElementById("totalMade").textContent = docSnap.data().totalMade || '0';
-                document.getElementById("totalWithdrawn").textContent = docSnap.data().totalWithdrawn || '0';
-                document.getElementById("peopleInvited").textContent = docSnap.data().peopleInvited || '0';
+                const data = docSnap.data();
+                document.getElementById("username").textContent = data.username || 'N/A';
+                document.getElementById("totalMade").textContent = data.totalMade || '0';
+                document.getElementById("totalWithdrawn").textContent = data.totalWithdrawn || '0';
+                document.getElementById("peopleInvited").textContent = data.peopleInvited || '0';
+            } else {
+                console.error("User not found in Firestore.");
+                // Optionally handle missing user data
             }
         }
     </script>
+
 </body>
+
 </html>
