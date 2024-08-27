@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY DAILY2K Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #ff6f61, #dce35b);
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            width: 100%;
+            padding: 20px;
+            background-color: #333;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .header h1 {
+            color: rgb(209, 181, 23);
+            font-size: 24px;
+            margin: 0;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        .balance-container {
+            margin-top: 110px;
+            text-align: center;
+        }
+
+        .balance {
+            font-size: 32px;
+            margin: 100px 0;
+        }
+
+        .middle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 120px;
+        }
+
+        .button {
+            width: 60px;
+            height: 60px;
+            background-color: gold;
+            color: #000;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #ffd700;
+        }
+
+        footer {
+            padding: 10px;
+            background-color: #333;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+
+        footer .button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 24px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>MY DAILY2K</h1>
+    </div>
+
+    <div class="balance-container">
+        <p class="balance">2KCoins: <span id="balance">0</span></p>
+    </div>
+
+    <div class="middle-container">
+        <button class="button" onclick="window.location.href='task.html'">
+            <i class="fas fa-tasks"></i>
+        </button>
+        <button class="button" onclick="loadAdgramAd()">
+            <i class="fas fa-tv"></i>
+        </button>
+    </div>
+
+    <footer>
+        <button class="button" onclick="window.location.href='profile.html'">
+            <i class="fas fa-user"></i>
+        </button>
+        <button class="button" onclick="window.location.href='withdraw.html'">
+            <i class="fas fa-wallet"></i>
+        </button>
+        <button class="button" onclick="window.location.href='friends.html'">
+            <i class="fas fa-user-friends"></i>
+        </button>
+    </footer>
+
+    <!-- Firebase Integration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
+            authDomain: "mydaily2kbot.firebaseapp.com",
+            projectId: "mydaily2kbot",
+            storageBucket: "mydaily2kbot.appspot.com",
+            messagingSenderId: "967002689133",
+            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
+            measurementId: "G-2VNDPK8V4J"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Check if the user is logged in
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const email = user.email;
+                const username = email.split('@')[0]; // Simplified username extraction
+                await loadUserData(username);
+            } else {
+                window.location.href = 'login.html'; // Redirect to login page
+            }
+        });
+
+        // Function to load user data from Firestore
+        async function loadUserData(username) {
+            try {
+                const userDocRef = doc(db, "users", username);
+                const docSnap = await getDoc(userDocRef);
+
+                if (docSnap.exists()) {
+                    document.getElementById("balance").textContent = docSnap.data().balance || 0;
+                } else {
+                    console.error("User not found in Firestore.");
+                }
+            } catch (error) {
+                console.error("Error loading user data: ", error);
+            }
+        }
+
+        // Function to load Adgram Ad and award 15 2KCoins after completion
+        async function loadAdgramAd() {
+            // Example AdGram integration
+            const adgramScript = document.createElement('script');
+            adgramScript.src = "https://adgram.ai/blockad.js?blockid=2338";
+            document.body.appendChild(adgramScript);
+
+            adgramScript.onload = () => {
+                alert("Ad completed. You've earned 15 2KCoins!");
+
+                // Update balance after ad is watched
+                const user = auth.currentUser;
+                if (user) {
+                    const email = user.email;
+                    const username = email.split('@')[0];
+                    updateBalance(username, 15);
+                } else {
+                    alert("Unable to track activity without logged-in user.");
+                }
+            };
+        }
+
+        // Function to update user balance
+        async function updateBalance(username, amount) {
+            try {
+                const userDocRef = doc(db, "users", username);
+                const userDoc = await getDoc(userDocRef);
+
+                if (userDoc.exists()) {
+                    const newBalance = (userDoc.data().balance || 0) + amount;
+                    await updateDoc(userDocRef, { balance: newBalance });
+                    document.getElementById("balance").textContent = newBalance;
+                } else {
+                    console.error("User not found.");
+                }
+            } catch (error) {
+                console.error("Error updating balance: ", error);
+            }
+        }
+    </script>
+</body>
+
+</html>
