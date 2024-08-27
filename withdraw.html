@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,46 +33,49 @@
             font-family: 'Comic Sans MS', cursive, sans-serif;
         }
 
-        .top-right-buttons {
+        .bottom-banner {
+            width: 100%;
+            padding: 10px 0;
+            background-color: #333;
+            text-align: center;
             position: fixed;
-            top: 20px;
-            right: 20px;
+            bottom: 0;
+            left: 0;
             z-index: 1;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
         }
 
-        .top-right-buttons .button {
+        .bottom-banner .button {
             background-color: gold;
             color: #000;
             border: none;
-            border-radius: 25px;
+            border-radius: 50%;
             cursor: pointer;
-            padding: 10px 20px;
+            padding: 15px;
             font-size: 18px;
             text-align: center;
             transition: background-color 0.3s, transform 0.3s;
-            margin-left: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 20px;
+            height: 20px;
         }
 
-        .top-right-buttons .button:hover {
+        .bottom-banner .button:hover {
             background-color: #ffd700;
             transform: scale(1.1);
         }
 
-        .top-left-icon {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1;
-        }
-
-        .top-left-icon a {
-            color: gold;
+        .bottom-banner i {
             font-size: 24px;
-            text-decoration: none;
         }
 
         .content {
-            margin-top: 80px; /* Adjust for fixed header */
+            margin-top: 80px;
+            margin-bottom: 60px;
             padding: 20px;
             text-align: center;
         }
@@ -122,10 +126,10 @@
             background-color: gold;
             color: #000;
             border: none;
-            border-radius: 25px;
+            border-radius: 50px;
             cursor: pointer;
             padding: 10px 20px;
-            font-size: 18px;
+            font-size: 24px;
             text-align: center;
             transition: background-color 0.3s, transform 0.3s;
             width: 100%;
@@ -135,27 +139,33 @@
             background-color: #ffd700;
             transform: scale(1.1);
         }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        .naira-amount {
+            background-color: #555;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 18px;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="header">
-        <h1> </h1>
-    </div>
-
-    <div class="top-left-icon">
-        <a href="index.html"><i class="fas fa-home"></i></a>
-    </div>
-
-    <div class="top-right-buttons">
-        <button class="button" onclick="window.location.href='profile.html'">Profile</button>
-        <button class="button" onclick="window.location.href='task.html'">Task</button>
+        <h1>MY DAILY2K Withdraw</h1>
     </div>
 
     <div class="content">
         <div class="balance-info">
             <h2>Current Balance</h2>
-            <p><strong>Naira:</strong> <span id="nairaBalance">0</span></p>
+            <p><strong>2KCoin:</strong> <span id="2KCoin">0</span></p>
         </div>
 
         <div class="withdraw-form">
@@ -167,15 +177,26 @@
                 <label for="accountNumber">Account Number:</label>
                 <input type="text" id="accountNumber" name="accountNumber" placeholder="Enter account number" required>
 
-                <label for="bankname">Account Number:</label>
-                <input type="text" id="bankname" name="bankname" placeholder="bankname" required>
+                <label for="bankname">Bank Name:</label>
+                <input type="text" id="bankname" name="bankname" placeholder="Enter bank name" required>
 
-                <label for="nairaAmount">Amount (min 2000):</label>
+                <label for="nairaAmount">Amount (min 2000 2KCoin / 1000 Naira):</label>
                 <input type="number" id="nairaAmount" name="amount" placeholder="Enter amount" min="2000" required>
+                <div class="naira-amount">
+                    <p>Equivalent Naira Amount: <span id="nairaEquivalent">0</span></p>
+                </div>
+                <p id="conversionRate">1 2KCoin = 0.5 Naira</p>
 
-                <button type="submit">Submit Withdrawal</button>
+                <button type="submit" id="withdrawButton" disabled>Submit Withdrawal</button>
+                <p class="error-message" id="inviteError"></p>
             </form>
         </div>
+    </div>
+
+    <div class="bottom-banner">
+        <a href="dashboard.html" class="button"><i class="fas fa-home"></i></a>
+        <a href="profile.html" class="button"><i class="fas fa-user"></i></a>
+        <a href="friends.html" class="button"><i class="fas fa-user-friends"></i></a>
     </div>
 
     <script type="module">
@@ -195,20 +216,53 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const telegramUsername = "sampleTelegramUser"; // Replace with actual Telegram username
-
         document.addEventListener("DOMContentLoaded", async () => {
-            await loadBalances(telegramUsername);
+            await loadBalances();
+            await checkInvites();
         });
 
-        async function loadBalances(username) {
-            const userDocRef = doc(db, "users", username);
+        async function loadBalances() {
+            const userDocRef = doc(db, "users", "exampleUserId");
             const docSnap = await getDoc(userDocRef);
 
             if (docSnap.exists()) {
                 document.getElementById("nairaBalance").textContent = docSnap.data().nairaBalance || '0';
             }
         }
+
+        async function checkInvites() {
+            const userDocRef = doc(db, "users", "exampleUserId");
+            const docSnap = await getDoc(userDocRef);
+
+            if (docSnap.exists()) {
+                const inviteCount = docSnap.data().inviteCount || 0;
+
+                if (inviteCount >= 3) {
+                    document.getElementById("withdrawButton").disabled = false;
+                } else {
+                    document.getElementById("inviteError").textContent = "You must invite at least 3 people to withdraw.";
+                }
+            }
+        }
+
+        // Conversion logic
+        const conversionRate = 0.5; // 1 2KCoin = 0.5 Naira
+        const nairaAmountInput = document.getElementById("nairaAmount");
+        const nairaEquivalent = document.getElementById("nairaEquivalent");
+
+        nairaAmountInput.addEventListener("input", () => {
+            const amount = parseFloat(nairaAmountInput.value);
+            if (isNaN(amount) || amount < 2000) {
+                nairaEquivalent.textContent = "0";
+                nairaAmountInput.setCustomValidity("Amount must be at least 2000 2KCoin.");
+            } else {
+                nairaAmountInput.setCustomValidity("");
+                const equivalentNaira = (amount * conversionRate).toFixed(2);
+                nairaEquivalent.textContent = equivalentNaira;
+            }
+        });
     </script>
+
 </body>
+
 </html>
