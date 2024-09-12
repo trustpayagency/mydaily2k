@@ -33,7 +33,7 @@
         }
 
         .content {
-            margin-top: 80px; /* Adjust for fixed header */
+            margin-top: 80px;
             padding: 20px;
             text-align: center;
         }
@@ -82,7 +82,17 @@
             transform: scale(1.1);
         }
 
-        /* Black bottom banner */
+        .task-list li button:disabled {
+            background-color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .claim-button {
+            display: none;
+            background-color: #4CAF50 !important;
+        }
+
         .bottom-banner {
             position: fixed;
             bottom: 0;
@@ -124,7 +134,6 @@
     </style>
 </head>
 <body>
-
     <div class="header">
         <h1>MY DAILY2K</h1>
     </div>
@@ -138,7 +147,6 @@
         </div>
     </div>
 
-    <!-- Black bottom banner containing the buttons -->
     <div class="bottom-banner">
         <button class="button" onclick="window.location.href='dashboard.html'">
             <i class="fas fa-home"></i>
@@ -156,7 +164,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, updateDoc, doc, increment, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
@@ -170,30 +179,94 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        document.addEventListener("DOMContentLoaded", async () => {
-            await loadTasks();
+        let currentUser = null;
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                loadTasks();
+            } else {
+                console.log("User is not logged in");
+                window.location.href = 'login.html'; // Redirect to login page
+            }
         });
 
         async function loadTasks() {
-            const taskListElement = document.getElementById("taskList");
-            const tasksSnapshot = await getDocs(collection(db, "tasks"));
+    const taskListElement = document.getElementById("taskList");
+    taskListElement.innerHTML = ''; // Clear existing tasks
+    
+    try {
+        const tasksSnapshot = await getDocs(collection(db, "tasks"));
+        const userTasksDoc = await getDoc(doc(db, "userTasks", currentUser.uid));
+        const userTasks = userTasksDoc.exists() ? userTasksDoc.data() : {};
 
-            tasksSnapshot.forEach(doc => {
-                const task = doc.data();
-                const listItem = document.createElement("li");
-                listItem.innerHTML = `
-                    ${task.name} - ${task.reward} points
-                    <button onclick="completeTask('${doc.id}')">Complete</button>
-                `;
-                taskListElement.appendChild(listItem);
-            });
+        tasksSnapshot.forEach(doc => {
+            const task = doc.data();
+            const listItem = document.createElement("li");
+            const isClaimed = userTasks[doc.id] === true;
+            
+            listItem.innerHTML = `
+                <h3>${task.name} - ${task.reward} points</h3>
+                <p>${task.description}</p>
+                <button onclick="checkTask('${doc.id}', ${task.reward})" ${isClaimed ? 'disabled' : ''}>
+                    ${isClaimed ? 'Claimed' : 'Check'}
+                </button>
+                <button class="claim-button" id="claim-${doc.id}" onclick="claimReward('${doc.id}', ${task.reward})" style="display: none;">
+                    Claim
+                </button>
+            `;
+            taskListElement.appendChild(listItem);
+        });
+    } catch (error) {
+        console.error("Error loading tasks:", error);
+        alert("Failed to load tasks. Please try again later.");
+    }
+}
+
+        function checkTask(taskId, reward) {
+            alert("Checking task completion...");
+            setTimeout(() => {
+                document.getElementById(`claim-${taskId}`).style.display = 'inline-block';
+            }, 20000); // 20 seconds delay
         }
 
-        async function completeTask(taskId) {
-            // Handle task completion logic here
-            alert(`Task ${taskId} completed!`);
+        async function claimReward(taskId, reward) {
+            if (!currentUser) {
+                alert("Please log in to claim rewards");
+                return;
+            }
+
+            try {
+                const userTasksRef = doc(db, "userTasks", currentUser.uid);
+                const userTasksDoc = await getDoc(userTasksRef);
+                const userTasks = userTasksDoc.exists() ? userTasksDoc.data() : {};
+
+                if (userTasks[taskId]) {
+                    alert("You have already claimed this reward.");
+                    return;
+                }
+
+                const userRef = doc(db, "users", currentUser.uid);
+                await updateDoc(userRef, {
+                    balance: increment(reward)
+                });
+
+                // Mark the task as claimed
+                await setDoc(userTasksRef, { [taskId]: true }, { merge: true });
+
+                alert(`Claimed ${reward} points!`);
+                loadTasks(); // Reload tasks to update UI
+            } catch (error) {
+                console.error("Error claiming reward:", error);
+                alert("Failed to claim reward. Please try again later.");
+            }
         }
+
+        // Expose these functions to the global scope
+        window.checkTask = checkTask;
+        window.claimReward = claimReward;
     </script>
 </body>
 </html>
