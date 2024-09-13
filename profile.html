@@ -57,7 +57,6 @@
             margin: 0;
         }
 
-        /* Black bottom banner */
         .bottom-banner {
             position: fixed;
             bottom: 0;
@@ -110,24 +109,23 @@
             <h2>Profile Information</h2>
 
             <div class="info-container">
+                <p><strong>Full Name:</strong> <span id="fullname">Loading...</span></p>
+            </div>
+
+            <div class="info-container">
                 <p><strong>Username:</strong> <span id="username">Loading...</span></p>
             </div>
 
             <div class="info-container">
-                <p><strong>Total Amount Made:</strong> <span id="totalMade">0</span> 2K Coins</p>
+                <p><strong>Balance:</strong> <span id="balance">0</span> 2K Coins</p>
             </div>
 
             <div class="info-container">
-                <p><strong>Total Withdrawn:</strong> <span id="totalWithdrawn">0</span> 2K Coins</p>
-            </div>
-
-            <div class="info-container">
-                <p><strong>People Invited:</strong> <span id="peopleInvited">0</span></p>
+                <p><strong>Email:</strong> <span id="email">Loading...</span></p>
             </div>
         </div>
     </div>
 
-    <!-- Black bottom banner containing the buttons -->
     <div class="bottom-banner">
         <button class="button" onclick="window.location.href='dashboard.html'">
             <i class="fas fa-home"></i>
@@ -161,34 +159,33 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        async function loadUserProfile(userId) {
+            const userDocRef = doc(db, "users", userId);
+            const docSnap = await getDoc(userDocRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById("username").textContent = data['username'] || 'N/A';
+                document.getElementById("fullname").textContent = data['fullname'] || 'N/A';
+                document.getElementById("balance").textContent = data.balance || '0';
+                document.getElementById("email").textContent = data.email || 'N/A';
+            } else {
+                console.error("User not found in Firestore.");
+                document.getElementById("fullname").textContent = 'User not found';
+                document.getElementById("balance").textContent = '0';
+                document.getElementById("email").textContent = 'N/A';
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
-                    const email = user.email;
-                    const username = email.split('@')[0]; // Assuming username is part of email
-
-                    await loadUserProfile(username);
+                    await loadUserProfile(user.uid);
                 } else {
                     window.location.href = 'login.html'; // Redirect to login page if not authenticated
                 }
             });
         });
-
-        async function loadUserProfile(username) {
-            const userDocRef = doc(db, "users", username);
-            const docSnap = await getDoc(userDocRef);
-
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                document.getElementById("username").textContent = data.username || 'N/A';
-                document.getElementById("totalMade").textContent = data.totalMade || '0';
-                document.getElementById("totalWithdrawn").textContent = data.totalWithdrawn || '0';
-                document.getElementById("peopleInvited").textContent = data.peopleInvited || '0';
-            } else {
-                console.error("User not found in Firestore.");
-                // Optionally handle missing user data
-            }
-        }
     </script>
 
 </body>
