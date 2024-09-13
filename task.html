@@ -62,8 +62,8 @@
             padding: 15px;
             margin: 10px 0;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
         .task-list li button {
@@ -75,6 +75,7 @@
             padding: 5px 15px;
             font-size: 16px;
             transition: background-color 0.3s, transform 0.3s;
+            margin-top: 10px;
         }
 
         .task-list li button:hover {
@@ -91,6 +92,12 @@
         .claim-button {
             display: none;
             background-color: #4CAF50 !important;
+        }
+
+        .do-task-button {
+            background-color: #4CAF50 !important;
+            color: white !important;
+            margin-right: 10px;
         }
 
         .bottom-banner {
@@ -141,6 +148,7 @@
     <div class="content">
         <div class="task-list">
             <h2>Available Tasks</h2>
+            <button onclick="window.loadTasks()">Reload Tasks</button>
             <ul id="taskList">
                 <!-- Task items will be dynamically added here -->
             </ul>
@@ -177,6 +185,7 @@
             measurementId: "G-2VNDPK8V4J"
         };
 
+        console.log("Initializing Firebase with config:", firebaseConfig);
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
@@ -185,6 +194,7 @@
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
+                console.log("User authenticated:", user.uid);
                 currentUser = user;
                 loadTasks();
             } else {
@@ -194,42 +204,60 @@
         });
 
         async function loadTasks() {
-    const taskListElement = document.getElementById("taskList");
-    taskListElement.innerHTML = ''; // Clear existing tasks
-    
-    try {
-        const tasksSnapshot = await getDocs(collection(db, "tasks"));
-        const userTasksDoc = await getDoc(doc(db, "userTasks", currentUser.uid));
-        const userTasks = userTasksDoc.exists() ? userTasksDoc.data() : {};
-
-        tasksSnapshot.forEach(doc => {
-            const task = doc.data();
-            const listItem = document.createElement("li");
-            const isClaimed = userTasks[doc.id] === true;
+            console.log("Loading tasks...");
+            const taskListElement = document.getElementById("taskList");
+            taskListElement.innerHTML = ''; // Clear existing tasks
             
-            listItem.innerHTML = `
-                <h3>${task.name} - ${task.reward} points</h3>
-                <p>${task.description}</p>
-                <button onclick="checkTask('${doc.id}', ${task.reward})" ${isClaimed ? 'disabled' : ''}>
-                    ${isClaimed ? 'Claimed' : 'Check'}
-                </button>
-                <button class="claim-button" id="claim-${doc.id}" onclick="claimReward('${doc.id}', ${task.reward})" style="display: none;">
-                    Claim
-                </button>
-            `;
-            taskListElement.appendChild(listItem);
-        });
-    } catch (error) {
-        console.error("Error loading tasks:", error);
-        alert("Failed to load tasks. Please try again later.");
-    }
-}
+            try {
+                const tasksSnapshot = await getDocs(collection(db, "tasks"));
+                console.log("Tasks snapshot:", tasksSnapshot);
+
+                if (tasksSnapshot.empty) {
+                    console.log("No tasks found in the database.");
+                    taskListElement.innerHTML = '<li>No tasks available at the moment.</li>';
+                    return;
+                }
+
+                const userTasksDoc = await getDoc(doc(db, "userTasks", currentUser.uid));
+                const userTasks = userTasksDoc.exists() ? userTasksDoc.data() : {};
+
+                tasksSnapshot.forEach(doc => {
+                    console.log("Task data:", doc.id, doc.data());
+                    const task = doc.data();
+                    const listItem = document.createElement("li");
+                    const isClaimed = userTasks[doc.id] === true;
+                    
+                    listItem.innerHTML = `
+                        <h3>${task.name} - ${task.reward} points</h3>
+                        <p>${task.description}</p>
+                        <button class="do-task-button" onclick="window.open('${task.link}', '_blank')">Do Task</button>
+                        <button onclick="checkTask('${doc.id}', ${task.reward})" ${isClaimed ? 'disabled' : ''}>
+                            ${isClaimed ? 'Claimed' : 'Check'}
+                        </button>
+                        <button class="claim-button" id="claim-${doc.id}" onclick="claimReward('${doc.id}', ${task.reward})" style="display: none;">
+                            Claim
+                        </button>
+                    `;
+                    taskListElement.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error("Error loading tasks:", error);
+                alert("Failed to load tasks. Please try again later.");
+            }
+        }
 
         function checkTask(taskId, reward) {
+            console.log("Checking task:", taskId, "with reward:", reward);
             alert("Checking task completion...");
             setTimeout(() => {
-                document.getElementById(`claim-${taskId}`).style.display = 'inline-block';
-            }, 20000); // 20 seconds delay
+                const claimButton = document.getElementById(`claim-${taskId}`);
+                if (claimButton) {
+                    claimButton.style.display = 'inline-block';
+                    console.log("Claim button displayed for task:", taskId);
+                } else {
+                    console.error("Claim button not found for task:", taskId);
+                }
+            }, 2000); // 2 seconds delay
         }
 
         async function claimReward(taskId, reward) {
@@ -267,6 +295,7 @@
         // Expose these functions to the global scope
         window.checkTask = checkTask;
         window.claimReward = claimReward;
+        window.loadTasks = loadTasks;
     </script>
 </body>
 </html>
