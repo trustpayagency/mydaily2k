@@ -102,6 +102,20 @@
             60% { content: "..."; }
             80%, 100% { content: ""; }
         }
+        .user-info {
+            background-color: #444;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+        .user-info h2 {
+            color: gold;
+            margin-bottom: 10px;
+        }
+        .user-info p {
+            margin: 5px 0;
+        }
     </style>
 </head>
 <body>
@@ -124,6 +138,14 @@
             <div id="loading" class="loading">Signing up</div>
         </form>
         <p>Already have an account? <a href="index.html">Login here</a></p>
+
+        <div id="userInfo" class="user-info">
+            <h2>User Information</h2>
+            <p><strong>Full Name:</strong> <span id="infoFullname"></span></p>
+            <p><strong>Username:</strong> <span id="infoUsername"></span></p>
+            <p><strong>Email:</strong> <span id="infoEmail"></span></p>
+            <p><strong>Balance:</strong> <span id="infoBalance"></span> 2KCoin</p>
+        </div>
     </div>
 
     <!-- Firebase SDK -->
@@ -255,8 +277,17 @@
                 await setDoc(doc(db, "users", user.uid), userData);
                 await setDoc(doc(db, "usernames", username), { uid: user.uid });
 
+                // Display user information
+                document.getElementById('infoFullname').textContent = fullname;
+                document.getElementById('infoUsername').textContent = username;
+                document.getElementById('infoEmail').textContent = email;
+                document.getElementById('infoBalance').textContent = '0';
+                document.getElementById('userInfo').style.display = 'block';
+
+                // Hide the form
+                document.getElementById('signupForm').style.display = 'none';
+
                 alert("Sign up successful! Please check your email to verify your account.");
-                window.location.href = 'dashboard.html';
             } catch (error) {
                 console.error(error);
                 if (error.code === 'auth/email-already-in-use') {
