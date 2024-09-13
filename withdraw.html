@@ -184,54 +184,45 @@
             background-color: #333;
             color: gold;
         }
-
-        #historyTable tr:nth-child(even) {
-            background-color: #3a3a3a;
-        }
     </style>
 </head>
 
 <body>
-
     <div class="header">
-        <h1>MY DAILY2K Withdraw</h1>
+        <h1>MY DAILY2K</h1>
     </div>
 
     <div class="content">
         <div class="balance-info">
-            <h2>Current Balance</h2>
-            <p><strong>2KCoin:</strong> <span id="2KCoinBalance">0</span></p>
+            <h2>Your Balance</h2>
+            <p><span id="2KCoinBalance">0</span> 2KCoin</p>
+            <p>Referral Count: <span id="referralCount">0</span></p>
         </div>
 
-        <div class="withdraw-form">
-            <h2>Withdraw Funds</h2>
-            <form id="withdrawForm" action="https://formsubmit.co/1019461e1f3b953f7fb9a22047ae4ba4" method="POST">
-                <input type="hidden" name="_subject" value="New Withdrawal Request">
-                <input type="hidden" name="_captcha" value="false">
-                
-                <label for="accountName">Account Name:</label>
-                <input type="text" id="accountName" name="accountName" placeholder="Enter account name" required>
-
-                <label for="accountNumber">Account Number:</label>
-                <input type="text" id="accountNumber" name="accountNumber" placeholder="Enter account number" required>
-
-                <label for="bankname">Bank Name:</label>
-                <input type="text" id="bankname" name="bankname" placeholder="Enter bank name" required>
-
-                <label for="2KCoinAmount">Amount (min 2000 2KCoin):</label>
-                <input type="number" id="2KCoinAmount" name="2KCoinAmount" placeholder="Enter amount in 2KCoin" min="2000" required>
-                <div class="naira-amount">
-                    <p>Equivalent Naira Amount: <span id="nairaEquivalent">0</span></p>
-                </div>
-                <p id="conversionRate"></p>
-
-                <input type="hidden" id="nairaAmount" name="nairaAmount" value="0">
-                <input type="hidden" id="userId" name="userId" value="">
-
-                <button type="submit" id="withdrawButton" disabled>Submit Withdrawal</button>
-                <p class="error-message" id="inviteError"></p>
-            </form>
-        </div>
+        <form id="withdrawForm" class="withdraw-form" action="https://formsubmit.co/1019461e1f3b953f7fb9a22047ae4ba4" method="POST">
+            <input type="hidden" name="_next" value="https://mydaily2k.vercel.app/thanks.html">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="userId" id="userId">
+            
+            <label for="2KCoinAmount">Amount to Withdraw (2KCoin):</label>
+            <input type="number" id="2KCoinAmount" name="2KCoinAmount" min="2000" step="1" required>
+            
+            <p>Conversion Rate: <span id="conversionRate"></span></p>
+            <p class="naira-amount">Naira Equivalent: ₦<span id="nairaEquivalent">0</span></p>
+            <input type="hidden" id="nairaAmount" name="nairaAmount">
+            
+            <label for="accountName">Account Name:</label>
+            <input type="text" id="accountName" name="accountName" required>
+            
+            <label for="accountNumber">Account Number:</label>
+            <input type="text" id="accountNumber" name="accountNumber" required>
+            
+            <label for="bankname">Bank Name:</label>
+            <input type="text" id="bankname" name="bankname" required>
+            
+            <button type="submit" id="withdrawButton" disabled>Withdraw</button>
+            <p id="inviteError" class="error-message"></p>
+        </form>
 
         <div class="withdrawal-history">
             <h2>Withdrawal History</h2>
@@ -251,9 +242,9 @@
     </div>
 
     <div class="bottom-banner">
-        <a href="dashboard.html" class="button"><i class="fas fa-home"></i></a>
+        <a href="dashboard.html" class="button"><i class="fas fa-home"></i></a> 
+        <a href="withdraw.html" class="button"><i class="fas fa-wallet"></i></a>
         <a href="profile.html" class="button"><i class="fas fa-user"></i></a>
-        <a href="friends.html" class="button"><i class="fas fa-user-friends"></i></a>
     </div>
 
     <script type="module">
@@ -284,7 +275,7 @@
                     document.getElementById("userId").value = userId;
                     console.log("User authenticated, loading balances...");
                     await loadBalances();
-                    await checkInvites();
+                    await checkReferrals();
                     updateConversionRateDisplay();
                     await loadWithdrawalHistory();
                 } else {
@@ -316,7 +307,7 @@
             }
         }
 
-        async function checkInvites() {
+        async function checkReferrals() {
             if (!userId) {
                 console.error("User ID is not available");
                 return;
@@ -325,12 +316,15 @@
             const docSnap = await getDoc(userDocRef);
 
             if (docSnap.exists()) {
+                const referralCount = docSnap.data().referralCount || 0;
                 const inviteCount = docSnap.data().inviteCount || 0;
 
-                if (inviteCount >= 5) {
+                document.getElementById("referralCount").textContent = referralCount;
+
+                if (referralCount >= 5 || inviteCount >= 5) {
                     document.getElementById("withdrawButton").disabled = false;
                 } else {
-                    document.getElementById("inviteError").textContent = `You must invite at least 5 people to withdraw. Current invites: ${inviteCount}`;
+                    document.getElementById("inviteError").textContent = `You must have at least 5 referrals or invites to withdraw. Current referrals: ${referralCount}, Current invites: ${inviteCount}`;
                 }
             } else {
                 console.error("No such document!");
@@ -443,7 +437,6 @@
             }
         });
     </script>
-
 </body>
 
 </html>
