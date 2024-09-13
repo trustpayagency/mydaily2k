@@ -114,7 +114,7 @@
         }
 
         .withdraw-form input {
-            width: 100%;
+            width: 95%;
             padding: 10px;
             margin-bottom: 15px;
             border: none;
@@ -153,6 +153,41 @@
             margin-top: 10px;
             font-size: 18px;
         }
+
+        .withdrawal-history {
+            background-color: #444;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .withdrawal-history h2 {
+            color: gold;
+            margin-bottom: 15px;
+        }
+
+        #historyTable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #historyTable th, #historyTable td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #555;
+        }
+
+        #historyTable th {
+            background-color: #333;
+            color: gold;
+        }
+
+        #historyTable tr:nth-child(even) {
+            background-color: #3a3a3a;
+        }
     </style>
 </head>
 
@@ -165,12 +200,15 @@
     <div class="content">
         <div class="balance-info">
             <h2>Current Balance</h2>
-            <p><strong>2KCoin:</strong> <span id="2KCoin">0</span></p>
+            <p><strong>2KCoin:</strong> <span id="2KCoinBalance">0</span></p>
         </div>
 
         <div class="withdraw-form">
             <h2>Withdraw Funds</h2>
             <form id="withdrawForm" action="https://formsubmit.co/1019461e1f3b953f7fb9a22047ae4ba4" method="POST">
+                <input type="hidden" name="_subject" value="New Withdrawal Request">
+                <input type="hidden" name="_captcha" value="false">
+                
                 <label for="accountName">Account Name:</label>
                 <input type="text" id="accountName" name="accountName" placeholder="Enter account name" required>
 
@@ -180,16 +218,35 @@
                 <label for="bankname">Bank Name:</label>
                 <input type="text" id="bankname" name="bankname" placeholder="Enter bank name" required>
 
-                <label for="nairaAmount">Amount (min 2000 2KCoin / 1000 Naira):</label>
-                <input type="number" id="nairaAmount" name="amount" placeholder="Enter amount" min="2000" required>
+                <label for="2KCoinAmount">Amount (min 2000 2KCoin):</label>
+                <input type="number" id="2KCoinAmount" name="2KCoinAmount" placeholder="Enter amount in 2KCoin" min="2000" required>
                 <div class="naira-amount">
                     <p>Equivalent Naira Amount: <span id="nairaEquivalent">0</span></p>
                 </div>
-                <p id="conversionRate">1 2KCoin = 0.5 Naira</p>
+                <p id="conversionRate"></p>
+
+                <input type="hidden" id="nairaAmount" name="nairaAmount" value="0">
+                <input type="hidden" id="userId" name="userId" value="">
 
                 <button type="submit" id="withdrawButton" disabled>Submit Withdrawal</button>
                 <p class="error-message" id="inviteError"></p>
             </form>
+        </div>
+
+        <div class="withdrawal-history">
+            <h2>Withdrawal History</h2>
+            <table id="historyTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount (2KCoin)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                    <!-- Withdrawal history will be populated here -->
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -201,7 +258,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
@@ -215,50 +273,173 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        document.addEventListener("DOMContentLoaded", async () => {
-            await loadBalances();
-            await checkInvites();
+        let userId = null;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    document.getElementById("userId").value = userId;
+                    console.log("User authenticated, loading balances...");
+                    await loadBalances();
+                    await checkInvites();
+                    updateConversionRateDisplay();
+                    await loadWithdrawalHistory();
+                } else {
+                    console.error("No user is signed in");
+                    window.location.href = "index.html";
+                }
+            });
         });
 
         async function loadBalances() {
-            const userDocRef = doc(db, "users", "exampleUserId");
+            if (!userId) {
+                console.error("User ID is not available");
+                return;
+            }
+            const userDocRef = doc(db, "users", userId);
+            console.log("Fetching document for user ID:", userId);
             const docSnap = await getDoc(userDocRef);
 
             if (docSnap.exists()) {
-                document.getElementById("nairaBalance").textContent = docSnap.data().nairaBalance || '0';
+                const userData = docSnap.data();
+                console.log("Document data:", userData);
+                
+                let coinBalance = userData.balance || 0;
+                console.log("Coin balance:", coinBalance);
+                
+                document.getElementById("2KCoinBalance").textContent = coinBalance;
+            } else {
+                console.error("No such document!");
             }
         }
 
         async function checkInvites() {
-            const userDocRef = doc(db, "users", "exampleUserId");
+            if (!userId) {
+                console.error("User ID is not available");
+                return;
+            }
+            const userDocRef = doc(db, "users", userId);
             const docSnap = await getDoc(userDocRef);
 
             if (docSnap.exists()) {
                 const inviteCount = docSnap.data().inviteCount || 0;
 
-                if (inviteCount >= 3) {
+                if (inviteCount >= 5) {
                     document.getElementById("withdrawButton").disabled = false;
                 } else {
-                    document.getElementById("inviteError").textContent = "You must invite at least 3 people to withdraw.";
+                    document.getElementById("inviteError").textContent = `You must invite at least 5 people to withdraw. Current invites: ${inviteCount}`;
                 }
+            } else {
+                console.error("No such document!");
             }
         }
 
-        // Conversion logic
         const conversionRate = 0.5; // 1 2KCoin = 0.5 Naira
-        const nairaAmountInput = document.getElementById("nairaAmount");
+        const coinAmountInput = document.getElementById("2KCoinAmount");
         const nairaEquivalent = document.getElementById("nairaEquivalent");
 
-        nairaAmountInput.addEventListener("input", () => {
-            const amount = parseFloat(nairaAmountInput.value);
+        function updateConversionRateDisplay() {
+            document.getElementById("conversionRate").textContent = `1 2KCoin = ${conversionRate} Naira`;
+        }
+
+        coinAmountInput.addEventListener("input", () => {
+            const amount = parseFloat(coinAmountInput.value);
             if (isNaN(amount) || amount < 2000) {
                 nairaEquivalent.textContent = "0";
-                nairaAmountInput.setCustomValidity("Amount must be at least 2000 2KCoin.");
+                document.getElementById("nairaAmount").value = "0";
+                coinAmountInput.setCustomValidity("Amount must be at least 2000 2KCoin.");
             } else {
-                nairaAmountInput.setCustomValidity("");
+                coinAmountInput.setCustomValidity("");
                 const equivalentNaira = (amount * conversionRate).toFixed(2);
                 nairaEquivalent.textContent = equivalentNaira;
+                document.getElementById("nairaAmount").value = equivalentNaira;
+            }
+        });
+
+        async function loadWithdrawalHistory() {
+            if (!userId) {
+                console.error("User ID is not available");
+                return;
+            }
+
+            const withdrawalsRef = collection(db, "withdrawals");
+            const q = query(
+                withdrawalsRef,
+                where("userId", "==", userId),
+                orderBy("timestamp", "desc"),
+                limit(10)
+            );
+
+            try {
+                const querySnapshot = await getDocs(q);
+                const historyTableBody = document.getElementById("historyTableBody");
+                historyTableBody.innerHTML = ""; // Clear existing rows
+
+                querySnapshot.forEach((doc) => {
+                    const withdrawal = doc.data();
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${new Date(withdrawal.timestamp.toDate()).toLocaleString()}</td>
+                        <td>${withdrawal.amount}</td>
+                        <td>${withdrawal.status}</td>
+                    `;
+                    historyTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error fetching withdrawal history:", error);
+            }
+        }
+
+        document.getElementById("withdrawForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (!userId) {
+                console.error("User is not authenticated");
+                return;
+            }
+
+            const coinAmount = parseFloat(coinAmountInput.value);
+            const userDocRef = doc(db, "users", userId);
+            const docSnap = await getDoc(userDocRef);
+
+            if (docSnap.exists()) {
+                const userData = docSnap.data();
+                const currentBalance = userData.balance || 0;
+                if (coinAmount > currentBalance) {
+                    alert("Insufficient balance for withdrawal.");
+                    return;
+                }
+
+                // Update user's balance in Firestore
+                const newBalance = currentBalance - coinAmount;
+                await updateDoc(userDocRef, { balance: newBalance });
+
+                // Create withdrawal document
+                const withdrawalData = {
+                    userId: userId,
+                    amount: coinAmount,
+                    nairaAmount: parseFloat(document.getElementById("nairaAmount").value),
+                    accountName: document.getElementById("accountName").value,
+                    accountNumber: document.getElementById("accountNumber").value,
+                    bankName: document.getElementById("bankname").value,
+                    timestamp: new Date(),
+                    status: "Pending"
+                };
+
+                await addDoc(collection(db, "withdrawals"), withdrawalData);
+
+                // Update displayed balance
+                document.getElementById("2KCoinBalance").textContent = newBalance;
+
+                // Refresh withdrawal history
+                await loadWithdrawalHistory();
+
+                // Submit the form to FormSubmit
+                e.target.submit();
+            } else {
+                console.error("User document not found");
             }
         });
     </script>
