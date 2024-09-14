@@ -19,7 +19,7 @@
             width: 100%;
             padding: 20px;
             background-color: #333;
-            text-align: center;
+            text-align: left;
             position: fixed;
             top: 0;
             left: 0;
@@ -30,7 +30,7 @@
             color: gold;
             font-size: 24px;
             margin: 0;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-family: 'bold', sans-serif;
         }
 
         .bottom-banner {
@@ -189,7 +189,7 @@
 
 <body>
     <div class="header">
-        <h1>MY DAILY2K</h1>
+        <h1>WITHDRAW</h1>
     </div>
 
     <div class="content">
@@ -199,9 +199,8 @@
             <p>Referral Count: <span id="referralCount">0</span></p>
         </div>
 
-        <form id="withdrawForm" class="withdraw-form" action="https://formsubmit.co/1019461e1f3b953f7fb9a22047ae4ba4" method="POST">
+        <form id="withdrawForm" class="withdraw-form" action="https://usebasin.com/f/4c6cac9781b2" method="POST">
             <input type="hidden" name="_next" value="https://mydaily2k.vercel.app/thanks.html">
-            <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="userId" id="userId">
             
             <label for="2KCoinAmount">Amount to Withdraw (2KCoin):</label>
@@ -243,7 +242,7 @@
 
     <div class="bottom-banner">
         <a href="dashboard.html" class="button"><i class="fas fa-home"></i></a> 
-        <a href="withdraw.html" class="button"><i class="fas fa-wallet"></i></a>
+        <a href="friends.html" class="button"><i class="fas fa-user-friends"></i></a>
         <a href="profile.html" class="button"><i class="fas fa-user"></i></a>
     </div>
 
@@ -359,6 +358,8 @@
                 return;
             }
 
+            console.log("Current user ID:", userId);
+
             const withdrawalsRef = collection(db, "withdrawals");
             const q = query(
                 withdrawalsRef,
@@ -368,22 +369,33 @@
             );
 
             try {
+                console.log("Fetching withdrawal history for user:", userId);
                 const querySnapshot = await getDocs(q);
                 const historyTableBody = document.getElementById("historyTableBody");
                 historyTableBody.innerHTML = ""; // Clear existing rows
 
-                querySnapshot.forEach((doc) => {
-                    const withdrawal = doc.data();
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${new Date(withdrawal.timestamp.toDate()).toLocaleString()}</td>
-                        <td>${withdrawal.amount}</td>
-                        <td>${withdrawal.status}</td>
-                    `;
-                    historyTableBody.appendChild(row);
-                });
+                if (querySnapshot.empty) {
+                    console.log("No withdrawal history found for user");
+                    historyTableBody.innerHTML = "<tr><td colspan='3'>No withdrawal history available</td></tr>";
+                } else {
+                    console.log("Withdrawal history found, populating table");
+                    querySnapshot.forEach((doc) => {
+                        const withdrawal = doc.data();
+                        console.log("Withdrawal data:", withdrawal);
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${withdrawal.timestamp ? new Date(withdrawal.timestamp.toDate()).toLocaleString() : 'N/A'}</td>
+                            <td>${withdrawal.amount || 'N/A'}</td>
+                            <td>${withdrawal.status || 'N/A'}</td>
+                        `;
+                        historyTableBody.appendChild(row);
+                    });
+                }
             } catch (error) {
                 console.error("Error fetching withdrawal history:", error);
+                console.error("Error details:", error.code, error.message);
+                const historyTableBody = document.getElementById("historyTableBody");
+                historyTableBody.innerHTML = `<tr><td colspan='3'>Error loading withdrawal history: ${error.message}</td></tr>`;
             }
         }
 
@@ -414,28 +426,33 @@
                 const withdrawalData = {
                     userId: userId,
                     amount: coinAmount,
-                    nairaAmount: parseFloat(document.getElementById("nairaAmount").value),
-                    accountName: document.getElementById("accountName").value,
-                    accountNumber: document.getElementById("accountNumber").value,
-                    bankName: document.getElementById("bankname").value,
-                    timestamp: new Date(),
-                    status: "Pending"
-                };
+            nairaAmount: parseFloat(document.getElementById("nairaAmount").value),
+            accountName: document.getElementById("accountName").value,
+            accountNumber: document.getElementById("accountNumber").value,
+            bankName: document.getElementById("bankname").value,
+            timestamp: new Date(),
+            status: "Pending"
+        };
 
-                await addDoc(collection(db, "withdrawals"), withdrawalData);
+        try {
+            const docRef = await addDoc(collection(db, "withdrawals"), withdrawalData);
+            console.log("Withdrawal document added with ID: ", docRef.id);
+        } catch (error) {
+            console.error("Error adding withdrawal document: ", error);
+        }
 
-                // Update displayed balance
-                document.getElementById("2KCoinBalance").textContent = newBalance;
+        // Update displayed balance
+        document.getElementById("2KCoinBalance").textContent = newBalance;
 
-                // Refresh withdrawal history
-                await loadWithdrawalHistory();
+        // Refresh withdrawal history
+        await loadWithdrawalHistory();
 
-                // Submit the form to FormSubmit
-                e.target.submit();
-            } else {
-                console.error("User document not found");
-            }
-        });
+        // Submit the form to Basin
+        e.target.submit();
+    } else {
+        console.error("User document not found");
+    }
+});
     </script>
 </body>
 
