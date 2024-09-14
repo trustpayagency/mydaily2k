@@ -19,7 +19,7 @@
             width: 100%;
             padding: 20px;
             background-color: #333;
-            text-align: center;
+            text-align: left;
             position: fixed;
             top: 0;
             left: 0;
@@ -30,7 +30,7 @@
             color: gold;
             font-size: 24px;
             margin: 0;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-family: 'bold', sans-serif;
         }
 
         .bottom-banner {
@@ -71,6 +71,41 @@
             text-align: center;
         }
 
+        .referral-info {
+            background-color: #444;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .referral-info h2 {
+            margin: 0 0 10px 0;
+            font-size: 20px;
+            color: gold;
+        }
+
+        .referral-code {
+            color: gold;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .copy-button {
+            background-color: #555;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .copy-button:hover {
+            background-color: #666;
+        }
+
         .friend-list {
             background-color: #444;
             border-radius: 10px;
@@ -96,36 +131,47 @@
             margin: 5px 0;
         }
 
-        .referral-code {
-            color: gold;
-            font-size: 18px;
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+        }
+
+        .error-message {
+            color: #ff6b6b;
             font-weight: bold;
+            margin: 10px 0;
         }
     </style>
 </head>
 
 <body>
-
     <div class="header">
-        <h1>MY DAILY2K Friends</h1>
+        <h1>FRIENDS</h1>
     </div>
 
     <div class="content">
+        <div id="referralInfoContainer" class="referral-info">
+            <h2>Your Referral Code</h2>
+            <div id="referralCodeContainer">Loading referral code...</div>
+        </div>
         <div id="friendListContainer" class="friend-list">
             <h2>Your Referred Friends</h2>
-            <!-- Friends will be dynamically loaded here -->
+            <div id="friendsListContent">Loading friends...</div>
         </div>
     </div>
 
     <div class="bottom-banner">
-        <a href="dashboard.html"><i class="fas fa-home"></i></a>
-        <a href="withdraw.html"><i class="fas fa-wallet"></i></a>
-        <a href="profile.html"><i class="fas fa-user"></i></a>   
+        <a href="dashboard.html" aria-label="Home"><i class="fas fa-home"></i></a>
+        <a href="withdraw.html" aria-label="Wallet"><i class="fas fa-wallet"></i></a>
+        <a href="profile.html" aria-label="Profile"><i class="fas fa-user"></i></a>   
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
@@ -138,109 +184,85 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const userId = "sampleUserId"; // Replace with the actual user's unique ID
+        let currentUser = null;
 
-        document.addEventListener("DOMContentLoaded", async () => {
-            await loadReferredFriends(userId);
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                loadReferralInfo();
+                loadReferredFriends();
+            } else {
+                window.location.href = 'login.html';
+            }
         });
 
-        async function loadReferredFriends(userId) {
-            const friendListContainer = document.getElementById("friendListContainer");
-
+        async function loadReferralInfo() {
             try {
-                // Fetch referred friends for the user
-                const friendsQuery = query(collection(db, "users"), where("referredBy", "==", userId));
-                const friendsSnapshot = await getDocs(friendsQuery);
+                const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    const referralCode = userData.referralCode || userData.referralcode || 'N/A';
+                    const referralCodeContainer = document.getElementById('referralCodeContainer');
+                    referralCodeContainer.innerHTML = `
+                        <div class="referral-code">${referralCode}</div>
+                        <button class="copy-button" onclick="copyToClipboard('${referralCode}')">Copy Code</button>
+                    `;
+                } else {
+                    console.log("User document does not exist");
+                    document.getElementById('referralCodeContainer').innerHTML = '<p class="error-message">Error loading referral code.</p>';
+                }
+            } catch (error) {
+                console.error("Error loading referral info:", error);
+                document.getElementById('referralCodeContainer').innerHTML = '<p class="error-message">Error loading referral code.</p>';
+            }
+        }
 
+        async function loadReferredFriends() {
+            try {
+                const friendsQuery = query(collection(db, "users"), where("referredBy", "==", currentUser.uid));
+                const friendsSnapshot = await getDocs(friendsQuery);
+                const friendsListContent = document.getElementById('friendsListContent');
+                
                 if (!friendsSnapshot.empty) {
+                    let friendsHtml = '';
                     friendsSnapshot.forEach((doc) => {
                         const friendData = doc.data();
-                        const friendElement = document.createElement("div");
-                        friendElement.classList.add("friend");
-
-                        friendElement.innerHTML = `
-                            <p><strong>Username:</strong> ${friendData.username}</p>
-                            <p><strong>Balance:</strong> ${friendData.balance || '0'} 2KCoins</p>
+                        friendsHtml += `
+                            <div class="friend">
+                                <p><strong>Username:</strong> ${escapeHtml(friendData.username)}</p>
+                                <p><strong>Balance:</strong> ${friendData.balance || '0'} 2KCoins</p>
+                            </div>
                         `;
-
-                        friendListContainer.appendChild(friendElement);
                     });
+                    friendsListContent.innerHTML = friendsHtml;
                 } else {
-                    friendListContainer.innerHTML += "<p>No friends referred yet.</p>";
+                    friendsListContent.innerHTML = '<p>No friends referred yet.</p>';
                 }
             } catch (error) {
                 console.error("Error fetching referred friends:", error);
-                friendListContainer.innerHTML += "<p>Error loading friends. Please try again later.</p>";
+                document.getElementById('friendsListContent').innerHTML = '<p class="error-message">Error loading friends. Please try again later.</p>';
             }
         }
 
-        // Referral code generation logic
-        async function getReferralCode(userId) {
-            const userDoc = doc(db, "users", userId);
-            const userSnap = await getDoc(userDoc);
-
-            if (userSnap.exists()) {
-                const userData = userSnap.data();
-                if (!userData.referralCode) {
-                    const referralCode = generateUniqueReferralCode();
-                    await updateDoc(userDoc, { referralCode: referralCode });
-                    return referralCode;
-                }
-                return userData.referralCode;
-            }
-            return null;
+        function escapeHtml(unsafe) {
+            return unsafe
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
         }
 
-        function generateUniqueReferralCode() {
-            return 'REF-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-        }
-
-        // Example: Display referral code for current user
-        document.addEventListener("DOMContentLoaded", async () => {
-            const referralCode = await getReferralCode(userId);
-            if (referralCode) {
-                const referralCodeElement = document.createElement('p');
-                referralCodeElement.classList.add('referral-code');
-                referralCodeElement.textContent = `Your Referral Code: ${referralCode}`;
-                document.querySelector('.content').prepend(referralCodeElement);
-            }
-        });
-
-        // Add the 200 2K Coins reward for referral
-        async function addReferralBonus(referredByUserId) {
-            const referrerDoc = doc(db, "users", referredByUserId);
-            const referrerSnap = await getDoc(referrerDoc);
-
-            if (referrerSnap.exists()) {
-                const referrerData = referrerSnap.data();
-                const updatedBalance = (referrerData.balance || 0) + 200;
-
-                await updateDoc(referrerDoc, {
-                    balance: updatedBalance
-                });
-            }
-        }
-
-        // When a new user signs up
-        async function handleUserSignUp(newUserId, referralCode) {
-            const referrerQuery = query(collection(db, "users"), where("referralCode", "==", referralCode));
-            const referrerSnap = await getDocs(referrerQuery);
-
-            if (!referrerSnap.empty) {
-                referrerSnap.forEach((doc) => {
-                    const referrerData = doc.data();
-                    addReferralBonus(referrerData.userId);
-                    
-                    // Set the referredBy field for the new user
-                    const newUserDoc = doc(db, "users", newUserId);
-                    updateDoc(newUserDoc, {
-                        referredBy: referrerData.userId
-                    });
-                });
-            }
-        }
+        window.copyToClipboard = function(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Referral code copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        };
     </script>
 </body>
 
