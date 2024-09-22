@@ -64,6 +64,14 @@
             background-color: #666;
         }
 
+        .button-label {
+            display: block;
+            color: #fff; /* White color for visibility */
+            text-align: center;
+            font-size: 12px; /* Appropriate size for labels */
+            margin-top: 5px; /* Space between icon and label */
+        }
+
         .content {
             margin-top: 80px;
             margin-bottom: 60px;
@@ -163,9 +171,18 @@
     </div>
 
     <div class="bottom-banner">
-        <a href="dashboard.html" aria-label="Home"><i class="fas fa-home"></i></a>
-        <a href="withdraw.html" aria-label="Wallet"><i class="fas fa-wallet"></i></a>
-        <a href="profile.html" aria-label="Profile"><i class="fas fa-user"></i></a>   
+        <div>
+            <a href="dashboard.html" aria-label="Home"><i class="fas fa-home"></i></a>
+            <span class="button-label">Home</span>
+        </div>
+        <div>
+            <a href="withdraw.html" aria-label="Wallet"><i class="fas fa-wallet"></i></a>
+            <span class="button-label">Wallet</span>
+        </div>
+        <div>
+            <a href="profile.html" aria-label="Profile"><i class="fas fa-user"></i></a>
+            <span class="button-label">Profile</span>
+        </div>
     </div>
 
     <script type="module">
