@@ -48,20 +48,19 @@
         }
 
         .bottom-banner .button {
-            background-color: gold;
-            color: #000;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            padding: 15px;
-            font-size: 18px;
-            text-align: center;
+        width: 50px; /* Adjusted size for consistency */
+        height: 50px;
+        background-color: gold;
+        color: #000;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        padding: 10px; /* Adjusted padding */
+        font-size: 24px; /* Adjusted icon size */
+        display: flex;
+        justify-content: center;
+        align-items: center;
             transition: background-color 0.3s, transform 0.3s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 20px;
-            height: 20px;
         }
 
         .bottom-banner .button:hover {
@@ -69,9 +68,13 @@
             transform: scale(1.1);
         }
 
-        .bottom-banner i {
-            font-size: 24px;
-        }
+        .button-label {
+            display: block;
+            color: #fff; /* White color for visibility */
+            text-align: center;
+            font-size: 12px; /* Appropriate size for labels */
+            margin-top: 5px; /* Space between icon and label */
+        } 
 
         .content {
             margin-top: 80px;
@@ -241,9 +244,24 @@
     </div>
 
     <div class="bottom-banner">
-        <a href="dashboard.html" class="button"><i class="fas fa-home"></i></a> 
-        <a href="friends.html" class="button"><i class="fas fa-user-friends"></i></a>
-        <a href="profile.html" class="button"><i class="fas fa-user"></i></a>
+        <div>
+            <button class="button" onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-home"></i>
+            </button>
+            <span class="button-label">Dashboard</span>
+        </div>
+        <div>
+            <button class="button" onclick="window.location.href='profile.html'">
+                <i class="fas fa-user"></i>
+            </button>
+            <span class="button-label">profile</span>
+        </div>
+        <div>
+            <button class="button" onclick="window.location.href='friends.html'">
+                <i class="fas fa-user-friends"></i>
+            </button>
+            <span class="button-label">Friends</span>
+        </div>
     </div>
 
     <script type="module">
