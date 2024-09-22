@@ -8,102 +8,108 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(45deg, #ff6f61, #dce35b);
-            color: #ffffff;
+            font-family: 'Roboto', Arial, sans-serif; /* Updated font family */
+            background: linear-gradient(45deg, #ff6f61, #dce35b); /* Changed gradient colors */
+            color: #f0f0f0; /* Lightened text color for better readability */
             margin: 0;
             padding: 0;
+            height: 100vh; /* Ensure full height */
+            display: flex;
+            flex-direction: column;
         }
-
+    
         .header {
             width: 100%;
-            padding: 20px;
-            background-color: #333;
-            text-align: left;
-            position: fixed;
+            padding: 20px 40px; /* Increased padding for better spacing */
+            background-color: #222; /* Darkened for contrast */
+            text-align: center; /* Centered title text */
+            position: sticky; /* Changed to sticky for better UX */
             top: 0;
-            left: 0;
-            z-index: 1;
+            z-index: 10;
         }
-
+    
         .header h1 {
-            color: gold;
-            font-size: 24px;
-            margin: 0;
-            font-family: 'bold', sans-serif;
+            color: #ffdf00; /* Changed color to a brighter gold */
+            font-size: 28px; /* Increased font size */
         }
-
+    
         .balance-container {
-            margin-top: 110px;
+            margin-top: 80px; /* Adjusted margin */
             text-align: center;
+            flex-grow: 1; /* Allows container to fill available space */
         }
-
+    
         .balance {
-            font-size: 32px;
-            margin: 100px 0;
-        }
-
+            font-size: 36px; /* Increased font size */
+            margin: 20px 0; /* Reduced vertical margin */
+        } 
+        
         .middle-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 120px;
+           display: flex;
+           justify-content: space-evenly; /* Improved spacing between buttons */
+           align-items: center;
+           padding: 20px 0; /* Added padding */
+           margin-top: -20px; /* Move up the middle button */
         }
 
-        .button {
-            width: 60px;
-            height: 60px;
-            background-color: gold;
-            color: #000;
+        .button-label {
+            display: block;
+            color: #f0f0f0; /* Text color */
+            text-align: center;
+            font-size: 14px; /* Label font size */
+            margin-top: 5px; /* Space between button and label */
+    }
+       .button {
+            width: 80px; /* Increased button size */
+            height: 80px;
+            background-color: #ffc107; /* Changed to a lighter gold */
+            color: #333; /* Darkened text color for contrast */
             border: none;
-            border-radius: 50%;
+            border-radius: 70%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            margin: 10px;
-            transition: background-color 0.3s;
+            font-size: 24px; /* Increased icon size */
+            margin: 15px; /* Increased margin */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3); /* Added shadow for depth */
         }
-
+    
         .button:hover {
-            background-color: #ffd700;
+            background-color: #ffeb3b; /* Lighter color on hover */
         }
-
+    
         footer {
-            padding: 10px;
-            background-color: #333;
+            padding: 2px 0; /* Increased padding */
+            background-color: #222; /* Consistent with header */
             width: 100%;
             display: flex;
             justify-content: space-around;
-            position: fixed;
+            position: sticky; /* Changed to sticky */
             bottom: 0;
-            left: 0;
         }
-
+    
         footer .button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 24px;
+            width: 60px; /* Adjusted size for footer buttons */
+            height: 60px;
         }
-
+    
         #loading {
             display: none;
             text-align: center;
             margin-top: 20px;
         }
-
+    
         #adsgram-container {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 1000;
-            background-color: white;
+            background-color: #fff;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            box-shadow: 0 0 15px rgba(0,0,0,0.6); /* Darker shadow for emphasis */
         }
     </style>
 </head>
@@ -120,27 +126,45 @@
     <div id="loading">Loading...</div>
 
     <div class="middle-container">
-        <button class="button" onclick="window.location.href='task.html'">
-            <i class="fas fa-tasks"></i>
-        </button>
-        <button class="button" onclick="window.loadAdgramAd()">
-            <i class="fas fa-ad"></i>
-        </button>
-        <button class="button" onclick="window.loadAdsterraAd()">
-            <i class="fas fa-paper-plane"></i>
-        </button>
+        <div>
+            <button class="button" onclick="window.location.href='task.html'">
+                <i class="fas fa-tasks"></i>
+            </button>
+            <span class="button-label">Tasks</span>
+        </div>
+        <div>
+            <button class="button" onclick="window.loadAdgramAd()">
+                <i class="fas fa-ad"></i>
+            </button>
+            <span class="button-label">watchads</span>
+        </div>
+        <div>
+            <button class="button" onclick="window.loadAdsterraAd()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+            <span class="button-label">directlink</span>
+        </div>
     </div>
-
+    
     <footer>
-        <button class="button" onclick="window.location.href='profile.html'">
-            <i class="fas fa-user"></i>
-        </button>
-        <button class="button" onclick="window.location.href='withdraw.html'">
-            <i class="fas fa-wallet"></i>
-        </button>
-        <button class="button" onclick="window.location.href='friends.html'">
-            <i class="fas fa-user-friends"></i>
-        </button>
+        <div>
+            <button class="button" onclick="window.location.href='profile.html'">
+                <i class="fas fa-user"></i>
+            </button>
+            <span class="button-label">Profile</span>
+        </div>
+        <div>
+            <button class="button" onclick="window.location.href='withdraw.html'">
+                <i class="fas fa-wallet"></i>
+            </button>
+            <span class="button-label">Wallet</span>
+        </div>
+        <div>
+            <button class="button" onclick="window.location.href='friends.html'">
+                <i class="fas fa-user-friends"></i>
+            </button>
+            <span class="button-label">Friends</span>
+        </div>
     </footer>
 
     <script type="module">
@@ -283,7 +307,7 @@
                 await loadUserData(user.uid);
             } else {
                 console.log("User not logged in. Redirecting to login page.");
-                window.location.href = 'index.html';
+                window.location.href = 'login.html';
             }
         });
 
