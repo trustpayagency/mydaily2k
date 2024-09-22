@@ -45,18 +45,38 @@
         } 
         
         .middle-container {
-           display: flex;
-           justify-content: space-evenly; /* Improved spacing between buttons */
-           align-items: center;
-           padding: 20px 0; /* Added padding */
-           margin-top: -20px; /* Move up the middle button */
-        }
+        display: flex;
+        justify-content: center; /* Center align the buttons horizontally */
+        align-items: center;
+        padding: 20px 0; /* Existing padding */
+        margin-top: 15px; /* Existing negative margin to move up */
+        width: 100%; /* Ensure it spans the full width */
+        position: absolute; /* Positioning it absolutely */
+        top: 50%; /* Center vertically */
+        transform: translateY(-50%); /* Adjust to exactly center vertically */
+    }
+
+    .button {
+        width: 80px; /* Existing button size */
+        height: 80px;
+        background-color: #ffc107; /* Existing button color */
+        color: #333; /* Existing text color */
+        border: none;
+        border-radius: 70%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px; /* Existing icon size */
+        margin: 25px; /* Existing margin */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3); /* Existing shadow */
+    }
 
         .button-label {
             display: block;
             color: #f0f0f0; /* Text color */
             text-align: center;
-            font-size: 14px; /* Label font size */
+            font-size: 20px; /* Label font size */
             margin-top: 5px; /* Space between button and label */
     }
        .button {
