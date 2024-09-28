@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY DAILY2K Withdraw</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to top, #ec8f04, #000000);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }  
+
+        .bottom-banner {
+            width: 100%;
+            padding: 10px 0;
+            background-color: #333;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 1;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .bottom-banner .button {
+            width: 50px; /* Adjusted size for consistency */
+            height: 50px;
+            background-color: #ec8f04;
+            color: #000;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 10px; /* Adjusted padding */
+            font-size: 24px; /* Adjusted icon size */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .bottom-banner .button:hover {
+            background-color: #ec8f04;
+            transform: scale(1.1);
+        }
+
+        .button-label {
+            display: block;
+            color: #fff; /* White color for visibility */
+            text-align: center;
+            font-size: 12px; /* Appropriate size for labels */
+            margin-top: 5px; /* Space between icon and label */
+        } 
+
+        .content {
+            margin-top: 80px;
+            margin-bottom: 60px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .balance-info {
+            background-color: #444;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .balance-info h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #ec8f04;
+        }
+
+        .balance-info p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .withdraw-form {
+            background-color: #444;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: left;
+            margin: 0 auto;
+            max-width: 400px;
+        }
+
+        .withdraw-form label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .withdraw-form input {
+            width: 95%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .withdraw-form button {
+            background-color: #ec8f04;
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            padding: 10px 20px;
+            font-size: 24px;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.3s;
+            width: 100%;
+        }
+
+        .withdraw-form button:hover {
+            background-color: #ec8f04;
+            transform: scale(1.1);
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        .naira-amount {
+            background-color: #555;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        .withdrawal-history {
+            background-color: #444;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .withdrawal-history h2 {
+            color: #ec8f04;
+            margin-bottom: 15px;
+        }
+
+        #historyTable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #historyTable th, #historyTable td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #555;
+        }
+
+        #historyTable th {
+            background-color: #333;
+            color: #ec8f04;
+        }
+    </style>
+</head>
+
+<body> 
+
+    <div class="content">
+        <div class="balance-info">
+            <h2>Your Balance</h2>
+            <p><span id="2KCoinBalance">0</span> 2KCoin</p>
+            <p>Referral Count: <span id="referralCount">0</span></p>
+        </div>
+
+        <form id="withdrawForm" class="withdraw-form" action="https://formsubmit.co" method="POST"> 
+            <input type="hidden" name="_next" value="https://mydaily2k.vercel.app/thanks.html">
+            <input type="hidden" name="userId" id="userId">
+            
+            <label for="2KCoinAmount">Amount to Withdraw (2KCoin):</label>
+            <input type="number" id="2KCoinAmount" name="2KCoinAmount" min="2000" step="1" required>
+            
+            <p>Conversion Rate: <span id="conversionRate"></span></p>
+            <p class="naira-amount">Naira Equivalent: ₦<span id="nairaEquivalent">0</span></p>
+            <input type="hidden" id="nairaAmount" name="nairaAmount">
+            
+            <label for="accountName">Account Name:</label>
+            <input type="text" id="accountName" name="accountName" required>
+            
+            <label for="accountNumber">Account Number:</label>
+            <input type="text" id="accountNumber" name="accountNumber" required>
+            
+            <label for="bankname">Bank Name:</label> 
+            <input type="text" id="bankname" name="bankname" required>
+            
+            <button type="submit" id="withdrawButton" disabled>Withdraw</button>
+            <p id="inviteError" class="error-message"></p>
+        </form>
+
+        <div class="withdrawal-history">
+            <h2>Withdrawal History</h2>
+            <table id="historyTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount (2KCoin)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                    <!-- Withdrawal history will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="bottom-banner">
+        <div>
+            <button class="button" onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-home"></i>
+            </button>
+            <span class="button-label">Dashboard</span>
+        </div>
+        <div>
+            <button class="button" onclick="window.location.href='profile.html'">
+                <i class="fas fa-user"></i>
+            </button>
+            <span class="button-label">Profile</span>
+        </div>
+        <div>
+            <button class="button" onclick="window.location.href='friends.html'">
+                <i class="fas fa-user-friends"></i>
+            </button>
+            <span class="button-label">Friends</span>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
+            authDomain: "mydaily2kbot.firebaseapp.com",
+            projectId: "mydaily2kbot",
+            storageBucket: "mydaily2kbot.appspot.com",
+            messagingSenderId: "967002689133",
+            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
+            measurementId: "G-2VNDPK8V4J"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let userId = null;
+        const chargeAmount = 100; // Charge for each withdrawal
+
+        document.addEventListener("DOMContentLoaded", () => {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    document.getElementById("userId").value = userId;
+                    console.log("User authenticated, loading balances...");
+                    await loadBalances();
+                    await checkReferrals();
+                    updateConversionRateDisplay();
+                    await loadWithdrawalHistory();
+                } else {
+                    console.error("No user is signed in");
+                    window.location.href = "index.html";
+                }
+            });
+        });
+
+        async function loadBalances() {
+            if (!userId) {
+                console.error("User ID is not available");
+                return;
+            }
+            const userDocRef = doc(db, "users", userId);
+            console.log("Fetching document for user ID:", userId);
+            const docSnap = await getDoc(userDocRef);
+
+            if (docSnap.exists()) {
+                const userData = docSnap.data();
+                console.log("Document data:", userData);
+                
+                let coinBalance = userData.balance || 0;
+                console.log("Coin balance:", coinBalance);
+                
+                document.getElementById("2KCoinBalance").textContent = coinBalance;
+            } else {
+                console.error("No such document!");
+            }
+        }
+
+        async function checkReferrals() {
+            if (!userId) {
+                console.error("User ID is not available");
+                return;
+            }
+            const userDocRef = doc(db, "users", userId);
+            const docSnap = await getDoc(userDocRef);
+
+            if (docSnap.exists()) {
+                const referralCount = docSnap.data().referralCount || 0;
+                const inviteCount = docSnap.data().inviteCount || 0;
+
+                document.getElementById("referralCount").textContent = referralCount;
+
+                if (referralCount >= 3 || inviteCount >= 3) { // Updated referral requirement
+                    document.getElementById("withdrawButton").disabled = false;
+                } else {
+                    document.getElementById("inviteError").textContent = `You must have at least 3 referrals or invites to withdraw. Current referrals: ${referralCount}, Current invites: ${inviteCount}`;
+                }
+            } else {
+                console.error("No such document!");
+            }
+        }
+
+        const conversionRate = 0.5; // 1 2KCoin = 0.5 Naira
+        const coinAmountInput = document.getElementById("2KCoinAmount");
+        const nairaEquivalent = document.getElementById("nairaEquivalent");
+
+        function updateConversionRateDisplay() {
+            document.getElementById("conversionRate").textContent = `1 2KCoin = ${conversionRate} Naira`;
+        }
+
+        coinAmountInput.addEventListener("input", () => {
+            const amount = parseFloat(coinAmountInput.value);
+            if (isNaN(amount) || amount < 2000) {
+                nairaEquivalent.textContent = "0";
+                document.getElementById("nairaAmount").value = "0";
+                coinAmountInput.setCustomValidity("Amount must be at least 2000 2KCoin.");
+            } else {
+                coinAmountInput.setCustomValidity("");
+                const equivalentNaira = (amount * conversionRate).toFixed(2);
+                nairaEquivalent.textContent = equivalentNaira;
+                document.getElementById("nairaAmount").value = equivalentNaira;
+            }
+        });
+
+        async function loadWithdrawalHistory() {
+            if (!userId) {
+                console.error("User ID is not available");
+                return;
+            }
+
+            console.log("Current user ID:", userId);
+
+            const withdrawalsRef = collection(db, "withdrawals");
+            const q = query(
+                withdrawalsRef,
+                where("userId", "==", userId),
+                orderBy("timestamp", "desc"),
+                limit(10)
+            );
+
+            try {
+                console.log("Fetching withdrawal history for user:", userId);
+                const querySnapshot = await getDocs(q);
+                const historyTableBody = document.getElementById("historyTableBody");
+                historyTableBody.innerHTML = ""; // Clear existing rows
+
+                if (querySnapshot.empty) {
+                    console.log("No withdrawal history found for user");
+                    historyTableBody.innerHTML = "<tr><td colspan='3'>No withdrawal history available</td></tr>";
+                } else {
+                    console.log("Withdrawal history found, populating table");
+                    querySnapshot.forEach((doc) => {
+                        const withdrawal = doc.data();
+                        console.log("Withdrawal data:", withdrawal);
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${withdrawal.timestamp ? new Date(withdrawal.timestamp.toDate()).toLocaleString() : 'N/A'}</td>
+                            <td>${withdrawal.amount || 'N/A'}</td>
+                            <td>${withdrawal.status || 'N/A'}</td>
+                        `;
+                        historyTableBody.appendChild(row);
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching withdrawal history:", error);
+                console.error("Error details:", error.code, error.message);
+                const historyTableBody = document.getElementById("historyTableBody");
+                historyTableBody.innerHTML = `<tr><td colspan='3'>Error loading withdrawal history: ${error.message}</td></tr>`;
+            }
+        }
+
+        document.getElementById("withdrawForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (!userId) {
+                console.error("User is not authenticated");
+                return;
+            }
+
+            const coinAmount = parseFloat(coinAmountInput.value);
+            const userDocRef = doc(db, "users", userId);
+            const docSnap = await getDoc(userDocRef);
+
+            if (docSnap.exists()) {
+                const userData = docSnap.data();
+                const currentBalance = userData.balance || 0;
+                if (coinAmount > currentBalance) {
+                    alert("Insufficient balance for withdrawal.");
+                    return;
+                }
+                if (coinAmount + chargeAmount > currentBalance) { // Check for charge
+                    alert("Insufficient balance for withdrawal after charge.");
+                    return;
+                }
+
+                // Update user's balance in Firestore
+                const newBalance = currentBalance - coinAmount - chargeAmount; // Deduct charge
+                await updateDoc(userDocRef, { balance: newBalance });
+
+                // Create withdrawal document
+                const withdrawalData = {
+                    userId: userId,
+                    amount: coinAmount,
+                    nairaAmount: parseFloat(document.getElementById("nairaAmount").value),
+                    accountName: document.getElementById("accountName").value,
+                    accountNumber: document.getElementById("accountNumber").value,
+                    bankName: document.getElementById("bankname").value,
+                    timestamp: new Date(),
+                    status: "Pending"
+                };
+
+                try {
+                    const docRef = await addDoc(collection(db, "withdrawals"), withdrawalData);
+                    console.log("Withdrawal document added with ID: ", docRef.id);
+                } catch (error) {
+                    console.error("Error adding withdrawal document: ", error);
+                }
+
+                // Update displayed balance
+                document.getElementById("2KCoinBalance").textContent = newBalance;
+
+                // Refresh withdrawal history
+                await loadWithdrawalHistory();
+
+                // Submit the form to Basin
+                e.target.submit();
+            } else {
+                console.error("User document not found");
+            }
+        });
+    </script>
+</body>
+
+</html>
