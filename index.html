@@ -17,12 +17,17 @@
             height: 100vh; /* Ensures the body takes full height */
             margin: 0; /* Removes default margin */
         }
+         #loading {
+           position: absolute; /* Positioning the loading div */
+           bottom: 20px; /* Adjust this value to move it higher or lower */
+           left: 50%; /* Center horizontally */
+           transform: translateX(-50%); /* Centering adjustment */
+        }
     </style>
 </head>
 <body>
     <div id="loading">
-        <i class="fas fa-spinner fa-spin" style="font-size: 36px; color: #ec8f04;"></i>
-        <p>Loading...</p>
+        <i class="fas fa-spinner fa-spin" style="font-size: 36px; color: #ec8f04;"></i> 
     </div> 
 </body>
 </html>
