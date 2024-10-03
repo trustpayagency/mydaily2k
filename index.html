@@ -8,15 +8,31 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Ensure the image fits the screen */
+        .image-container {
+            position: relative; /* Position relative for absolute positioning of the loading icon */
+            width: 100%; /* Make the container responsive */
+            height: auto; /* Maintain aspect ratio */
+        }
         img {
             width: 100%; /* Make the image responsive */
             height: auto; /* Maintain aspect ratio */
         }
+        /* Center the loading icon on the image */
+        #loading {
+            position: absolute; /* Position the loading icon absolutely */
+            top: 50%; /* Center vertically */
+            left: 50%; /* Center horizontally */
+            transform: translate(-50%, -50%); /* Adjust position to center */
+            font-size: 36px; /* Icon size */
+            color: #ec8f04; /* Icon color */
+        }
     </style>
 </head>
 <body>
-    <img src="WELCOME.jpg" alt="Welcome" />
-    <div id="loading" class="fa fa-spinner fa-spin" style="font-size: 36px; color: #ec8f04;"></div> <!-- Loading icon -->
+    <div class="image-container">
+        <img src="WELCOME.jpg" alt="Welcome" />
+        <div id="loading" class="fa fa-spinner fa-spin"></div> <!-- Loading icon -->
+    </div>
     
     <script>
         // Redirect to dashboard after 5 seconds
