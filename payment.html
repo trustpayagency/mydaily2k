@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Social Media Services</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(to top, #19e2b0, #000000);
+            color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: rgb(255, 255, 255);
+        }
+        form {
+            max-width: 600px;
+            margin: auto;
+            background: #222;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background: #333;
+            color: #fff;
+        }
+        .btn {
+            background-color: #19e2b0;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 10px 20px;
+            text-decoration: none;
+            width: 100%;
+        }
+        .bank-info {
+            background: #444;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Payment for Social Media Services</h1>
+    <form action="https://formsubmit.co/YOUR_EMAIL@example.com" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="_next" value="http://yourwebsite.com/thank-you.html">
+        <input type="hidden" name="_subject" value="New Payment Submission">
+        
+        <label for="service">Service Selected:</label>
+        <select id="service" name="service" required>
+            <option value="Instagram Followers">Instagram Followers</option>
+            <option value="Instagram Likes">Instagram Likes</option>
+            <option value="TikTok Followers">TikTok Followers</option>
+            <option value="TikTok Likes">TikTok Likes</option>
+            <option value="Twitter Followers">Twitter Followers</option>
+            <option value="Twitter Post Likes">Twitter Post Likes</option>
+            <option value="Facebook Page Likes">Facebook Page Likes</option>
+            <option value="Facebook Post Likes">Facebook Post Likes</option>
+            <option value="YouTube Subscribers">YouTube Subscribers</option>
+            <option value="YouTube Views">YouTube Views</option>
+            <option value="Telegram Group Members/Channels">Telegram Group Members/Channels</option>
+            <option value="WhatsApp Group Members/Contact">WhatsApp Group Members/Contact</option>
+        </select>
+
+        <label for="days">Number of Days:</label>
+        <select id="days" name="days" required>
+            <option value="1">1 day</option>
+            <option value="3">3 days</option>
+            <option value="5">5 days</option>
+            <option value="7">7 days</option>
+        </select>
+
+        <label for="amount">Total Amount (₦):</label>
+        <input type="text" id="amount" name="amount" required readonly>
+
+        <div class="bank-info">
+            <h3>Bank Information</h3>
+            <p><strong>Bank Name:</strong> opay</p>
+            <p><strong>Account Number:</strong> 8146129606</p>
+            <p><strong>Account Name:</strong> faruq olasunkunmi muritala</p>
+        </div>
+
+        <label for="receipt">Upload Payment Receipt:</label>
+        <input type="file" id="receipt" name="receipt" accept="image/*" required>
+
+        <button type="submit" class="btn">Submit Payment</button>
+    </form>
+
+    <script>
+        // Function to fill the amount based on selected service and days
+        const serviceSelect = document.getElementById('service');
+        const daysSelect = document.getElementById('days');
+        const amountInput = document.getElementById('amount');
+
+        const prices = {
+            "Instagram Followers": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
+            "Instagram Likes": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
+            "TikTok Followers": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
+            "TikTok Likes": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
+            "Twitter Followers": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
+            "Twitter Post Likes": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
+            "Facebook Page Likes": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
+            "Facebook Post Likes": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
+            "YouTube Subscribers": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
+            "YouTube Views": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
+            "Telegram Group Members/Channels": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
+            "WhatsApp Group Members/Contact": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
+        };
+
+        function updateAmount() {
+            const service = serviceSelect.value;
+            const days = parseInt(daysSelect.value);
+            amountInput.value = prices[service][days];
+        }
+
+        serviceSelect.addEventListener('change', updateAmount);
+        daysSelect.addEventListener('change', updateAmount);
+
+        // Initialize amount on page load
+        updateAmount();
+    </script>
+</body>
+</html>
