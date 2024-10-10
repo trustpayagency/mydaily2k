@@ -43,19 +43,20 @@
         }
 
         .bottom-banner {
-            border-radius: 20px; /* Curved edges */
-            overflow: hidden; /* Ensure content fits within the border */
-            background-color: #222; /* Change background color */
-            padding: 12px; /* Adjust padding */
-            width: 75%; /* Set width */
-            margin:  0px auto; /* Center the banner */
-            position: fixed; /* Keep it fixed at the bottom */
-            bottom: 20px;
-            left: 126px;
-            z-index: 1;
-            display: flex;
-            justify-content: space-around;
-        }
+    border-radius: 20px; /* Curved edges */
+    overflow: hidden; /* Ensure content fits within the border */
+    background-color: #222; /* Change background color */
+    padding: 13px; /* Adjust padding */
+    width: 75%; /* Set width */
+    margin: 0px auto; /* Center the banner */
+    position: fixed; /* Keep it fixed at the bottom */
+    bottom: 20px;
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust position to perfectly center */
+    z-index: 1;
+    display: flex;
+    justify-content: space-around;
+}
 
         .bottom-banner .button {
         width: 50px; /* Adjusted size for consistency */
