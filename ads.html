@@ -18,7 +18,7 @@
             background-color: #000000;
         }
         .image-container {
-            background-image: url('ADVERTISE.jpg'); /* Set the image as background */
+            background-image: url('advertise.jpg'); /* Set the image as background */
             background-size: contain; /* Ensure the entire image is visible */
             background-repeat: no-repeat;
             background-position: center; /* Center the image */
@@ -27,24 +27,25 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative; /* Position relative for absolute positioning of buttons */ 
+            position: relative; /* Position relative for absolute positioning of buttons */
+            background-color: linear-gradient(to top, #19e2b0, #000000); /* Fallback background color */
         }
         .button-container {
             position: absolute; /* Position the button container absolutely */
             bottom: 10px; /* Distance from the bottom */
-            left: 50%;
-            transform: translateX(-50%); /* Center horizontally */
+            left: 20px; /* Align to the left with some padding */
+            right: 20px; /* Align to the right with some padding */
             display: flex; /* Use flexbox for button alignment */
-            gap: 20px; /* Space between buttons */
+            justify-content: space-between;  
         }
         .button {
             background-color: #19e2b0; /* Button color */
             color: white; /* Text color */
             border: none; /* No border */
-            padding: 8px 10px; /* Padding */
+            padding: 10px 20px; /* Increased padding for better touch targets */
             cursor: pointer; /* Pointer cursor on hover */
             border-radius: 5px; /* Rounded corners */
-            font-size:  6px;
+            font-size: 14px; /* Increased font size for readability */
             transition: background-color 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -54,13 +55,15 @@
         }
         @media (max-width: 600px) {
             .button-container {
-                flex-direction: column;
-                gap: 10px;
+                flex-direction: row; /* Keep row direction on mobile */
+                justify-content: space-between; /* Ensure buttons are spaced apart */
+                left: 10px; /* Slightly less padding on smaller screens */
+                right: 10px;
             }
             .button {
-                width: 150px;
-                padding: 10px 0;
-                font-size: 14px;
+                width: 48%; /* Allow buttons to take up nearly half the width each */
+                padding: 10px 0; /* Uniform vertical padding */
+                font-size: 14px; /* Consistent font size */
             }
         }
     </style>
