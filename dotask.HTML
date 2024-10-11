@@ -33,19 +33,19 @@
         .button-container {
             position: absolute; /* Position the button container absolutely */
             bottom: 10px; /* Distance from the bottom */
-            left: 50%;
-            transform: translateX(-50%); /* Center horizontally */
+            left: 20px; /* Align to the left with some padding */
+            right: 20px; /* Align to the right with some padding */
             display: flex; /* Use flexbox for button alignment */
-            gap: 200px; /* Space between buttons */
+            justify-content: space-between;  
         }
         .button {
             background-color: #ec8f04; /* Button color */
             color: white; /* Text color */
             border: none; /* No border */
-            padding: 8px 10px; /* Padding */
+            padding: 10px 10px; /* Increased padding for better touch targets */
             cursor: pointer; /* Pointer cursor on hover */
             border-radius: 5px; /* Rounded corners */
-            font-size:  6px;
+            font-size: 14px; /* Increased font size for readability */
             transition: background-color 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -55,13 +55,15 @@
         }
         @media (max-width: 600px) {
             .button-container {
-                flex-direction: column;
-                gap: 10px;
+                flex-direction: row; /* Keep row direction on mobile */
+                justify-content: space-between; /* Ensure buttons are spaced apart */
+                left: 10px; /* Slightly less padding on smaller screens */
+                right: 10px;
             }
             .button {
-                width: 150px;
-                padding: 10px 0;
-                font-size: 14px;
+                width: 3O%; /* Allow buttons to take up nearly half the width each */
+                padding: 10px 0; /* Uniform vertical padding */
+                font-size: 14px; /* Consistent font size */
             }
         }
     </style>
