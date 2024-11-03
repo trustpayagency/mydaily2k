@@ -160,15 +160,83 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+        } 
+        .card {
+            background-color: #000000; /* Card background color */
+            border-radius: 10px; /* Rounded corners */
+            padding: 20px; /* Padding inside the card */
+            display: flex; /* Flexbox for layout */
+            flex-direction: column; /* Stack elements vertically */
+            justify-content: space-between; /* Space between header and username */
+            color: #fff; /* Text color */
+            box-shadow: 0 4px 8px rgba(228, 21, 21, 0.3); /* Shadow effect */
+            position: relative; /* Positioning for absolute elements */
+            height: 120px; /* Fixed height for the card */
+            width: 320px;
         }
-    </style>
+
+        .card-header {
+            display: flex; /* Flexbox for layout */
+            justify-content: space-between; /* Space between balance and daily2k */
+             align-items: flex-start; /* Align items to the start */
+        }
+
+    .daily2k {
+        font-size: 16px; /* Font size for the user's name */
+        font-weight: bold; /* Bold text */
+        position: absolute; /* Absolute positioning */
+        top: 10px; /* Position from the bottom */
+        right: 10px; /* Position from the right */
+    }
+    .acc-name {
+        font-size: 16px; /* Font size for the user's name */
+        font-weight: lighter; /* Bold text */
+        position: absolute; /* Absolute positioning */
+        bottom: 25px; /* Position from the bottom */
+        right: 15px;
+    }
+    
+    .acc-number {
+        font-size: 16px; /* Font size for the user's name */
+        font-weight: lighter; /* Bold text */
+        position: absolute; /* Absolute positioning */
+        bottom: 25px; /* Position from the bottom */
+        left: 15px;
+    }
+
+    .balance-amount {
+        font-size: 20px; /* Font size for the balance amount */
+        display: flex; /* Flexbox for layout */
+        flex-direction: column; /* Stack elements vertically */
+        align-items: flex-start; /* Align items to the start */
+    }
+
+    #user-full-name {
+        font-size: 16px; /* Font size for the user's name */
+        font-weight: bold; /* Bold text */
+        position: absolute; /* Absolute positioning */
+        bottom: 10px; /* Position from the bottom */
+        right: 20px; /* Position from the right */
+    }
+</style>
 </head>
 
 <body>
     <div class="balance-container">
         <div class="balance">
-            2KCoins: 
-            <i class="fas fa-coins balance-icon" alt="Coins Icon"></i> <span id="balance">0</span>
+            <div class="card">
+                <div class="balance-amount">
+                    <span>2KCoin balance</span>
+                    <span id="balance">0</span> 
+                </div>
+                <div class="card-header">
+                    <span class="daily2k">DAILY2K</span>
+                </div>
+                 <span class="acc-name">User Name.</span>
+                 <span id="user-full-name"></span> <!-- Placeholder for user's full name -->
+                 <span class="acc-number">****2KCoin.</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -244,30 +312,52 @@
 
         function showLoading(show) {
             document.getElementById("loading").style.display = show ? "block" : "none";
-        }
+        } 
 
-        async function loadUserData(userId) {
-            showLoading(true);
-            try {
-                const userDocRef = doc(db, "users", userId);
-                const docSnap = await getDoc(userDocRef);
+async function loadUserData(userId) {
+    showLoading(true);
+    let userData = null; // Initialize userData variable
+    try {
+        const userDocRef = doc(db, "users", userId);
+        const docSnap = await getDoc(userDocRef);
 
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    document.getElementById("balance").textContent = data.balance || 0;
-                    // Store ad usage limits
-                    window.adUsage = data.adUsage || { adsWatched: 0, directLinksUsed: 0 };
-                } else {
-                    console.error("User not found in Firestore.");
-                    alert("Error: User data not found. Please contact support.");
-                }
-            } catch (error) {
-                console.error("Error loading user data: ", error);
-                alert("Error loading user data. Please try again later.");
-            } finally {
-                showLoading(false);
-            }
+        if (docSnap.exists()) {
+            userData = docSnap.data(); // Store user data
+            console.log("User data:", userData); // Log user data
+            document.getElementById("balance").textContent = userData.balance || 0;
+            document.getElementById("user-full-name").textContent = userData.username || "User"; // Set full name
+            // Store ad usage limits
+            window.adUsage = userData.adUsage || { adsWatched: 0, directLinksUsed: 0 };
+        } else {
+            console.error("User not found in Firestore.");
+            alert("Error: User data not found. Please contact support.");
         }
+    } catch (error) {
+        console.error("Error loading user data: ", error);
+        alert("Error loading user data. Please try again later.");
+    } finally {
+        showLoading(false);
+    }
+    return userData; // Return the user data
+}
+
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        const userData = await loadUserData(user.uid); // Get user data
+        
+        // Log the user object to check its structure
+        console.log("User object:", user);
+
+        // Check if the account is inactive
+        if (userData && userData.isActive === false) {
+            alert("Your account has been disabled.");
+            window.location.href = 'login.html';
+        }
+    } else {
+        console.log("User not logged in. Redirecting to login page.");
+        window.location.href = 'login.html';
+    }
+}); 
 
         async function loadAdgramAd() {
             const user = auth.currentUser;
@@ -391,13 +481,23 @@
         }
 
         onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                await loadUserData(user.uid);
-            } else {
-                console.log("User not logged in. Redirecting to login page.");
-                window.location.href = 'login.html';
-            }
-        });
+    if (user) {
+        await loadUserData(user.uid);
+        
+        // Log the user object to check its structure
+        console.log("User object:", user);
+
+        // Assuming loadUserData sets a global variable or updates the user object
+        // Check if the account is inactive
+        if (user.isActive === false) {
+            alert("Your account has been disabled.");
+            window.location.href = 'login.html';
+        }
+    } else {
+        console.log("User not logged in. Redirecting to login page.");
+        window.location.href = 'login.html';
+    }
+});
 
         window.loadAdgramAd = loadAdgramAd;
         window.loadAdsterraAd = loadAdsterraAd;
