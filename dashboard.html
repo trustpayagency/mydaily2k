@@ -218,10 +218,21 @@
         bottom: 10px; /* Position from the bottom */
         right: 20px; /* Position from the right */
     }
+    .profile-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+}
 </style>
 </head>
 
 <body>
+    <div class="profile-container">
+        <img id="profile-pic" src="R.png" alt="Profile Picture" style="width: 50px; height: 50px; border-radius: 50%;">
+        <span id="username" style="color: #fff; margin-left: 10px;">User Name</span>
+    </div>
     <div class="balance-container">
         <div class="balance">
             <div class="card">
@@ -293,6 +304,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js"; 
 
         // Firebase configuration
         const firebaseConfig = {
@@ -309,12 +321,13 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
         function showLoading(show) {
             document.getElementById("loading").style.display = show ? "block" : "none";
         } 
 
-async function loadUserData(userId) {
+        async function loadUserData(userId) {
     showLoading(true);
     let userData = null; // Initialize userData variable
     try {
@@ -326,6 +339,11 @@ async function loadUserData(userId) {
             console.log("User data:", userData); // Log user data
             document.getElementById("balance").textContent = userData.balance || 0;
             document.getElementById("user-full-name").textContent = userData.username || "User"; // Set full name
+            
+            // Set profile picture and username
+            document.getElementById("profile-pic").src = userData.profilePic || "default/R.png"; // Set profile picture URL
+            document.getElementById("username").textContent = userData.username || "User Name"; // Set username
+            
             // Store ad usage limits
             window.adUsage = userData.adUsage || { adsWatched: 0, directLinksUsed: 0 };
         } else {
