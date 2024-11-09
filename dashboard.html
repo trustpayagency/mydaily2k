@@ -390,7 +390,7 @@ onAuthStateChanged(auth, async (user) => {
             }
 
             // Fetch campaigns from Campaigns.html
-            const response = await fetch('Campaigns.html');
+            const response = await fetch('https://daily2kadmin.vercel.app/Campaigns.html');
             const campaignsHtml = await response.text();
             const parser = new DOMParser();
             const doc = parser.parseFromString(campaignsHtml, 'text/html');
