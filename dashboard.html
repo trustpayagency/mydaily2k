@@ -544,6 +544,50 @@ onAuthStateChanged(auth, async (user) => {
         window.loadAdgramAd = loadAdgramAd;
         window.loadAdsterraAd = loadAdsterraAd;
         window.updateBalance = updateBalance;
+
+        // Load campaigns
+        async function loadCampaigns() {
+            const highViewsGallery = document.getElementById('highViewsGallery');
+            const lowViewsGallery = document.getElementById('lowViewsGallery');
+            highViewsGallery.innerHTML = '';
+            lowViewsGallery.innerHTML = '';
+
+            try {
+                const snapshot = await db.collection('campaigns').get();
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    console.log("Campaign data:", data); // Log the data to check its structure
+
+                    // Check if videoURL exists and is not empty, and ignore documents with a balance field
+                    if (data.videoURL && data.videoURL.trim() !== '' && !data.hasOwnProperty('balance')) {
+                        const videoContainer = document.createElement('div');
+                        videoContainer.className = 'campaign';
+                        videoContainer.dataset.preference = data.viewPreference;
+
+                        const videoElement = document.createElement('video');
+                        videoElement.src = data.videoURL;
+                        videoElement.controls = true;
+
+                        const videoName = document.createElement('p');
+                        videoName.textContent = data.name;
+
+                        videoContainer.appendChild(videoElement);
+                        videoContainer.appendChild(videoName);
+
+                        // Append to the appropriate gallery based on viewPreference
+                        if (data.viewPreference === 'high') {
+                            highViewsGallery.appendChild(videoContainer);
+                        } else {
+                            lowViewsGallery.appendChild(videoContainer);
+                        }
+                    } else {
+                        console.warn(`Missing or empty videoURL for document: ${doc.id}`);
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading campaigns:", error);
+            }
+        }
     </script>
 </body>
 
