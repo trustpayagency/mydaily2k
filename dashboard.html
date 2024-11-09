@@ -389,21 +389,45 @@ onAuthStateChanged(auth, async (user) => {
                 return;
             }
 
+            // Fetch campaigns from Campaigns.html
+            const response = await fetch('Campaigns.html');
+            const campaignsHtml = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(campaignsHtml, 'text/html');
+
+            // Assume campaigns are stored in a specific structure, e.g., <div class="campaign" data-preference="high">...</div>
+            const campaigns = Array.from(doc.querySelectorAll('.campaign'));
+            const highPreference = campaigns.filter(c => c.dataset.preference === 'high');
+            const lowPreference = campaigns.filter(c => c.dataset.preference === 'low');
+
+            // Randomly select a campaign
+            let selectedCampaign;
+            const randomValue = Math.random();
+            if (randomValue < 0.7 && highPreference.length > 0) {
+                // 70% chance to pick a high preference campaign
+                selectedCampaign = highPreference[Math.floor(Math.random() * highPreference.length)];
+            } else if (lowPreference.length > 0) {
+                // 30% chance to pick a low preference campaign
+                selectedCampaign = lowPreference[Math.floor(Math.random() * lowPreference.length)];
+            } else if (highPreference.length > 0) {
+                // Fallback to high preference if no low preference campaigns are available
+                selectedCampaign = highPreference[Math.floor(Math.random() * highPreference.length)];
+            }
+
+            if (!selectedCampaign) {
+                alert("No campaigns available.");
+                return;
+            }
+
             // Increment ad usage
             window.adUsage.adsWatched++;
             await updateAdUsage(user.uid, window.adUsage);
 
-            // Create a container for the ad
+            // Display the selected campaign
             const adContainer = document.createElement('div');
             adContainer.id = 'adsgram-container';
+            adContainer.innerHTML = selectedCampaign.innerHTML; // Assuming the campaign HTML can be directly used
             document.body.appendChild(adContainer);
-
-            window.adsbygram = window.adsbygram || [];
-            window.adsbygram.push({
-                blockId: '3322',
-                container: 'adsgram-container',
-                rewardUrl: `https://vercel-backend-liart.vercel.app/api/reward?userid=${user.uid}`
-            });
 
             // Load Adsgram script
             const adsgramScript = document.createElement('script');
