@@ -467,13 +467,13 @@ onAuthStateChanged(auth, async (user) => {
                 const banner = adContainer.querySelector('.banner');
                 banner.style.position = 'absolute';
                 banner.style.bottom = '0';
-                banner.style.width = '100%'; // Ensure banner matches video width
+                banner.style.width = '91%'; // Ensure banner matches video width
                 banner.style.display = 'flex';
                 banner.style.justifyContent = 'space-between';
                 banner.style.alignItems = 'center';
                 banner.style.backgroundColor = 'rgba(51, 51, 51, 0.8)';
                 banner.style.color = '#fff';
-                banner.style.padding = '5px'; // Adjust padding for smaller screens
+                banner.style.padding = '20px'; // Adjust padding for smaller screens
                 banner.style.borderRadius = '0 0 10px 10px';
 
                 // Style the action link
@@ -481,7 +481,7 @@ onAuthStateChanged(auth, async (user) => {
                 actionLink.style.backgroundColor = '#ec8f04';
                 actionLink.style.color = '#fff';
                 actionLink.style.padding = '5px 10px';
-                actionLink.style.borderRadius = '5px';
+                actionLink.style.borderRadius = '10px';
                 actionLink.style.textDecoration = 'none';
                 actionLink.style.transition = 'background-color 0.3s';
                 actionLink.onmouseover = () => actionLink.style.backgroundColor = '#d07c03';
