@@ -377,7 +377,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 }); 
 
-        async function loadAdgramAd() {
+        async function loadAdCampaign() {
             const user = auth.currentUser;
             if (!user) {
                 alert("Please log in to watch ads and earn coins.");
@@ -389,55 +389,67 @@ onAuthStateChanged(auth, async (user) => {
                 return;
             }
 
-            // Fetch campaigns from Campaigns.html
-            const response = await fetch('https://daily2kadmin.vercel.app/Campaigns.html');
-            const campaignsHtml = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(campaignsHtml, 'text/html');
+            try {
+                const response = await fetch('https://daily2kadmin.vercel.app/Campaigns.html');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const campaignsHtml = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(campaignsHtml, 'text/html');
 
-            // Assume campaigns are stored in a specific structure, e.g., <div class="campaign" data-preference="high">...</div>
-            const campaigns = Array.from(doc.querySelectorAll('.campaign'));
-            const highPreference = campaigns.filter(c => c.dataset.preference === 'high');
-            const lowPreference = campaigns.filter(c => c.dataset.preference === 'low');
+                const campaigns = Array.from(doc.querySelectorAll('.campaign'));
+                if (campaigns.length === 0) {
+                    alert("No campaigns available.");
+                    return;
+                }
 
-            // Randomly select a campaign
-            let selectedCampaign;
-            const randomValue = Math.random();
-            if (randomValue < 0.7 && highPreference.length > 0) {
-                // 70% chance to pick a high preference campaign
-                selectedCampaign = highPreference[Math.floor(Math.random() * highPreference.length)];
-            } else if (lowPreference.length > 0) {
-                // 30% chance to pick a low preference campaign
-                selectedCampaign = lowPreference[Math.floor(Math.random() * lowPreference.length)];
-            } else if (highPreference.length > 0) {
-                // Fallback to high preference if no low preference campaigns are available
-                selectedCampaign = highPreference[Math.floor(Math.random() * highPreference.length)];
+                // Select a random campaign
+                const selectedCampaign = campaigns[Math.floor(Math.random() * campaigns.length)];
+                const videoElement = selectedCampaign.querySelector('video');
+
+                if (!videoElement) {
+                    console.error("No video element found in the selected campaign.");
+                    alert("Error: No video available in the selected campaign.");
+                    return;
+                }
+
+                // Create overlay for video
+                const adContainer = document.createElement('div');
+                adContainer.id = 'campaign-container';
+                adContainer.innerHTML = selectedCampaign.innerHTML;
+                document.body.appendChild(adContainer);
+
+                // Style the overlay
+                adContainer.style.display = 'block';
+                adContainer.style.position = 'fixed';
+                adContainer.style.top = '50%';
+                adContainer.style.left = '50%';
+                adContainer.style.transform = 'translate(-50%, -50%)';
+                adContainer.style.zIndex = '1000';
+                adContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                adContainer.style.padding = '20px';
+                adContainer.style.borderRadius = '10px';
+
+                // Add event listener to detect video end
+                videoElement.addEventListener('ended', () => {
+                    const claimButton = document.createElement('button');
+                    claimButton.textContent = 'Claim 20 2KCoins';
+                    claimButton.style.marginTop = '10px';
+                    claimButton.onclick = async () => {
+                        window.adUsage.adsWatched++;
+                        await updateAdUsage(user.uid, window.adUsage);
+                        await updateBalance(user.uid, 20);
+                        adContainer.remove();
+                        alert("You've earned 20 2KCoins!");
+                    };
+                    adContainer.appendChild(claimButton);
+                });
+
+            } catch (error) {
+                console.error("Error loading campaigns:", error);
+                alert("Error loading campaigns. Please try again later.");
             }
-
-            if (!selectedCampaign) {
-                alert("No campaigns available.");
-                return;
-            }
-
-            // Increment ad usage
-            window.adUsage.adsWatched++;
-            await updateAdUsage(user.uid, window.adUsage);
-
-            // Display the selected campaign
-            const adContainer = document.createElement('div');
-            adContainer.id = 'adsgram-container';
-            adContainer.innerHTML = selectedCampaign.innerHTML; // Assuming the campaign HTML can be directly used
-            document.body.appendChild(adContainer);
-
-            // Load Adsgram script
-            const adsgramScript = document.createElement('script');
-            adsgramScript.src = "https://st.adsgram.com/tds/js/main.js";
-            document.body.appendChild(adsgramScript);
-
-            adsgramScript.onload = () => {
-                // Start checking for reward confirmation
-                checkRewardConfirmation(user.uid);
-            };
         }
 
         async function checkRewardConfirmation(userId) {
@@ -451,7 +463,7 @@ onAuthStateChanged(auth, async (user) => {
                     if (data.rewarded) {
                         alert("Ad completed. You've earned 10 2KCoins!");
                         await updateBalance(userId, 10);
-                        document.getElementById('adsgram-container').remove();
+                        document.getElementById('campaign-container').remove();
                     } else {
                         // Check again after 5 seconds
                         setTimeout(checkReward, 5000);
@@ -541,7 +553,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-        window.loadAdgramAd = loadAdgramAd;
+        window.loadAdgramAd = loadAdCampaign;
         window.loadAdsterraAd = loadAdsterraAd;
         window.updateBalance = updateBalance;
 
