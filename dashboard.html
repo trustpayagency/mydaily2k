@@ -392,7 +392,7 @@ onAuthStateChanged(auth, async (user) => {
             try {
                 const campaignsCollection = collection(db, 'campaigns');
                 const snapshot = await getDocs(campaignsCollection);
-                const campaigns = snapshot.docs.map(doc => doc.data());
+                const campaigns = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
                 if (campaigns.length === 0) {
                     alert("No campaigns available.");
@@ -423,35 +423,53 @@ onAuthStateChanged(auth, async (user) => {
                 const adContainer = document.createElement('div');
                 adContainer.id = 'campaign-container';
                 adContainer.innerHTML = `
-                    <video src="${selectedCampaign.videoURL}" controls autoplay></video>
-                    <div class="banner">
-                        <span>${selectedCampaign.name || 'App Name'}</span>
-                        <a href="${selectedCampaign.link || '#'}" target="_blank" class="action-link">${selectedCampaign.type === 'application' ? 'Install App' : 'Visit Web'}</a>
+                    <div class="video-wrapper">
+                        <video src="${selectedCampaign.videoURL}" controls autoplay></video>
+                        <div class="banner">
+                            <span>${selectedCampaign.name || 'App Name'}</span>
+                            <a href="${selectedCampaign.link || '#'}" target="_blank" class="action-link">${selectedCampaign.type === 'application' ? 'Install App' : 'Visit Web'}</a>
+                        </div>
                     </div>
                 `;
                 document.body.appendChild(adContainer);
 
                 // Style the overlay
-                adContainer.style.display = 'block';
+                adContainer.style.display = 'flex';
+                adContainer.style.flexDirection = 'column';
+                adContainer.style.alignItems = 'center';
+                adContainer.style.justifyContent = 'center';
                 adContainer.style.position = 'fixed';
                 adContainer.style.top = '50%';
                 adContainer.style.left = '50%';
                 adContainer.style.transform = 'translate(-50%, -50%)';
-                adContainer.style.zIndex = '1000';
-                adContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                adContainer.style.zIndex = '1000'; 
                 adContainer.style.padding = '20px';
                 adContainer.style.borderRadius = '10px';
+                adContainer.style.width = '80%';
+                adContainer.style.maxWidth = '600px';
+
+                // Style the video wrapper
+                const videoWrapper = adContainer.querySelector('.video-wrapper');
+                videoWrapper.style.position = 'relative';
+                videoWrapper.style.width = '100%';
+
+                // Style the video
+                const videoElement = adContainer.querySelector('video');
+                videoElement.style.width = '100%';
+                videoElement.style.borderRadius = '10px';
 
                 // Style the banner
                 const banner = adContainer.querySelector('.banner');
+                banner.style.position = 'absolute';
+                banner.style.bottom = '10px';
+                banner.style.width = '91%';
                 banner.style.display = 'flex';
                 banner.style.justifyContent = 'space-between';
                 banner.style.alignItems = 'center';
-                banner.style.backgroundColor = '#333';
+                banner.style.backgroundColor = 'rgba(51, 51, 51, 0.8)';
                 banner.style.color = '#fff';
                 banner.style.padding = '10px';
-                banner.style.borderRadius = '5px';
-                banner.style.marginTop = '10px';
+                banner.style.borderRadius = '0 0 10px 10px';
 
                 // Style the action link
                 const actionLink = adContainer.querySelector('.action-link');
@@ -465,14 +483,16 @@ onAuthStateChanged(auth, async (user) => {
                 actionLink.onmouseout = () => actionLink.style.backgroundColor = '#ec8f04';
 
                 // Add event listener to detect video end
-                const videoElement = adContainer.querySelector('video');
-                videoElement.addEventListener('ended', () => {
+                videoElement.addEventListener('ended', async () => {
+                    // Increment views count
+                    const campaignDocRef = doc(db, 'campaigns', selectedCampaign.id);
+                    await updateDoc(campaignDocRef, {
+                        views: (selectedCampaign.views || 0) + 1
+                    });
+
                     const claimButton = document.createElement('button');
                     claimButton.textContent = 'Claim 20 2KCoins';
-                    claimButton.style.position = 'absolute';
-                    claimButton.style.bottom = '20px';
-                    claimButton.style.left = '50%';
-                    claimButton.style.transform = 'translateX(-50%)';
+                    claimButton.style.marginTop = '10px';
                     claimButton.style.backgroundColor = '#28a745';
                     claimButton.style.color = '#fff';
                     claimButton.style.padding = '10px 20px';
