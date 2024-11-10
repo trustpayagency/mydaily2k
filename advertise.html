@@ -5,98 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buy Social Media Services - Followers, Likes, Views</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Roboto', Arial, sans-serif;
-            background: linear-gradient(to top, #19e2b0, #000000);
-            color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        } 
-        .switch {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-        }
-        .switch a {
-            margin-left: 10px;
-            color: white;
-            text-decoration: none;
-            padding: 5px 10px;
-            background-color: #555;
-            border-radius: 5px;
-        } 
-        
-        h1 {
-            text-align: center; 
-            font-size: 35px;
-            color: rgb(255, 255, 255);
-            margin-bottom: 20px;
-        }
+    <style> 
+    body {
+        font-family: 'Roboto', Arial, sans-serif;
+        background: linear-gradient(to top, #19e2b0, #000000);
+        color: #f0f0f0;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    } 
+    .switch {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+    }
+    .switch a {
+        margin-left: 10px;
+        color: white;
+        text-decoration: none;
+        padding: 5px 10px;
+        background-color: #555;
+        border-radius: 5px;
+    }
+    .switch1 {
+        position: absolute;
+        top: 60px;
+        right: 50px;
+        display: flex;
+        align-items: center;
+    }
+    .switch1 a {
+        margin-right: 0px;
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+        background-color: #19e2b0;
+        border-radius: 5px;
+        font-weight: bold;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s;
+    }
+    .switch1 a:hover {
+        transform: scale(1.1);
+    }
+    
+    h1 {
+        text-align: center; 
+        font-size: 35px;
+        color: rgb(255, 255, 255);
+        margin-bottom: 20px;
+    }
 
-        h2 {
-            text-align: center; 
-            font-size: 24px;
-            color: rgb(255, 255, 255);
-            margin-bottom: 20px;
-        }
+    h2 {
+        text-align: center; 
+        font-size: 24px;
+        color: rgb(255, 255, 255);
+        margin-bottom: 20px;
+    }
 
-        main {
-            padding: 20px;
-        }
-        .pricing-table {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 30px;
-        }
+    main {
+        padding: 20px;
+    }
+    .pricing-table {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 30px;
+    }
+    .pricing-plan {
+        background-color: #000000;
+        border-radius: 5px;
+        padding: 20px;
+        text-align: center;
+        width: calc(33.33% - 20px); /* Adjust width for desktop */
+        margin: 10px;
+        box-sizing: border-box; /* Ensures padding is included in width */
+    }
+    @media (max-width: 768px) {
         .pricing-plan {
-            background-color: #000000;
-            border-radius: 5px;
-            padding: 20px;
-            text-align: center;
-            width: calc(33.33% - 20px);
-            margin: 10px;
+            width: calc(50% - 20px); /* Adjust width for tablets */
         }
-        .pricing-plan h2 {
-            margin-top: 0;
+    }
+    @media (max-width: 480px) {
+        .pricing-plan {
+            width: 100%; /* Full width for mobile devices */
+            margin: 10px 0; /* Adjust margin for mobile */
         }
-        .price {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        .features {
-            list-style-type: none;
-            padding: 0;
-        }
-        .features li {
-            margin-bottom: 10px;
-        }
-        .btn {
-            background-color: #19e2b0;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: -20px;
-            padding: 10px 20px;
-            text-decoration: none;
-        }
-    </style>
-    <script>
-        function updatePrice(selectElement, priceElement, basePrice) {
-            const days = parseInt(selectElement.value);
-            const totalPrice = basePrice[days];
-            priceElement.textContent = `₦${totalPrice} for ${days} day${days > 1 ? 's' : ''}`;
-        }
-    </script>
+    }
+
+    .price {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+    .features {
+        list-style-type: none;
+        padding: 0;
+    }
+    .features li {
+        margin-bottom: 10px;
+    }
+    .btn {
+        background-color: #19e2b0;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: -20px;
+        padding: 10px 20px;
+        text-decoration: none;
+    }
+</style>
 </head>
 <body>
      <h1>Buy Social Media Services</h1>
@@ -106,193 +130,270 @@
             <a href="advertise.html" style="background-color: #19e2b0;">Advertise</a>
         </div>
 
+     <div class="switch1" style="top: 60px; right: 20px;"> 
+            <a href="createcampaign.html" style="background-color: #19e2b0;">POST ADS</a>
+        </div>
+
     <main>
         <h2>Boost your social media presence with our affordable services. Choose from the options below:</h2>
         <div class="pricing-table">
             <div class="pricing-plan">
                 <h2>Instagram Followers</h2>
-                <div class="price" id="price-instagram">₦2000 for 1 day</div>
+                <div class="price" id="price-instagram">₦3500 for 1 day</div>
                 <ul class="features">
                     <li>Real and active followers</li>
                     <li>Gradual delivery</li> 
                 </ul>
-                <select id="days-select-instagram" onchange="updatePrice(this, document.getElementById('price-instagram'), {1: 2000, 3: 3500, 5: 5000, 7: 6500})">
+                <select id="days-select-instagram" onchange="updatePrice(this, document.getElementById('price-instagram'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
                     <option value="7">7 days</option>
                 </select>
-                <a href="payment.html" class="btn">Buy Now</a>
+                <a href="payment.html?service=Instagram%20Followers&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
             </div>
             <div class="pricing-plan">
                 <h2>Instagram Likes</h2>
-                <div class="price" id="price-likes">₦2000 for 1 day</div>
+                <div class="price" id="price-likes">₦3500 for 1 day</div>
                 <ul class="features">
                     <li>Real likes from active users</li> 
                     <li>Gradual delivery</li>
                 </ul>
-                <select id="days-select-likes" onchange="updatePrice(this, document.getElementById('price-likes'), {1: 2000, 3: 3500, 5: 5000, 7: 6500})">
+                <select id="days-select-likes" onchange="updatePrice(this, document.getElementById('price-likes'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
                     <option value="7">7 days</option>
                 </select>
-                <a href="payment.html" class="btn">Buy Now</a>
+                <a href="payment.html?service=Instagram%20likes&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
             </div>
             <div class="pricing-plan">
                 <h2>TikTok Followers</h2>
-                <div class="price" id="price-tiktok-followers">₦2000 for 1 day</div>
+                <div class="price" id="price-tiktok-followers">₦3500 for 1 day</div>
                 <ul class="features">
                     <li>Real and active followers</li>
                     <li>Gradual delivery</li> 
                 </ul>
-                <select id="days-select-tiktok-followers" onchange="updatePrice(this, document.getElementById('price-tiktok-followers'), {1: 2000, 3: 3500, 5: 5000, 7: 6500})">
+                <select id="days-select-tiktok-followers" onchange="updatePrice(this, document.getElementById('price-tiktok-followers'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
                     <option value="7">7 days</option>
                 </select>
-                <a href="payment.html" class="btn">Buy Now</a>
+                <a href="payment.html?service=Tiktok%20Followers&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
             </div>
             <div class="pricing-plan">
                 <h2>TikTok Likes</h2>
-                <div class="price" id="price-tiktok-likes">₦2000 for 1 day</div>
+                <div class="price" id="price-tiktok-likes">₦3500 for 1 day</div>
                 <ul class="features">
                     <li>Real likes from active users</li> 
                     <li>Gradual delivery</li>
                 </ul>
-                <select id="days-select-tiktok-likes" onchange="updatePrice(this, document.getElementById('price-tiktok-likes'), {1: 2000, 3: 3500, 5: 5000, 7: 6500})">
+                <select id="days-select-tiktok-likes" onchange="updatePrice(this, document.getElementById('price-tiktok-likes'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
                     <option value="7">7 days</option>
                 </select>
-                <a href="payment.html" class="btn">Buy Now</a>
+                <a href="payment.html?service=Tiktok%20likes&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
             </div>
             <div class="pricing-plan">
                 <h2>Twitter Followers</h2>
-                <div class="price" id="price-twitter-followers">₦2000 for 1 day</div>
+                <div class="price" id="price-twitter-followers">₦3500 for 1 day</div>
                 <ul class="features">
                     <li>Real views from unique users</li>
                     <li>High retention</li>
                     <li>Gradual delivery</li>
                 </ul>
-                <select id="days-select-twitter-followers" onchange="updatePrice(this, document.getElementById('price-twitter-followers'), {1: 2000, 3: 3500, 5: 5000, 7: 6500})">
+                <select id="days-select-twitter-followers" onchange="updatePrice(this, document.getElementById('price-twitter-followers'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
                     <option value="7">7 days</option>
                 </select>
-                <a href="payment.html" class="btn">Buy Now</a>
+                <a href="payment.html?service=Twitter%20Followers&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
             </div>
             <div class="pricing-plan">
                 <h2>Twitter Post Likes</h2>
-                <div class="price" id="price-twitter-post-likes">₦2000 for 1 day</div>
+                <div class="price" id="price-twitter-post-likes">₦3500 for 1 day</div>
                 <ul class="features">
                     <li>Real views from unique users</li>
                     <li>Applicable to like and retweet</li>
                     <li>Gradual delivery</li>
                 </ul>
-                <select id="days-select-twitter-post-likes" onchange="updatePrice(this, document.getElementById('price-twitter-post-likes'), {1: 2000, 3: 3500, 5: 5000, 7: 6500})">
+                <select id="days-select-twitter-post-likes" onchange="updatePrice(this, document.getElementById('price-twitter-post-likes'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
                     <option value="7">7 days</option>
                 </select>
-                <a href="payment.html" class="btn">Buy Now</a>
+                <a href="payment.html?service=Twitter%20Post%20Likes&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
             </div>
             <div class="pricing-plan">
                 <h2>Facebook Page Likes</h2>
-                <div class="price" id="price-facebook-page-likes">₦2000 for 1 day</div>
+                <div class="price" id="price-facebook-page-likes">₦3500 for 1 day</div>
                 <ul class="features">
                     <li>Real likes from active users</li>
                     <li>Gradual delivery</li> 
                 </ul>
-                <select id="days-select-facebook-page-likes" onchange="updatePrice(this, document.getElementById('price-facebook-page-likes'), {1: 2000, 3: 3500, 5: 5000, 7: 6500})">
+                <select id="days-select-facebook-page-likes" onchange="updatePrice(this, document.getElementById('price-facebook-page-likes'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
                     <option value="7">7 days</option>
                 </select>
-                <a href="payment.html" class="btn">Buy Now</a>
+                <a href="payment.html?service=Facebook%20Page%20Likes&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
             </div>
             <div class="pricing-plan">
                 <h2>Facebook Post Likes</h2>
-                <div class="price" id="price-facebook-post-likes">₦2000 for 1 day</div>
+                <div class="price" id="price-facebook-post-likes">₦3500 for 1 day</div>
                 <ul class="features">
                     <li>Real likes from active users</li> 
                     <li>Gradual delivery</li>
                 </ul>
-                <select id="days-select-facebook-post-likes" onchange="updatePrice(this, document.getElementById('price-facebook-post-likes'), {1: 2000, 3: 3500, 5: 5000, 7: 6500})">
+                <select id="days-select-facebook-post-likes" onchange="updatePrice(this, document.getElementById('price-facebook-post-likes'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
                     <option value="7">7 days</option>
                 </select>
-                <a href="payment.html" class="btn">Buy Now</a>
+                <a href="payment.html?service=Facebook%20Post%20Likes&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
             </div>
             <div class="pricing-plan">
                 <h2>YouTube Subscribers</h2>
-                <div class="price" id="price-youtube-subscribers">₦2000 for 1 day</div>
+                <div class="price" id="price-youtube-subscribers">₦3500 for 1 day</div>
                 <ul class="features">
                     <li>Real and active subscribers</li>
                     <li>Gradual delivery</li> 
                 </ul>
-                <select id="days-select-youtube-subscribers" onchange="updatePrice(this, document.getElementById('price-youtube-subscribers'), {1: 2000, 3: 3500, 5: 5000, 7: 6500})">
+                <select id="days-select-youtube-subscribers" onchange="updatePrice(this, document.getElementById('price-youtube-subscribers'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
                     <option value="7">7 days</option>
                 </select>
-                <a href="payment.html" class="btn">Buy Now</a>
+                <a href="payment.html?service=youtube%20subscribers&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
             </div>
             <div class="pricing-plan">
                 <h2>YouTube Views</h2>
-                <div class="price" id="price-youtube-views">₦2000 for 1 day</div>
+                <div class="price" id="price-youtube-views">₦4000 for 1 day</div>
                 <ul class="features">
                     <li>Real views from real users</li>
                     <li>High retention</li>
                     <li>Gradual delivery</li>
                 </ul>
-                <select id="days-select-youtube-views" onchange="updatePrice(this, document.getElementById('price-youtube-views'), {1: 2000, 3: 3500, 5: 5000, 7: 6500})">
+                <select id="days-select-youtube-views" onchange="updatePrice(this, document.getElementById('price-youtube-views'), {1: 4000, 3: 6500, 5: 8000, 7: 9500})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
                     <option value="7">7 days</option>
                 </select>
-                <a href="payment.html" class="btn">Buy Now</a>
+                <a href="payment.html?service=YouTube%20Views&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>  
             </div>
             <div class="pricing-plan">
-                <h2>Telegram Group Members/Channels</h2>
-                <div class="price" id="price-telegram">₦2000 for 1 day</div>
+                <h2>Telegram Group/Channels</h2>
+                <div class="price" id="price-telegram">₦3500 for 1 day</div>
                 <ul class="features">
                     <li>Real and active members</li> 
                     <li>Gradual delivery</li>
                 </ul>
-                <select id="days-select-telegram" onchange="updatePrice(this, document.getElementById('price-telegram'), {1: 2000, 3: 3500, 5: 5000, 7: 6500})">
+                <select id="days-select-telegram" onchange="updatePrice(this, document.getElementById('price-telegram'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
                     <option value="7">7 days</option>
                 </select>
-                <a href="payment.html" class="btn">Buy Now</a>
+                <a href="payment.html?service=telegram%20groups&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
             </div>
             <div class="pricing-plan">
-                <h2>WhatsApp Group Members/Contact</h2>
-                <div class="price" id="price-whatsapp">₦2000 for 1 day</div>
+                <h2>WhatsApp Groups/Contact</h2>
+                <div class="price" id="price-whatsapp">₦3500 for 1 day</div>
                 <ul class="features">
                     <li>Real and active members</li> 
                     <li>Gradual delivery</li>
                 </ul>
-                <select id="days-select-whatsapp" onchange="updatePrice(this, document.getElementById('price-whatsapp'), {1: 2000, 3: 3500, 5: 5000, 7: 6500})">
+                <select id="days-select-whatsapp" onchange="updatePrice(this, document.getElementById('price-whatsapp'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
                     <option value="7">7 days</option>
                 </select>
-                <a href="payment.html" class="btn">Buy Now</a>
+                <a href="payment.html?service=whatsapp%20contacts&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
+            </div>
+            <div class="pricing-plan" > 
+                <h2>Spotify Streams</h2>
+                <div class="price" id="price-spotify-streams">₦3500 for 1 day</div>
+                <ul class="features">
+                    <li>Real and active members</li> 
+                    <li>Gradual delivery</li>
+                </ul>
+                <select id="days-select-spotify-streams" onchange="updatePrice(this, document.getElementById('price-spotify-streams'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
+                    <option value="1">1 day</option>
+                    <option value="3">3 days</option>
+                    <option value="5">5 days</option>
+                    <option value="7">7 days</option>
+                </select>
+                <a href="payment.html?service=spotify%20streams&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
+            </div>
+            <div class="pricing-plan"> 
+                <h2>apple Music Streams</h2>
+                <div class="price" id="price-apple-music-streams">₦3500 for 1 day</div>
+                <ul class="features">
+                    <li>Real and active members</li> 
+                    <li>Gradual delivery</li>
+                </ul>
+                <select id="days-select-apple-music-streams" onchange="updatePrice(this, document.getElementById('price-apple-music-streams'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
+                    <option value="1">1 day</option>
+                    <option value="3">3 days</option>
+                    <option value="5">5 days</option>
+                    <option value="7">7 days</option>
+                </select>
+                <a href="payment.html?service=apple%20music%20streams&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
+            </div>
+            <div class="pricing-plan"> 
+                <h2>youtube music Streams</h2>
+                <div class="price" id="price-youtube-music-streams">₦3500 for 1 day</div>
+                <ul class="features">
+                    <li>Real and active members</li> 
+                    <li>Gradual delivery</li>
+                </ul>
+                <select id="days-select-youtube-music-streams" onchange="updatePrice(this, document.getElementById('price-youtube-music-streams'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
+                    <option value="1">1 day</option>
+                    <option value="3">3 days</option>
+                    <option value="5">5 days</option>
+                    <option value="7">7 days</option>
+                </select>
+                <a href="payment.html?service=youtube%20music%20streams&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
+            </div>
+            <div class="pricing-plan" > 
+                <h2>audiomack Streams</h2>  
+                <div class="price" id="price-audiomack-streams">₦3500 for 1 day</div>
+                <ul class="features">
+                    <li>Real and active members</li> 
+                    <li>Gradual delivery</li>
+                </ul>
+                <select id="days-select-audiomack-streams" onchange="updatePrice(this, document.getElementById('price-audiomack-streams'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
+                    <option value="1">1 day</option>
+                    <option value="3">3 days</option>
+                    <option value="5">5 days</option>
+                    <option value="7">7 days</option>
+                </select>
+                <a href="payment.html?service=audiomack%20streams&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
             </div>
         </div>
     </main>
-</body>
+    <script>
+        function updatePrice(selector, priceElement, priceOptions) {
+            const days = selector.value;
+            const price = priceOptions[days];
+            priceElement.textContent = `₦${price} for ${days} day${days > 1 ? 's' : ''}`;
+        }
+        function setPaymentLink(button) {
+            const service = button.closest('.pricing-plan').querySelector('h2').textContent;
+            const daysSelect = button.closest('.pricing-plan').querySelector('select');
+            const days = daysSelect.value;
+            button.href = `payment.html?service=${encodeURIComponent(service)}&days=${encodeURIComponent(days)}`;
+    }
+    </script>
+</body> 
 </html>
