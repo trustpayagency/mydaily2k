@@ -52,18 +52,75 @@
             pointer-events: auto; /* Allow clicks */
         }
         .overlay {
-            display: none; /* Hidden by default */
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.7);
-            color: white;
-            text-align: center;
-            padding-top: 20%;
-            font-size: 20px;
             z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            text-align: center;
+            color: #333;
+            position: relative;
+            z-index: 1001;
+        }
+
+        .overlay-content h2 {
+            margin-top: 0;
+            color: #19e2b0;
+        }
+
+        .overlay-content p {
+            margin: 20px 0;
+        }
+
+        .ok-button {
+            background-color: #19e2b0;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #19e2b0;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #19e2b0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
         }
     </style>
     <!-- Include Firebase SDK -->
@@ -92,11 +149,20 @@
         const auth = getAuth(app);
 
         async function addCash() {
-            const user = auth.currentUser; // Get the current user
+            const user = auth.currentUser;
             if (!user) {
                 alert("You must be logged in to add cash.");
                 return;
             }
+
+            // Show overlay with loading spinner
+            const overlay = document.getElementById('overlay');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const overlayMessage = document.getElementById('overlay-message');
+            
+            overlay.style.display = 'flex'; // Change to flex to center content
+            loadingSpinner.style.display = 'block';
+            overlayMessage.style.display = 'none';
 
             const amount = parseFloat(document.getElementById('amount').value);
             const receiptFile = document.getElementById('receipt').files[0];
@@ -138,10 +204,13 @@
         }
     });
 
-                document.getElementById('overlay').style.display = 'block';
+                // Hide spinner and show success message
+                loadingSpinner.style.display = 'none';
+                overlayMessage.style.display = 'block';
             } catch (error) {
                 console.error("Error adding cash: ", error);
                 alert("There was an error adding your cash.");
+                overlay.style.display = 'none';
             }
         }
 
@@ -157,15 +226,35 @@
             }
         }
 
+        function hideOverlay() {
+            const overlay = document.getElementById('overlay');
+            overlay.style.display = 'none';
+            // Reset form after successful submission
+            document.getElementById('addCashForm').reset();
+            // Reset submit button state
+            document.getElementById('submitButton').classList.remove('enabled');
+        }
+
         window.addCash = addCash;
         window.checkFormCompletion = checkFormCompletion;
+        window.hideOverlay = hideOverlay;
     </script>
 </head>
-<body> 
-    <h1>Add Cash</h1>
+<body>
+    <a href="createcampaign.html" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+    
     <div class="overlay" id="overlay">
-        Your cash will be added to your balance shortly. If your balance is not updated, contact support at adeledeveloper7@gmail.com.
+        <div class="loading-spinner" id="loading-spinner"></div>
+        <div class="overlay-content" id="overlay-message" style="display: none;">
+            <h2>Thank You!</h2>
+            <p>Your cash will be added to your balance shortly. If your balance is not updated in 30 minutes, contact support at adeledeveloper7@gmail.com.</p>
+            <button class="ok-button" onclick="hideOverlay()">OK</button>
+        </div>
     </div>
+
+    <h1>Add Cash</h1>
     <form id="addCashForm" action="#" method="POST" enctype="multipart/form-data">
         <label for="amount">Amount to Add (₦):</label>
         <input type="text" id="amount" name="amount" required oninput="checkFormCompletion()">
