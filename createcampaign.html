@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Campaign</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(to top, #19e2b0, #000000);
+            color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: rgb(255, 255, 255);
+        }
+        form {
+            max-width: 600px;
+            margin: auto;
+            background: #222;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background: #333;
+            color: #fff;
+        }
+        .btn {
+            background-color: #19e2b0;
+            width: 30%;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 10px 20px;
+            text-decoration: none;
+        }
+        .NOTE {
+            background: #b81212;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .balance-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .balance-text {
+            font-size: 16px;
+            color: #fff;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .overlay-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: #000;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 0 auto;
+        }
+        .loading-container {
+            display: none; /* Initially hidden */
+            text-align: center;
+            margin-top: 20px;
+        }
+        .loading-message {
+            color: #fff;
+            margin-top: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Create Campaign</h1>
+    <form id="campaignForm" enctype="multipart/form-data">
+        <div class="balance-container">
+            <span class="balance-text">Your Balance (₦): <span id="balance">0</span></span>
+            <button type="button" onclick="window.location.href='addcash.html';" class="btn">Add Cash</button>
+        </div>
+        
+        <label for="campaign-name">Your Campaign name:</label>
+        <input type="text" id="campaign-name" name="campaign-name" required>
+
+        <label for="video">Upload Campaign Video (max 30 seconds):</label>
+        <input type="file" id="video" name="video" accept="video/*" required>
+        <p class="NOTE">Video should not be longer than 30 seconds.</p>
+
+        <label for="link">Link to Your Website/App:</label>
+        <input type="text" id="link" name="link" required>
+        
+        <label for="logo">Upload Website/App Logo:</label>
+        <input type="file" id="logo" name="logo" accept="image/*" required>
+
+        <div class="loading-container" id="loadingContainer">
+            <div class="loading-spinner" id="loadingSpinner"></div>
+            <p class="loading-message" id="loadingMessage">Uploading...</p>
+        </div>
+        
+        <label for="type">Campaign Type:</label>
+        <select id="type" name="type" required>
+            <option value="">Select Type</option>
+            <option value="app">App</option>
+            <option value="website">Website</option>
+        </select>
+
+        <label for="duration">How long do you want the post to last?</label>
+        <select id="duration" name="duration" required>
+            <option value="">Select Duration</option>
+            <option value="14 days">14 days</option>
+            <option value="1 month">1 month</option>
+            <option value="2 months">2 months</option>
+            <option value="3 months">3 months</option>
+            <option value="6 months">6 months</option>
+            <option value="1 year">1 year</option>
+        </select>
+
+        <label for="view-preference">View Preference:</label>
+        <select id="view-preference" name="view-preference" required>
+            <option value="">Select View Preference</option>
+            <option value="high">High Views</option> 
+            <option value="low">Low Views</option>
+        </select>
+
+        <label for="amount">Total Amount (₦):</label>
+        <input type="text" id="amount" name="amount" required readonly>
+
+        <button type="submit" class="btn">publish Campaign</button> 
+    </form>
+
+    <div class="overlay" id="successOverlay">
+        <div class="overlay-content">
+            <p>Your campaign was published successfully!</p>
+            <button class="btn" id="overlayOkButton">OK</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
+            authDomain: "mydaily2kbot.firebaseapp.com",
+            projectId: "mydaily2kbot",
+            storageBucket: "mydaily2kbot.appspot.com",
+            messagingSenderId: "967002689133",
+            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
+            measurementId: "G-2VNDPK8V4J"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+        const auth = getAuth(app);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const durationSelect = document.getElementById('duration');
+            const viewPreferenceSelect = document.getElementById('view-preference');
+            const amountInput = document.getElementById('amount');
+            const form = document.getElementById('campaignForm');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const successOverlay = document.getElementById('successOverlay');
+            const overlayOkButton = document.getElementById('overlayOkButton');
+
+            const basePrices = {
+                "14 days": 14000,
+                "1 month": 25000,
+                "2 months": 45000,
+                "3 months": 60000,
+                "6 months": 100000,
+                "1 year": 180000,
+            };
+
+            async function initializeCampaign() {
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        const campaignsDocRef = doc(db, "campaigns", user.uid);
+                        const campaignsDocSnap = await getDoc(campaignsDocRef);
+
+                        if (!campaignsDocSnap.exists()) {
+                            await setDoc(campaignsDocRef, { balance: 0 });
+                        }
+
+                        const campaignsData = campaignsDocSnap.data();
+                        const currentBalance = campaignsData.balance;
+                        document.getElementById('balance').textContent = currentBalance;
+                    } else {
+                        console.log("No user is signed in.");
+                    }
+                });
+            }
+
+            function updateAmount() {
+                const duration = durationSelect.value;
+                const viewPreference = viewPreferenceSelect.value;
+                let price = basePrices[duration];
+
+                if (viewPreference === "low") {
+                    price *= 0.8;
+                }
+
+                amountInput.value = price;
+            }
+
+            durationSelect.addEventListener('change', updateAmount);
+            viewPreferenceSelect.addEventListener('change', updateAmount);
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const loadingContainer = document.getElementById('loadingContainer');
+                const loadingMessage = document.getElementById('loadingMessage');
+
+                loadingContainer.style.display = 'block';
+                loadingMessage.textContent = 'Uploading...';
+
+                const balance = parseFloat(document.getElementById('balance').textContent);
+                const amountNeeded = parseFloat(amountInput.value);
+
+                if (balance < amountNeeded) {
+                    loadingContainer.style.display = 'none';
+                    alert("Insufficient balance. Please add cash.");
+                } else {
+                    const newBalance = balance - amountNeeded;
+                    document.getElementById('balance').textContent = newBalance;
+
+                    const videoFile = document.getElementById('video').files[0];
+                    const logoFile = document.getElementById('logo').files[0];
+
+                    if (videoFile && logoFile) {
+                        const videoStorageRef = ref(storage, 'videos/' + videoFile.name);
+                        const logoStorageRef = ref(storage, 'logos/' + logoFile.name);
+
+                        uploadBytes(videoStorageRef, videoFile).then((videoSnapshot) => {
+                            loadingMessage.textContent = 'Getting video URL...';
+                            return getDownloadURL(videoSnapshot.ref);
+                        }).then((videoDownloadURL) => {
+                            loadingMessage.textContent = 'Uploading logo...';
+                            return uploadBytes(logoStorageRef, logoFile).then((logoSnapshot) => {
+                                return getDownloadURL(logoSnapshot.ref);
+                            }).then((logoDownloadURL) => {
+                                loadingMessage.textContent = 'Saving campaign details...';
+
+                                const startDate = new Date().toISOString();
+
+                                const durationText = durationSelect.value;
+                                const durationDays = {
+                                    "14 days": 14,
+                                    "1 month": 30,
+                                    "2 months": 60,
+                                    "3 months": 90,
+                                    "6 months": 180,
+                                    "1 year": 365
+                                }[durationText];
+
+                                return addDoc(collection(db, "campaigns"), {
+                                    name: document.getElementById('campaign-name').value,
+                                    link: document.getElementById('link').value,
+                                    type: document.getElementById('type').value,
+                                    duration: durationDays,
+                                    viewPreference: viewPreferenceSelect.value,
+                                    amount: amountInput.value,
+                                    videoURL: videoDownloadURL,
+                                    logoURL: logoDownloadURL,
+                                    startDate: startDate
+                                });
+                            });
+                        }).then((docRef) => {
+                            console.log("Document written with ID: ", docRef.id);
+                            loadingContainer.style.display = 'none';
+                            successOverlay.style.display = 'flex';
+
+                            // Update the balance in Firestore
+                            const user = auth.currentUser;
+                            if (user) {
+                                const campaignsDocRef = doc(db, "campaigns", user.uid);
+                                setDoc(campaignsDocRef, { balance: newBalance }, { merge: true });
+                            }
+                        }).catch((error) => {
+                            console.error("Error adding document: ", error);
+                            loadingContainer.style.display = 'none';
+                        });
+                    } else {
+                        alert("Please select both video and logo files.");
+                        loadingContainer.style.display = 'none';
+                    }
+                }
+            });
+
+            overlayOkButton.addEventListener('click', function() {
+                successOverlay.style.display = 'none';
+            });
+
+            updateAmount();
+            initializeCampaign();
+        });
+    </script>
+</body>
+</html>

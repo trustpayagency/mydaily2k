@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Cash</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .btn {
+            background-color: #19e2b0;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 10px 20px;
+            width: 100%;
+            opacity: 0.5; /* Initially disabled */
+            pointer-events: none; /* Prevent clicks */
+        }
+        .btn.enabled {
+            opacity: 1; /* Enabled state */
+            pointer-events: auto; /* Allow clicks */
+        }
+        .overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            text-align: center;
+            padding-top: 20%;
+            font-size: 20px;
+            z-index: 1000;
+        }
+    </style>
+    <!-- Include Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
+            authDomain: "mydaily2kbot.firebaseapp.com",
+            projectId: "mydaily2kbot",
+            storageBucket: "mydaily2kbot.appspot.com",
+            messagingSenderId: "967002689133",
+            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
+            measurementId: "G-2VNDPK8V4J"
+        }; 
+         
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+        const auth = getAuth(app);
+
+        async function addCash() {
+            const user = auth.currentUser; // Get the current user
+            if (!user) {
+                alert("You must be logged in to add cash.");
+                return;
+            }
+
+            const amount = parseFloat(document.getElementById('amount').value);
+            const receiptFile = document.getElementById('receipt').files[0];
+
+            try {
+                // Upload receipt to Firebase Storage
+                const receiptRef = ref(storage, `receipts/${receiptFile.name}`);
+                await uploadBytes(receiptRef, receiptFile);
+
+                                // Reference to the user's document in the campaigns collection
+                                const campaignDocRef = doc(db, "campaigns", user.uid);
+                const campaignDocSnap = await getDoc(campaignDocRef);
+
+                // If the document does not exist, create it, which will also create the campaigns collection if it doesn't exist
+                if (!campaignDocSnap.exists()) {
+                    await setDoc(campaignDocRef, { balance: 0 }); // Creates the document and the collection if it doesn't exist
+                }
+
+                // Add cash addition info to the cashAdditions collection
+                const cashAdditionRef = await addDoc(collection(db, "cashAdditions"), {
+                    userId: user.uid,
+                    amount: amount,
+                    receiptUrl: receiptRef.fullPath,
+                    status: "pending",
+                    timestamp: new Date()
+                });
+
+                // Listen to the status change of the cash addition to update the balance
+                const unsubscribe = onSnapshot(doc(db, "cashAdditions", cashAdditionRef.id), async (doc) => {
+        if (doc.exists()) { // Check if the document exists
+            const data = doc.data();
+            if (data && data.status === "cash added") { // Ensure data is not undefined and has a status
+                const newBalance = (campaignDocSnap.data().balance || 0) + data.amount;
+                await setDoc(campaignDocRef, { balance: newBalance }, { merge: true });
+                unsubscribe();
+            }
+        } else {
+            console.log("No such document!");
+        }
+    });
+
+                document.getElementById('overlay').style.display = 'block';
+            } catch (error) {
+                console.error("Error adding cash: ", error);
+                alert("There was an error adding your cash.");
+            }
+        }
+
+        function checkFormCompletion() {
+            const amount = document.getElementById('amount').value;
+            const receiptFile = document.getElementById('receipt').files[0];
+
+            const submitButton = document.getElementById('submitButton');
+            if (amount && receiptFile) {
+                submitButton.classList.add('enabled');
+            } else {
+                submitButton.classList.remove('enabled');
+            }
+        }
+
+        window.addCash = addCash;
+        window.checkFormCompletion = checkFormCompletion;
+    </script>
+</head>
+<body> 
+    <h1>Add Cash</h1>
+    <div class="overlay" id="overlay">
+        Your cash will be added to your balance shortly. If your balance is not updated, contact support at adeledeveloper7@gmail.com.
+    </div>
+    <form id="addCashForm" action="#" method="POST" enctype="multipart/form-data">
+        <label for="amount">Amount to Add (₦):</label>
+        <input type="text" id="amount" name="amount" required oninput="checkFormCompletion()">
+        
+        <label for="bank-details">Bank Details:</label>
+        <textarea id="bank-details" name="bank-details" rows="4" required>
+Account Name: Your Name
+Account Number: 1234567890
+Bank Name: Your Bank
+         </textarea>
+
+        <label for="receipt">Upload Payment Receipt:</label>
+        <input type="file" id="receipt" name="receipt" accept="image/*,application/pdf" required onchange="checkFormCompletion()">
+
+        <button type="button" id="submitButton" class="btn" onclick="addCash()">I Have Paid</button>
+    </form>
+</body>
+</html>
