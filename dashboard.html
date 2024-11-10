@@ -424,7 +424,7 @@ onAuthStateChanged(auth, async (user) => {
                 adContainer.id = 'campaign-container';
                 adContainer.innerHTML = `
                     <div class="video-wrapper">
-                        <video src="${selectedCampaign.videoURL}" controls autoplay></video>
+                        <video src="${selectedCampaign.videoURL}" autoplay muted playsinline></video>
                         <div class="banner">
                             <span>${selectedCampaign.name || 'App Name'}</span>
                             <a href="${selectedCampaign.link || '#'}" target="_blank" class="action-link">${selectedCampaign.type === 'application' ? 'Install App' : 'Visit Web'}</a>
@@ -453,7 +453,7 @@ onAuthStateChanged(auth, async (user) => {
                 const videoWrapper = adContainer.querySelector('.video-wrapper');
                 videoWrapper.style.position = 'relative';
                 videoWrapper.style.width = '100%';
-                videoWrapper.style.maxHeight = '300px'; // Adjust max height for smaller screens
+                videoWrapper.style.height = 'auto'; // Ensure the height adjusts to maintain aspect ratio
                 videoWrapper.style.overflow = 'hidden'; // Ensure content doesn't overflow
 
                 // Style the video
@@ -461,6 +461,7 @@ onAuthStateChanged(auth, async (user) => {
                 videoElement.style.width = '100%';
                 videoElement.style.height = 'auto'; // Maintain aspect ratio
                 videoElement.style.borderRadius = '10px';
+                videoElement.style.pointerEvents = 'none'; // Disable interaction with the video
 
                 // Style the banner
                 const banner = adContainer.querySelector('.banner');
