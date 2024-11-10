@@ -303,7 +303,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
         import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js"; 
 
         // Firebase configuration
@@ -390,26 +390,31 @@ onAuthStateChanged(auth, async (user) => {
             }
 
             try {
-                const response = await fetch('https://daily2kadmin.vercel.app/Campaigns.html');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const campaignsHtml = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(campaignsHtml, 'text/html');
+                const campaignsCollection = collection(db, 'campaigns');
+                const snapshot = await getDocs(campaignsCollection);
+                const campaigns = snapshot.docs.map(doc => doc.data());
 
-                const campaigns = Array.from(doc.querySelectorAll('.campaign'));
                 if (campaigns.length === 0) {
                     alert("No campaigns available.");
                     return;
                 }
 
-                // Select a random campaign
-                const selectedCampaign = campaigns[Math.floor(Math.random() * campaigns.length)];
-                const videoElement = selectedCampaign.querySelector('video');
+                // Filter campaigns by view preference
+                const highViewCampaigns = campaigns.filter(c => c.viewpreference === 'high');
+                const lowViewCampaigns = campaigns.filter(c => c.viewpreference !== 'high');
 
-                if (!videoElement) {
-                    console.error("No video element found in the selected campaign.");
+                // Randomly select a campaign with 70% chance for high view preference
+                let selectedCampaign;
+                if (Math.random() < 0.7 && highViewCampaigns.length > 0) {
+                    selectedCampaign = highViewCampaigns[Math.floor(Math.random() * highViewCampaigns.length)];
+                } else if (lowViewCampaigns.length > 0) {
+                    selectedCampaign = lowViewCampaigns[Math.floor(Math.random() * lowViewCampaigns.length)];
+                } else {
+                    selectedCampaign = campaigns[Math.floor(Math.random() * campaigns.length)];
+                }
+
+                if (!selectedCampaign.videoURL) {
+                    console.error("No video URL found in the selected campaign.");
                     alert("Error: No video available in the selected campaign.");
                     return;
                 }
@@ -417,7 +422,13 @@ onAuthStateChanged(auth, async (user) => {
                 // Create overlay for video
                 const adContainer = document.createElement('div');
                 adContainer.id = 'campaign-container';
-                adContainer.innerHTML = selectedCampaign.innerHTML;
+                adContainer.innerHTML = `
+                    <video src="${selectedCampaign.videoURL}" controls autoplay></video>
+                    <div class="banner">
+                        <span>${selectedCampaign.name || 'App Name'}</span>
+                        <a href="${selectedCampaign.link || '#'}" target="_blank" class="action-link">${selectedCampaign.type === 'application' ? 'Install App' : 'Visit Web'}</a>
+                    </div>
+                `;
                 document.body.appendChild(adContainer);
 
                 // Style the overlay
@@ -431,11 +442,47 @@ onAuthStateChanged(auth, async (user) => {
                 adContainer.style.padding = '20px';
                 adContainer.style.borderRadius = '10px';
 
+                // Style the banner
+                const banner = adContainer.querySelector('.banner');
+                banner.style.display = 'flex';
+                banner.style.justifyContent = 'space-between';
+                banner.style.alignItems = 'center';
+                banner.style.backgroundColor = '#333';
+                banner.style.color = '#fff';
+                banner.style.padding = '10px';
+                banner.style.borderRadius = '5px';
+                banner.style.marginTop = '10px';
+
+                // Style the action link
+                const actionLink = adContainer.querySelector('.action-link');
+                actionLink.style.backgroundColor = '#ec8f04';
+                actionLink.style.color = '#fff';
+                actionLink.style.padding = '5px 10px';
+                actionLink.style.borderRadius = '5px';
+                actionLink.style.textDecoration = 'none';
+                actionLink.style.transition = 'background-color 0.3s';
+                actionLink.onmouseover = () => actionLink.style.backgroundColor = '#d07c03';
+                actionLink.onmouseout = () => actionLink.style.backgroundColor = '#ec8f04';
+
                 // Add event listener to detect video end
+                const videoElement = adContainer.querySelector('video');
                 videoElement.addEventListener('ended', () => {
                     const claimButton = document.createElement('button');
                     claimButton.textContent = 'Claim 20 2KCoins';
-                    claimButton.style.marginTop = '10px';
+                    claimButton.style.position = 'absolute';
+                    claimButton.style.bottom = '20px';
+                    claimButton.style.left = '50%';
+                    claimButton.style.transform = 'translateX(-50%)';
+                    claimButton.style.backgroundColor = '#28a745';
+                    claimButton.style.color = '#fff';
+                    claimButton.style.padding = '10px 20px';
+                    claimButton.style.border = 'none';
+                    claimButton.style.borderRadius = '5px';
+                    claimButton.style.cursor = 'pointer';
+                    claimButton.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
+                    claimButton.style.transition = 'background-color 0.3s, transform 0.3s';
+                    claimButton.onmouseover = () => claimButton.style.backgroundColor = '#218838';
+                    claimButton.onmouseout = () => claimButton.style.backgroundColor = '#28a745';
                     claimButton.onclick = async () => {
                         window.adUsage.adsWatched++;
                         await updateAdUsage(user.uid, window.adUsage);
