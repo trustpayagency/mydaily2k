@@ -442,33 +442,37 @@ onAuthStateChanged(auth, async (user) => {
                 adContainer.style.top = '50%';
                 adContainer.style.left = '50%';
                 adContainer.style.transform = 'translate(-50%, -50%)';
-                adContainer.style.zIndex = '1000'; 
-                adContainer.style.padding = '20px';
+                adContainer.style.zIndex = '1000';
+                adContainer.style.backgroundColor = 'transparent'; // Remove black background
+                adContainer.style.padding = '10px';
                 adContainer.style.borderRadius = '10px';
-                adContainer.style.width = '80%';
+                adContainer.style.width = '90%'; // Adjust width for smaller screens
                 adContainer.style.maxWidth = '600px';
 
                 // Style the video wrapper
                 const videoWrapper = adContainer.querySelector('.video-wrapper');
                 videoWrapper.style.position = 'relative';
                 videoWrapper.style.width = '100%';
+                videoWrapper.style.maxHeight = '300px'; // Adjust max height for smaller screens
+                videoWrapper.style.overflow = 'hidden'; // Ensure content doesn't overflow
 
                 // Style the video
                 const videoElement = adContainer.querySelector('video');
                 videoElement.style.width = '100%';
+                videoElement.style.height = 'auto'; // Maintain aspect ratio
                 videoElement.style.borderRadius = '10px';
 
                 // Style the banner
                 const banner = adContainer.querySelector('.banner');
                 banner.style.position = 'absolute';
-                banner.style.bottom = '10px';
-                banner.style.width = '91%';
+                banner.style.bottom = '0';
+                banner.style.width = '100%'; // Ensure banner matches video width
                 banner.style.display = 'flex';
                 banner.style.justifyContent = 'space-between';
                 banner.style.alignItems = 'center';
                 banner.style.backgroundColor = 'rgba(51, 51, 51, 0.8)';
                 banner.style.color = '#fff';
-                banner.style.padding = '10px';
+                banner.style.padding = '5px'; // Adjust padding for smaller screens
                 banner.style.borderRadius = '0 0 10px 10px';
 
                 // Style the action link
