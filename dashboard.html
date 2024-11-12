@@ -375,8 +375,7 @@ onAuthStateChanged(auth, async (user) => {
         console.log("User not logged in. Redirecting to login page.");
         window.location.href = 'login.html';
     }
-}); 
-
+});   
         async function loadAdCampaign() {
             const user = auth.currentUser;
             if (!user) {
@@ -424,13 +423,16 @@ onAuthStateChanged(auth, async (user) => {
                 adContainer.id = 'campaign-container';
                 adContainer.innerHTML = `
                     <div class="video-wrapper">
+                        <a href="createcampaign.html" class="publish-ads-button">Post Ads</a>
                         <video src="${selectedCampaign.videoURL}" autoplay muted playsinline></video>
                         <div class="banner">
                             <div class="logo-name">
                                 <img src="${selectedCampaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
                                 <span>${selectedCampaign.name || 'App Name'}</span>
                             </div>
-                            <a href="${selectedCampaign.link || '#'}" target="_blank" class="action-link">${selectedCampaign.type === 'application' ? 'Install App' : 'Visit Web'}</a>
+                            <a href="${selectedCampaign.link || '#'}" target="_blank" class="action-link">
+                                ${selectedCampaign.type === 'application' ? 'Install App' : 'Visit Web'}
+                            </a>
                         </div>
                     </div>
                 `;
@@ -501,6 +503,23 @@ onAuthStateChanged(auth, async (user) => {
                 actionLink.style.transition = 'background-color 0.3s';
                 actionLink.onmouseover = () => actionLink.style.backgroundColor = '#d07c03';
                 actionLink.onmouseout = () => actionLink.style.backgroundColor = '#ec8f04';
+
+                // Style the publish ads button
+                const publishButton = adContainer.querySelector('.publish-ads-button');
+                publishButton.style.position = 'absolute';
+                publishButton.style.top = '10px';
+                publishButton.style.right = '10px';
+                publishButton.style.padding = '8px 15px';
+                publishButton.style.backgroundColor = '#ec8f04';
+                publishButton.style.color = '#fff';
+                publishButton.style.textDecoration = 'none';
+                publishButton.style.borderRadius = '5px';
+                publishButton.style.fontWeight = 'bold';
+                publishButton.style.zIndex = '1002';
+                publishButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+                publishButton.style.transition = 'background-color 0.3s';
+                publishButton.onmouseover = () => publishButton.style.backgroundColor = '#d07c03';
+                publishButton.onmouseout = () => publishButton.style.backgroundColor = '#ec8f04';
 
                 // Add event listener to detect video end
                 videoElement.addEventListener('ended', async () => {
