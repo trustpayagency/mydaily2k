@@ -54,6 +54,12 @@
             border-radius: 5px;
             margin-bottom: 15px;
         }
+        .NOTE {
+            background: #b81212;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -74,8 +80,12 @@
             <option value="Facebook Post Likes">Facebook Post Likes</option>
             <option value="YouTube Subscribers">YouTube Subscribers</option>
             <option value="YouTube Views">YouTube Views</option>
-            <option value="Telegram Group Members/Channels">Telegram Group Members/Channels</option>
-            <option value="WhatsApp Group Members/Contact">WhatsApp Group Members/Contact</option>
+            <option value="Telegram Group/Channels">Telegram Group Members/Channels</option>
+            <option value="WhatsApp Groups/Contact">WhatsApp Group Members/Contact</option>
+            <option value="Spotify Streams">Spotify Streams</option>
+            <option value="apple Music Streams">Apple Music Streams</option>
+            <option value="youtube music Streams">YouTube Music Streams</option>
+            <option value="audiomack Streams">Audiomack Streams</option>
         </select>
 
         <label for="days">Number of Days:</label>
@@ -96,8 +106,17 @@
             <p><strong>Account Name:</strong> faruq olasunkunmi muritala</p>
         </div>
 
+        <div class="NOTE"> 
+            <h3>We do not promise a certain amount of traffic</h3>
+            <p> But we promise your service will be up Till the days you baught run out </p>
+            <p> So we advice you to buy more than one days to get more traffic on your post </p> 
+        </div>
+
         <label for="receipt">Upload Payment Receipt:</label>
         <input type="file" id="receipt" name="receipt" accept="image/*" required>
+
+        <label for="post-link">Upload The Page or Post Link:</label>
+        <input type="text" id="post-link" name="post-link" accept="link/*" required>
 
         <button type="submit" class="btn">Submit Payment</button>
     </form>
@@ -109,18 +128,22 @@
         const amountInput = document.getElementById('amount');
 
         const prices = {
-            "Instagram Followers": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
-            "Instagram Likes": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
-            "TikTok Followers": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
-            "TikTok Likes": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
-            "Twitter Followers": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
-            "Twitter Post Likes": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
-            "Facebook Page Likes": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
-            "Facebook Post Likes": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
-            "YouTube Subscribers": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
-            "YouTube Views": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
-            "Telegram Group Members/Channels": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
-            "WhatsApp Group Members/Contact": {1: 2000, 3: 3500, 5: 5000, 7: 6500},
+            "Instagram Followers": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "Instagram Likes": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "TikTok Followers": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "TikTok Likes": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "Twitter Followers": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "Twitter Post Likes": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "Facebook Page Likes": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "Facebook Post Likes": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "YouTube Subscribers": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "YouTube Views": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "Telegram Group/Channels": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "WhatsApp Groups/Contact": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "Spotify Streams": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "apple Music Streams": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "youtube music Streams": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "audiomack Streams": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
         };
 
         function updateAmount() {
@@ -131,6 +154,19 @@
 
         serviceSelect.addEventListener('change', updateAmount);
         daysSelect.addEventListener('change', updateAmount);
+
+        
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const service = urlParams.get('service');
+            const days = urlParams.get('days');
+
+            if (service && days) {
+                document.getElementById('service').value = service;
+                document.getElementById('days').value = days;
+                updateAmount(); // This will set the correct amount based on the service and days
+            }
+        }
 
         // Initialize amount on page load
         updateAmount();
