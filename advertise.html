@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style> 
     body {
-        font-family: 'Roboto', Arial, sans-serif;
+        font-family: 'Roboto', Arial, sans-serif; 
         background: linear-gradient(to top, #19e2b0, #000000);
         color: #f0f0f0;
         margin: 0;
@@ -120,6 +120,16 @@
         padding: 10px 20px;
         text-decoration: none;
     }
+    #searchBar {
+        background-color: rgba(255, 255, 255, 0.9);
+        color: #333;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    #searchBar:focus {
+        background-color: rgba(255, 255, 255, 1);
+        outline: none;
+    }
 </style>
 </head>
 <body>
@@ -134,9 +144,12 @@
         </div>
 
     <main>
-        
-     <h1>Buy Social Media Services</h1> 
+
+     <h1>Buy Social Media Services</h1>
         <h2>Boost your social media presence with our affordable services. Choose from the options below:</h2>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <input type="text" id="searchBar" placeholder="Search for services..." style="padding: 10px; width: 300px; border-radius: 5px; border: none;">
+        </div>
         <div class="pricing-table">
             <div class="pricing-plan">
                 <h2>Instagram Followers</h2>
@@ -304,7 +317,7 @@
                     <option value="5">5 days</option>
                     <option value="7">7 days</option>
                 </select>
-                <a href="payment.html?service=telegram%20groups&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
+                <a href="payment.html?service=telegram&days=1" class="btn" onclick="setPaymentLink(this)">Buy Now</a>
             </div>
             <div class="pricing-plan">
                 <h2>WhatsApp Groups/Contact</h2>
@@ -395,6 +408,19 @@
             const days = daysSelect.value;
             button.href = `payment.html?service=${encodeURIComponent(service)}&days=${encodeURIComponent(days)}`;
     }
+    document.getElementById('searchBar').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const plans = document.querySelectorAll('.pricing-plan');
+        
+        plans.forEach(plan => {
+            const title = plan.querySelector('h2').textContent.toLowerCase();
+            if (title.includes(searchTerm)) {
+                plan.style.display = 'block';
+            } else {
+                plan.style.display = 'none';
+            }
+        });
+    });
     </script>
 </body> 
 </html>
