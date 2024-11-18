@@ -29,11 +29,17 @@
             margin: 10px 0 5px;
         }
         input, textarea {
-            width: 100%;
+            width: 90%;
             padding: 10px;
             margin-bottom: 15px;
-            border: 1px solid #ccc;
+            border: 1px solid #000000;
             border-radius: 5px;
+        }
+        .bank-info { 
+            color: #000;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
         }
         .btn {
             background-color: #19e2b0;
@@ -259,12 +265,12 @@
         <label for="amount">Amount to Add (₦):</label>
         <input type="text" id="amount" name="amount" required oninput="checkFormCompletion()">
         
-        <label for="bank-details">Bank Details:</label>
-        <textarea id="bank-details" name="bank-details" rows="4" required>
-Account Name: Your Name
-Account Number: 1234567890
-Bank Name: Your Bank
-         </textarea>
+        <div class="bank-info">
+            <h3>Bank Information</h3>
+            <p><strong>Bank Name:</strong> opay</p>
+            <p><strong>Account Number:</strong> 8146129606</p>
+            <p><strong>Account Name:</strong> faruq olasunkunmi muritala</p>
+        </div>
 
         <label for="receipt">Upload Payment Receipt:</label>
         <input type="file" id="receipt" name="receipt" accept="image/*,application/pdf" required onchange="checkFormCompletion()">
