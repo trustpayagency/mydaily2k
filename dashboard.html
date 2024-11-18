@@ -747,7 +747,7 @@ onAuthStateChanged(auth, async (user) => {
 
             const checkInterval = setInterval(async () => {
                 const timeSpent = Date.now() - parseInt(startTime);
-                if (timeSpent >= 7000) { // Changed to 5 seconds
+                if (timeSpent >= 10000) { // Changed to 5 seconds
                     clearInterval(checkInterval);
                     const user = auth.currentUser;
                     if (user) {
