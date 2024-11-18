@@ -718,13 +718,58 @@ onAuthStateChanged(auth, async (user) => {
                 return;
             }
 
-            // Increment direct link usage
-            window.adUsage.directLinksUsed++;
-            await updateAdUsage(user.uid, window.adUsage);
+            try {
+                // Create loading overlay
+                const loadingOverlay = document.createElement('div');
+                loadingOverlay.className = 'loading-overlay';
+                loadingOverlay.innerHTML = `
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Visit the website completely to earn coins</div>
+                `;
+                document.body.appendChild(loadingOverlay);
 
-            window.open('https://www.cpmrevenuegate.com/v657brtjq?key=6e43c058ec2274a6ffbaa4f21a026e2d', '_blank');
-            alert("Ad opened. You've earned 10 2KCoins!");
-            updateBalance(user.uid, 10);
+                // Store the current timestamp when opening the link
+                const startTime = Date.now();
+                
+                // Open the MonetAg link in a new window
+                const adWindow = window.open('https://whomeenoaglauns.com/4/8526992', '_blank');
+                
+                // Check if the window was blocked by popup blocker
+                if (!adWindow) {
+                    loadingOverlay.remove();
+                    alert("Please allow popups to earn coins.");
+                    return;
+                }
+
+                // Function to check if enough time has passed
+                const checkVisitDuration = setInterval(async () => {
+                    const timeSpent = Date.now() - startTime;
+                    
+                    // Check if at least 10 seconds have passed
+                    if (timeSpent >= 10000) { // 10 seconds
+                        clearInterval(checkVisitDuration);
+                        loadingOverlay.remove();
+                        
+                        // Increment direct link usage and update balance
+                        window.adUsage.directLinksUsed++;
+                        await updateAdUsage(user.uid, window.adUsage);
+                        await updateBalance(user.uid, 10);
+                        
+                        alert("Thank you for visiting! You've earned 10 2KCoins!");
+                    }
+                }, 1000);
+
+                // Set a timeout to clear the interval if user doesn't complete the visit
+                setTimeout(() => {
+                    clearInterval(checkVisitDuration);
+                    loadingOverlay.remove();
+                }, 60000); // 60 second timeout
+
+            } catch (error) {
+                console.error("Error processing direct link:", error);
+                alert("Error processing direct link. Please try again later.");
+                loadingOverlay?.remove();
+            }
         }
 
         async function updateAdUsage(userId, adUsage) {
@@ -873,14 +918,40 @@ onAuthStateChanged(auth, async (user) => {
 
             try {
                 if (typeof show_8522466 === 'function') {
-                    show_8522466(); // This calls the MonetAg ad display function
-                    
-                    // Increment the watch ads limit
-                    window.adUsage.adsWatchLimit = (window.adUsage.adsWatchLimit || 20) + 1;
-                    window.adUsage.increaseLimitUsed++;
-                    await updateAdUsage(user.uid, window.adUsage);
-                    
-                    alert("Watch Ads limit increased by 1!");
+                    // Create a loading overlay
+                    const loadingOverlay = document.createElement('div');
+                    loadingOverlay.className = 'loading-overlay';
+                    loadingOverlay.innerHTML = `
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Watch the ad completely to increase your limit</div>
+                    `;
+                    document.body.appendChild(loadingOverlay);
+
+                    // Show the MonetAg ad
+                    show_8522466();
+
+                    // Listen for ad completion
+                    const checkAdCompletion = setInterval(async () => {
+                        // Check if MonetAg ad is still visible
+                        const monetagFrame = document.querySelector('iframe[src*="niphaumeenses.net"]');
+                        if (!monetagFrame) {
+                            clearInterval(checkAdCompletion);
+                            loadingOverlay.remove();
+                            
+                            // Increment the watch ads limit
+                            window.adUsage.adsWatchLimit = (window.adUsage.adsWatchLimit || 20) + 1;
+                            window.adUsage.increaseLimitUsed++;
+                            await updateAdUsage(user.uid, window.adUsage);
+                            
+                            alert("Watch Ads limit increased by 1!");
+                        }
+                    }, 1000); // Check every second
+
+                    // Set a timeout to clear the interval if ad doesn't complete
+                    setTimeout(() => {
+                        clearInterval(checkAdCompletion);
+                        loadingOverlay.remove();
+                    }, 60000); // 60 second timeout
                 } else {
                     alert("Ad service is not available. Please try again later.");
                 }
@@ -909,14 +980,40 @@ onAuthStateChanged(auth, async (user) => {
 
             try {
                 if (typeof show_8522466 === 'function') {
-                    show_8522466(); // This calls the MonetAg ad display function
-                    
-                    // Increment the direct link limit
-                    window.adUsage.directLinkLimit = (window.adUsage.directLinkLimit || 20) + 1;
-                    window.adUsage.increaseLimitUsed++;
-                    await updateAdUsage(user.uid, window.adUsage);
-                    
-                    alert("Direct Link limit increased by 1!");
+                    // Create a loading overlay
+                    const loadingOverlay = document.createElement('div');
+                    loadingOverlay.className = 'loading-overlay';
+                    loadingOverlay.innerHTML = `
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Watch the ad completely to increase your limit</div>
+                    `;
+                    document.body.appendChild(loadingOverlay);
+
+                    // Show the MonetAg ad
+                    show_8522466();
+
+                    // Listen for ad completion
+                    const checkAdCompletion = setInterval(async () => {
+                        // Check if MonetAg ad is still visible
+                        const monetagFrame = document.querySelector('iframe[src*="niphaumeenses.net"]');
+                        if (!monetagFrame) {
+                            clearInterval(checkAdCompletion);
+                            loadingOverlay.remove();
+                            
+                            // Increment the direct link limit
+                            window.adUsage.directLinkLimit = (window.adUsage.directLinkLimit || 20) + 1;
+                            window.adUsage.increaseLimitUsed++;
+                            await updateAdUsage(user.uid, window.adUsage);
+                            
+                            alert("Direct Link limit increased by 1!");
+                        }
+                    }, 1000); // Check every second
+
+                    // Set a timeout to clear the interval if ad doesn't complete
+                    setTimeout(() => {
+                        clearInterval(checkAdCompletion);
+                        loadingOverlay.remove();
+                    }, 60000); // 60 second timeout
                 } else {
                     alert("Ad service is not available. Please try again later.");
                 }
