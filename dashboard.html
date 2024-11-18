@@ -298,6 +298,29 @@
         transform: rotate(1turn);
     }
 }
+
+.increase-limit-btn {
+    background-color: #ec8f04;
+    color: #fff;
+    border: none;
+    border-radius: 15px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-bottom: -100px;
+    width: 100px;
+    height: 38px;
+}
+
+.increase-limit-btn:hover {
+    background-color: #d07c03;
+}
+
+.increase-limit-btn.loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.8;
+}
 </style>
 </head>
 
@@ -343,12 +366,18 @@
                 <i class="fas fa-ad" alt="Ads Icon"></i>
             </button>
             <span class="button-label">Watch Ads</span>
+            <button onclick="handleIncreaseWatchAdsLimit()" id="increaseWatchAdsButton" class="increase-limit-btn">
+                Increase Daily Limit
+            </button>
         </div>
         <div>
             <button class="button" onclick="window.loadAdsterraAd()">
                 <i class="fas fa-paper-plane" alt="Direct Link Icon"></i>
             </button>
             <span class="button-label">Direct Link</span>
+            <button onclick="handleIncreaseDirectLinkLimit()" id="increaseDirectLinkButton" class="increase-limit-btn">
+                Increase Daily Limit
+            </button>
         </div>
     </div>
 
@@ -418,7 +447,13 @@
             document.getElementById("username").textContent = userData.username || "User Name"; // Set username
             
             // Store ad usage limits
-            window.adUsage = userData.adUsage || { adsWatched: 0, directLinksUsed: 0 };
+            window.adUsage = userData.adUsage || { 
+                adsWatched: 0,
+                directLinksUsed: 0,
+                increaseLimitUsed: 0,
+                adsWatchLimit: 20,    // Default limit
+                directLinkLimit: 20    // Default limit
+            };
         } else {
             console.error("User not found in Firestore.");
             alert("Error: User data not found. Please contact support.");
@@ -456,8 +491,8 @@ onAuthStateChanged(auth, async (user) => {
                 return;
             }
 
-            if (window.adUsage.adsWatched >= 20) {
-                alert("You have reached the daily limit for watching ads.");
+            if (window.adUsage.adsWatched >= (window.adUsage.adsWatchLimit || 20)) {
+                alert("You have reached the daily limit for watching ads. Use 'Increase Ads Limit' to watch more.");
                 return;
             }
 
@@ -678,8 +713,8 @@ onAuthStateChanged(auth, async (user) => {
                 return;
             }
 
-            if (window.adUsage.directLinksUsed >= 100) {
-                alert("You have reached the daily limit for using direct links.");
+            if (window.adUsage.directLinksUsed >= (window.adUsage.directLinkLimit || 20)) {
+                alert("You have reached the daily limit for direct links. Use 'Increase Link Limit' to use more.");
                 return;
             }
 
@@ -809,6 +844,86 @@ onAuthStateChanged(auth, async (user) => {
                 alert('Failed to load ad. Please try again.');
             } finally {
                 // Remove loading state
+                button.classList.remove('loading');
+            }
+        }
+
+        // Add MonetAg script
+        const monetagScript = document.createElement('script');
+        monetagScript.src = '//niphaumeenses.net/vignette.min.js';
+        monetagScript.setAttribute('data-zone', '8522466');
+        monetagScript.setAttribute('data-sdk', 'show_8522466');
+        document.head.appendChild(monetagScript);
+
+        // Increase limit handlers that use MonetAg
+        window.handleIncreaseWatchAdsLimit = async function() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Please log in to use this feature.");
+                return;
+            }
+
+            if (window.adUsage.increaseLimitUsed >= 10) {
+                alert("You have reached the maximum limit increase attempts for today.");
+                return;
+            }
+
+            const button = document.getElementById('increaseWatchAdsButton');
+            button.classList.add('loading');
+
+            try {
+                if (typeof show_8522466 === 'function') {
+                    show_8522466(); // This calls the MonetAg ad display function
+                    
+                    // Increment the watch ads limit
+                    window.adUsage.adsWatchLimit = (window.adUsage.adsWatchLimit || 20) + 1;
+                    window.adUsage.increaseLimitUsed++;
+                    await updateAdUsage(user.uid, window.adUsage);
+                    
+                    alert("Watch Ads limit increased by 1!");
+                } else {
+                    alert("Ad service is not available. Please try again later.");
+                }
+            } catch (error) {
+                console.error('Error showing ad:', error);
+                alert('Failed to load ad. Please try again.');
+            } finally {
+                button.classList.remove('loading');
+            }
+        }
+
+        window.handleIncreaseDirectLinkLimit = async function() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Please log in to use this feature.");
+                return;
+            }
+
+            if (window.adUsage.increaseLimitUsed >= 10) {
+                alert("You have reached the maximum limit increase attempts for today.");
+                return;
+            }
+
+            const button = document.getElementById('increaseDirectLinkButton');
+            button.classList.add('loading');
+
+            try {
+                if (typeof show_8522466 === 'function') {
+                    show_8522466(); // This calls the MonetAg ad display function
+                    
+                    // Increment the direct link limit
+                    window.adUsage.directLinkLimit = (window.adUsage.directLinkLimit || 20) + 1;
+                    window.adUsage.increaseLimitUsed++;
+                    await updateAdUsage(user.uid, window.adUsage);
+                    
+                    alert("Direct Link limit increased by 1!");
+                } else {
+                    alert("Ad service is not available. Please try again later.");
+                }
+            } catch (error) {
+                console.error('Error showing ad:', error);
+                alert('Failed to load ad. Please try again.');
+            } finally {
                 button.classList.remove('loading');
             }
         }
