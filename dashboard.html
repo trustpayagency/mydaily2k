@@ -470,7 +470,7 @@
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         await loadUserData(user.uid);
-        checkTelegramReturn();
+        checkDirectLinkReturn(); // Check for direct link completion
         
         // Log the user object to check its structure
         console.log("User object:", user);
@@ -720,69 +720,20 @@ onAuthStateChanged(auth, async (user) => {
             }
 
             try {
-                // Create loading overlay
-                const loadingOverlay = document.createElement('div');
-                loadingOverlay.className = 'loading-overlay';
-                loadingOverlay.innerHTML = `
-                    <div class="loading-spinner"></div>
-                    <div class="loading-text">Visit the website completely to earn coins</div>
-                `;
-                document.body.appendChild(loadingOverlay);
-
-                // Store the current timestamp when opening the link
-                const startTime = Date.now();
+                // Store start time in localStorage
+                localStorage.setItem('directLinkStartTime', Date.now().toString());
                 
-                // Detect if running in Telegram's in-app browser
-                const isTelegram = navigator.userAgent.includes('Telegram') || window.Telegram;
+                // Navigate directly to the MonetAg link
+                window.location.href = 'https://whomeenoaglauns.com/4/8526992';
                 
-                if (isTelegram) {
-                    // For Telegram, open in current window and store a flag in localStorage
-                    localStorage.setItem('directLinkStartTime', startTime);
-                    window.location.href = 'https://whomeenoaglauns.com/4/8526992';
-                    return;
-                } else {
-                    // For regular browsers, use popup
-                    const adWindow = window.open('https://whomeenoaglauns.com/4/8526992', '_blank');
-                    
-                    if (!adWindow) {
-                        loadingOverlay.remove();
-                        alert("Please allow popups to earn coins.");
-                        return;
-                    }
-
-                    // Function to check if enough time has passed
-                    const checkVisitDuration = setInterval(async () => {
-                        const timeSpent = Date.now() - startTime;
-                        
-                        if (timeSpent >= 10000) { // 10 seconds
-                            clearInterval(checkVisitDuration);
-                            loadingOverlay.remove();
-                            
-                            // Increment direct link usage and update balance
-                            window.adUsage.directLinksUsed++;
-                            await updateAdUsage(user.uid, window.adUsage);
-                            await updateBalance(user.uid, 10);
-                            
-                            alert("You used directlink! Claim 10 2KCoins!");
-                        }
-                    }, 1000);
-
-                    // Set a timeout to clear the interval if user doesn't complete the visit
-                    setTimeout(() => {
-                        clearInterval(checkVisitDuration);
-                        loadingOverlay.remove();
-                    }, 60000);
-                }
-
             } catch (error) {
                 console.error("Error processing direct link:", error);
                 alert("Error processing direct link. Please try again later.");
-                loadingOverlay?.remove();
             }
         }
 
-        // Add this function to handle return from Telegram browser
-        function checkTelegramReturn() {
+        // Function to check and reward when user returns
+        function checkDirectLinkReturn() {
             const startTime = localStorage.getItem('directLinkStartTime');
             if (startTime) {
                 const timeSpent = Date.now() - parseInt(startTime);
