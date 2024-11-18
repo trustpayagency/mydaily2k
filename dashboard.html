@@ -469,13 +469,14 @@
 
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        const userData = await loadUserData(user.uid); // Get user data
+        await loadUserData(user.uid);
+        checkTelegramReturn();
         
         // Log the user object to check its structure
         console.log("User object:", user);
 
         // Check if the account is inactive
-        if (userData && userData.isActive === false) {
+        if (user.isActive === false) {
             alert("Your account has been disabled.");
             window.location.href = 'login.html';
         }
@@ -731,44 +732,74 @@ onAuthStateChanged(auth, async (user) => {
                 // Store the current timestamp when opening the link
                 const startTime = Date.now();
                 
-                // Open the MonetAg link in a new window
-                const adWindow = window.open('https://whomeenoaglauns.com/4/8526992', '_blank');
+                // Detect if running in Telegram's in-app browser
+                const isTelegram = navigator.userAgent.includes('Telegram') || window.Telegram;
                 
-                // Check if the window was blocked by popup blocker
-                if (!adWindow) {
-                    loadingOverlay.remove();
-                    alert("Please allow popups to earn coins.");
+                if (isTelegram) {
+                    // For Telegram, open in current window and store a flag in localStorage
+                    localStorage.setItem('directLinkStartTime', startTime);
+                    window.location.href = 'https://whomeenoaglauns.com/4/8526992';
                     return;
-                }
-
-                // Function to check if enough time has passed
-                const checkVisitDuration = setInterval(async () => {
-                    const timeSpent = Date.now() - startTime;
+                } else {
+                    // For regular browsers, use popup
+                    const adWindow = window.open('https://whomeenoaglauns.com/4/8526992', '_blank');
                     
-                    // Check if at least 10 seconds have passed
-                    if (timeSpent >= 10000) { // 10 seconds
+                    if (!adWindow) {
+                        loadingOverlay.remove();
+                        alert("Please allow popups to earn coins.");
+                        return;
+                    }
+
+                    // Function to check if enough time has passed
+                    const checkVisitDuration = setInterval(async () => {
+                        const timeSpent = Date.now() - startTime;
+                        
+                        if (timeSpent >= 10000) { // 10 seconds
+                            clearInterval(checkVisitDuration);
+                            loadingOverlay.remove();
+                            
+                            // Increment direct link usage and update balance
+                            window.adUsage.directLinksUsed++;
+                            await updateAdUsage(user.uid, window.adUsage);
+                            await updateBalance(user.uid, 10);
+                            
+                            alert("You used directlink! Claim 10 2KCoins!");
+                        }
+                    }, 1000);
+
+                    // Set a timeout to clear the interval if user doesn't complete the visit
+                    setTimeout(() => {
                         clearInterval(checkVisitDuration);
                         loadingOverlay.remove();
-                        
-                        // Increment direct link usage and update balance
-                        window.adUsage.directLinksUsed++;
-                        await updateAdUsage(user.uid, window.adUsage);
-                        await updateBalance(user.uid, 10);
-                        
-                        alert("Thank you for visiting! You've earned 10 2KCoins!");
-                    }
-                }, 1000);
-
-                // Set a timeout to clear the interval if user doesn't complete the visit
-                setTimeout(() => {
-                    clearInterval(checkVisitDuration);
-                    loadingOverlay.remove();
-                }, 60000); // 60 second timeout
+                    }, 60000);
+                }
 
             } catch (error) {
                 console.error("Error processing direct link:", error);
                 alert("Error processing direct link. Please try again later.");
                 loadingOverlay?.remove();
+            }
+        }
+
+        // Add this function to handle return from Telegram browser
+        function checkTelegramReturn() {
+            const startTime = localStorage.getItem('directLinkStartTime');
+            if (startTime) {
+                const timeSpent = Date.now() - parseInt(startTime);
+                if (timeSpent >= 10000) { // 10 seconds
+                    const user = auth.currentUser;
+                    if (user) {
+                        // Clear the stored time first to prevent double rewards
+                        localStorage.removeItem('directLinkStartTime');
+                        
+                        // Update usage and balance
+                        window.adUsage.directLinksUsed++;
+                        updateAdUsage(user.uid, window.adUsage);
+                        updateBalance(user.uid, 10);
+                        
+                        alert("Thank you for visiting! You've earned 10 2KCoins!");
+                    }
+                }
             }
         }
 
@@ -806,25 +837,6 @@ onAuthStateChanged(auth, async (user) => {
                 showLoading(false);
             }
         }
-
-        onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        await loadUserData(user.uid);
-        
-        // Log the user object to check its structure
-        console.log("User object:", user);
-
-        // Assuming loadUserData sets a global variable or updates the user object
-        // Check if the account is inactive
-        if (user.isActive === false) {
-            alert("Your account has been disabled.");
-            window.location.href = 'login.html';
-        }
-    } else {
-        console.log("User not logged in. Redirecting to login page.");
-        window.location.href = 'login.html';
-    }
-});
 
         window.loadAdgramAd = loadAdCampaign;
         window.loadAdsterraAd = loadAdsterraAd;
@@ -945,7 +957,7 @@ onAuthStateChanged(auth, async (user) => {
                             
                             alert("Watch Ads limit increased by 1!");
                         }
-                    }, 1000); // Check every second
+                    }, 16000); // Check every second
 
                     // Set a timeout to clear the interval if ad doesn't complete
                     setTimeout(() => {
@@ -1007,7 +1019,7 @@ onAuthStateChanged(auth, async (user) => {
                             
                             alert("Direct Link limit increased by 1!");
                         }
-                    }, 1000); // Check every second
+                    }, 16000); // Check every second
 
                     // Set a timeout to clear the interval if ad doesn't complete
                     setTimeout(() => {
