@@ -470,7 +470,6 @@
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         await loadUserData(user.uid);
-        checkDirectLinkReturn(); // Check for direct link completion
         
         // Log the user object to check its structure
         console.log("User object:", user);
@@ -723,14 +722,17 @@ onAuthStateChanged(auth, async (user) => {
                 // Store start time in localStorage
                 localStorage.setItem('directLinkStartTime', Date.now().toString());
                 
-                // Open in new tab using target="_blank"
+                // Open in new tab
                 const link = document.createElement('a');
                 link.href = 'https://whomeenoaglauns.com/4/8526992';
                 link.target = '_blank';
-                link.rel = 'noopener noreferrer'; // Security best practice
+                link.rel = 'noopener noreferrer';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
+
+                // Start checking for reward immediately
+                startRewardCheck();
                 
             } catch (error) {
                 console.error("Error processing direct link:", error);
@@ -738,26 +740,36 @@ onAuthStateChanged(auth, async (user) => {
             }
         }
 
-        // Function to check and reward when user returns
-        function checkDirectLinkReturn() {
+        // New function to handle reward checking
+        function startRewardCheck() {
             const startTime = localStorage.getItem('directLinkStartTime');
-            if (startTime) {
+            if (!startTime) return;
+
+            const checkInterval = setInterval(async () => {
                 const timeSpent = Date.now() - parseInt(startTime);
-                if (timeSpent >= 10000) { // 10 seconds
+                if (timeSpent >= 7000) { // Changed to 5 seconds
+                    clearInterval(checkInterval);
                     const user = auth.currentUser;
                     if (user) {
-                        // Clear the stored time first to prevent double rewards
+                        // Clear the stored time
                         localStorage.removeItem('directLinkStartTime');
                         
                         // Update usage and balance
                         window.adUsage.directLinksUsed++;
-                        updateAdUsage(user.uid, window.adUsage);
-                        updateBalance(user.uid, 10);
+                        await updateAdUsage(user.uid, window.adUsage);
+                        await updateBalance(user.uid, 10);
                         
-                        alert("Thank you for visiting! You've earned 10 2KCoins!");
+                        // Update the balance display immediately
+                        const newBalance = parseInt(document.getElementById("balance").textContent) + 10;
+                        document.getElementById("balance").textContent = newBalance;
+                        
+                        alert("Directlink used! You've earned 10 2KCoins!");
                     }
                 }
-            }
+            }, 1000); // Check every second
+
+            // Clear interval after 1 minute if something goes wrong
+            setTimeout(() => clearInterval(checkInterval), 60000);
         }
 
         async function updateAdUsage(userId, adUsage) {
