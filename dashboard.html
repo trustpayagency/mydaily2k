@@ -723,8 +723,14 @@ onAuthStateChanged(auth, async (user) => {
                 // Store start time in localStorage
                 localStorage.setItem('directLinkStartTime', Date.now().toString());
                 
-                // Navigate directly to the MonetAg link
-                window.location.href = 'https://whomeenoaglauns.com/4/8526992';
+                // Open in new tab using target="_blank"
+                const link = document.createElement('a');
+                link.href = 'https://whomeenoaglauns.com/4/8526992';
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer'; // Security best practice
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
                 
             } catch (error) {
                 console.error("Error processing direct link:", error);
