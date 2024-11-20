@@ -60,14 +60,54 @@
             border-radius: 5px;
             margin-bottom: 15px;
         }
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #19e2b0;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
     <h1>Payment for Social Media Services</h1>
-    <form action="https://formsubmit.co/YOUR_EMAIL@example.com" method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="_next" value="http://yourwebsite.com/thank-you.html">
-        <input type="hidden" name="_subject" value="New Payment Submission">
-        
+    
+    <!-- Add new container for balance and buttons -->
+    <div style="max-width: 600px; margin: 0 auto 20px; background: #222; padding: 20px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <span>Balance: </span>
+            <span id="userBalance">₦0.00</span>
+        </div>
+        <div>
+            <a href="advertise.html" class="btn" style="width: auto; margin-right: 10px;">Back</a>
+            <a href="addcash.html" class="btn" style="width: auto;">Add Cash</a>
+        </div>
+    </div>
+
+    <form id="paymentForm">
         <label for="service">Service Selected:</label>
         <select id="service" name="service" required>
             <option value="Instagram Followers">Instagram Followers</option>
@@ -99,12 +139,10 @@
         <label for="amount">Total Amount (₦):</label>
         <input type="text" id="amount" name="amount" required readonly>
 
-        <div class="bank-info">
-            <h3>Bank Information</h3>
-            <p><strong>Bank Name:</strong> opay</p>
-            <p><strong>Account Number:</strong> 8146129606</p>
-            <p><strong>Account Name:</strong> faruq olasunkunmi muritala</p>
-        </div>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required 
+            style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #555; border-radius: 5px; background: #333; color: #fff;"
+            rows="4"></textarea>
 
         <div class="NOTE"> 
             <h3>We do not promise a certain amount of traffic</h3>
@@ -112,16 +150,36 @@
             <p> So we advice you to buy more than one days to get more traffic on your post </p> 
         </div>
 
-        <label for="receipt">Upload Payment Receipt:</label>
-        <input type="file" id="receipt" name="receipt" accept="image/*" required>
-
         <label for="post-link">Upload The Page or Post Link:</label>
-        <input type="text" id="post-link" name="post-link" accept="link/*" required>
+        <input type="text" id="post-link" name="post-link" required>
 
         <button type="submit" class="btn">Submit Payment</button>
     </form>
 
-    <script>
+    <script type="module">
+        // Update Firebase imports with correct version number
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+        import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js';
+
+        // Your Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
+            authDomain: "mydaily2kbot.firebaseapp.com",
+            projectId: "mydaily2kbot",
+            storageBucket: "mydaily2kbot.appspot.com",
+            messagingSenderId: "967002689133",
+            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
+            measurementId: "G-2VNDPK8V4J"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+
         // Function to fill the amount based on selected service and days
         const serviceSelect = document.getElementById('service');
         const daysSelect = document.getElementById('days');
@@ -137,13 +195,13 @@
             "Facebook Page Likes": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
             "Facebook Post Likes": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
             "YouTube Subscribers": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
-            "YouTube Views": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "YouTube Views": {1: 4800, 3: 7800, 5: 9600, 7: 11400},
             "Telegram Group/Channels": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
             "WhatsApp Groups/Contact": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
-            "Spotify Streams": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
-            "apple Music Streams": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
-            "youtube music Streams": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
-            "audiomack Streams": {1: 3500, 3: 6000, 5: 7500, 7: 9000},
+            "Spotify Streams": {1: 4200, 3: 7200, 5: 9000, 7: 10800},
+            "apple Music Streams": {1: 4200, 3: 7200, 5: 9000, 7: 10800},
+            "youtube music Streams": {1: 4200, 3: 7200, 5: 9000, 7: 10800},
+            "audiomack Streams": {1: 4200, 3: 7200, 5: 9000, 7: 10800},
         };
 
         function updateAmount() {
@@ -170,6 +228,131 @@
 
         // Initialize amount on page load
         updateAmount();
+
+        // Add this service name mapping
+        const serviceNames = {
+            "Instagram Followers": "Instagram Followers",
+            "Instagram Likes": "Instagram Post",
+            "TikTok Followers": "TikTok Followers",
+            "TikTok Likes": "TikTok Post",
+            "Twitter Followers": "Twitter Followers",
+            "Twitter Post Likes": "Twitter Post",
+            "Facebook Page Likes": "Facebook Page",
+            "Facebook Post Likes": "Facebook Post",
+            "YouTube Subscribers": "YouTube Channel",
+            "YouTube Views": "YouTube Video",
+            "Telegram Group/Channels": "Telegram Group",
+            "WhatsApp Groups/Contact": "WhatsApp Group",
+            "Spotify Streams": "Spotify Track",
+            "apple Music Streams": "Apple Music Track",
+            "youtube music Streams": "YouTube Music Track",
+            "audiomack Streams": "Audiomack Track"
+        };
+
+        // Update the form submission handler
+        document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'flex';  // Show loading overlay
+
+            const user = auth.currentUser;
+            if (!user) {
+                loadingOverlay.style.display = 'none';
+                alert('Please login first');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                // Get form values
+                const selectedService = document.getElementById('service').value;
+                const serviceName = serviceNames[selectedService]; // Get standardized name
+                const days = parseInt(document.getElementById('days').value);
+                const amount = parseFloat(document.getElementById('amount').value);
+                const description = document.getElementById('description').value;
+                const postLink = document.getElementById('post-link').value;
+
+                // Determine reward based on service type
+                const streamingServices = [
+                    "Spotify Streams",
+                    "apple Music Streams",
+                    "youtube music Streams",
+                    "audiomack Streams",
+                    "YouTube Views"
+                ];
+                const reward = streamingServices.includes(selectedService) ? 20 : 10;
+
+                // Check if user has sufficient balance
+                const campaignDoc = await getDoc(doc(db, 'campaigns', user.uid));
+                const currentBalance = campaignDoc.data()?.balance || 0;
+
+                if (currentBalance < amount) {
+                    loadingOverlay.style.display = 'none';
+                    alert('Insufficient balance. Please add funds to your account.');
+                    return;
+                }
+
+                // Calculate start and end timestamps
+                const startTime = new Date();
+                const endTime = new Date();
+                endTime.setDate(endTime.getDate() + days);
+
+                // Create task document
+                const taskRef = doc(db, 'tasks', `${user.uid}_${Date.now()}`);
+                await setDoc(taskRef, {
+                    userId: user.uid,
+                    service: selectedService,     // Original service selection
+                    name: serviceName,            // Standardized name for display
+                    days: days,
+                    amount: amount,
+                    description: description,
+                    postLink: postLink,
+                    startTime: startTime,
+                    endTime: endTime,
+                    status: 'pending',
+                    createdAt: new Date(),
+                    reward: reward
+                });
+
+                // Update user's balance
+                const newBalance = currentBalance - amount;
+                await setDoc(doc(db, 'campaigns', user.uid), {
+                    balance: newBalance
+                }, { merge: true });
+
+                loadingOverlay.style.display = 'none';  // Hide loading overlay
+                alert('Task added successfully!');
+                window.location.href = 'payment.html';
+
+            } catch (error) {
+                loadingOverlay.style.display = 'none';  // Hide loading overlay
+                console.error('Error submitting task:', error);
+                alert('Error submitting task. Please try again.');
+            }
+        });
+
+        // Display balance function
+        async function displayBalance(userId) {
+            try {
+                const campaignDoc = await getDoc(doc(db, 'campaigns', userId));
+                if (campaignDoc.exists()) {
+                    const balance = campaignDoc.data().balance || 0;
+                    document.getElementById('userBalance').textContent = `₦${balance.toFixed(2)}`;
+                }
+            } catch (error) {
+                console.error('Error fetching balance:', error);
+            }
+        }
+
+        // Check authentication and display balance
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                displayBalance(user.uid);
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
     </script>
 </body>
 </html>
