@@ -54,6 +54,11 @@
         setTimeout(() => {
             window.location.href = "signup.html"; // Replace with your signup page URL
         }, 20000);
+            document.addEventListener('DOMContentLoaded', () => {
+        const video = document.querySelector('video');
+        video.muted = true;
+        video.play().catch(error => console.error('Autoplay blocked:', error));
+    });
     </script>
 </head>
 <body>
