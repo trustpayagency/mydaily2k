@@ -880,6 +880,7 @@ onAuthStateChanged(auth, async (user) => {
         monetagScript.setAttribute('data-zone', '8522466');
         monetagScript.setAttribute('data-sdk', 'show_8522466');
         document.head.appendChild(monetagScript);
+        console.log("Monetag script added");
 
         // Increase limit handlers that use MonetAg
         window.handleIncreaseWatchAdsLimit = async function() {
@@ -1005,6 +1006,26 @@ onAuthStateChanged(auth, async (user) => {
                 button.classList.remove('loading');
             }
         }
+
+        // Add event listener for navigation to other sections
+        document.querySelectorAll('.navigation-link').forEach(link => {
+            link.addEventListener('click', () => {
+                // Insert the MonetAg script here as well
+                const monetagScriptNav = document.createElement('script');
+                monetagScriptNav.src = '//niphaumeenoaglauns.com/vignette.min.js';
+                monetagScriptNav.setAttribute('data-zone', '8522466');
+                monetagScriptNav.setAttribute('data-sdk', 'show_8522466');
+                document.head.appendChild(monetagScriptNav);
+            });
+        });
+
+        // Trigger MonetAg Vignette Ads script after task completion
+        const monetagScript = document.createElement('script');
+        monetagScript.src = '//niphaumeenoaglauns.com/vignette.min.js';
+        monetagScript.setAttribute('data-zone', '8522466');
+        monetagScript.setAttribute('data-sdk', 'show_8522466');
+        document.head.appendChild(monetagScript);
+        console.log("Monetag script added");
     </script>
 </body>
 
