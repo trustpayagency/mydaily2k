@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, bold, sans-serif;
-            background: linear-gradient(to top, #ec8f04, #000000);
+            background: linear-gradient(to top, #ec8f04, #f58c79);
             color: #fff;
             margin: 0;
             padding: 0;
@@ -16,6 +16,9 @@
             align-items: center;
             height: 100vh;
             text-align: center;
+        }
+        body.light-mode {
+            background: linear-gradient(to top, #ec8f04, black); /* Change to black in light mode */
         }
         .success-container {
             background-color: rgba(0, 0, 0, 0.6);
@@ -56,10 +59,17 @@
 </head>
 <body>
     <div class="success-container">
-        <img src="C:\Users\adeye\Downloads\mydaily2kbot\golden.png" alt="Success" class="success-icon">
+        <img src="golden.png" alt="Success" class="success-icon">
         <h1>Withdrawal Successful!</h1>
         <p>Your withdrawal request has been successfully submitted.if you don't receive your payment in 30 minutes, contact support.</p>
         <a href="withdraw.html" class="back-button">Back to Withdraw</a>
     </div>
 </body>
+<script>
+    // Check localStorage for the user's mode preference
+    const currentMode = localStorage.getItem('mode') || 'dark';
+    if (currentMode === 'light') {
+        document.body.classList.add('light-mode'); // Apply light mode if set
+    }
+</script>
 </html>
