@@ -9,13 +9,16 @@
     <style>
         body {
             font-family: 'Roboto', Arial, sans-serif;
-            background: linear-gradient(to top, #ec8f04, #000000);
+            background: linear-gradient(to top, #ec8f04, #f58c79);
             color: #f0f0f0;
             margin: 0;
             padding: 0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+        }
+        body.light-mode {
+            background: linear-gradient(to top, #ec8f04, black); /* Change to black in light mode */
         }
 
         .bottom-banner {
@@ -246,6 +249,11 @@
                 console.error("Error fetching referred friends:", error);
                 document.getElementById('friendsListContent').innerHTML = '<p class="error-message">Error loading friends. Please try again later.</p>';
             }
+        }
+                // Check localStorage for the user's mode preference
+                const currentMode = localStorage.getItem('mode') || 'dark';
+        if (currentMode === 'light') {
+            document.body.classList.add('light-mode'); // Apply light mode if set
         }
 
         function escapeHtml(unsafe) {
