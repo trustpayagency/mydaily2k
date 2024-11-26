@@ -98,8 +98,33 @@
             color: white;
             text-decoration: none;
             padding: 5px 10px;
-            background-color: #555;
+            background-color: #19e2b0;
             border-radius: 5px;
+        }
+
+        .switch1 {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .switch1 button {
+            background: linear-gradient(to top, #ec8f04, #000000 50%);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            font-size: 10px;
+            border-radius: 15px;
+            margin-top: 60px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: 0.3s ease;
+        }
+
+        body.light-mode .switch1 button {
+            background:linear-gradient(to top, #ec8f04, #f58c79 50%);
         }
 
         .bottom-banner {
@@ -325,6 +350,47 @@
     pointer-events: none;
     opacity: 0.8;
 }
+
+.weekly-contest-button {
+    position: absolute; /* Position it relative to the parent */
+    background-attachment: fixed;
+    left: 50px; /* Adjust as needed */
+    top: 300px; /* Adjust to position above the Tasks button */
+    z-index: 10; /* Ensure it appears above other elements */
+    text-align: center; /* Center the text below the button */
+}
+
+.glowing-button {
+    background-color: #af320c; /* Button color */
+    color: #dd860b; /* Text color */
+    border: none;
+    margin-left: 13px;
+    border-radius: 100%; /* Make it round */
+    width: 60px; /* Set width */
+    height: 60px; /* Set height */
+    cursor: pointer;
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Center icon vertically */
+    justify-content: center; /* Center icon horizontally */
+    box-shadow: 0 0 10px rgba(236, 140, 4, 0.8), 0 0 20px rgba(236, 140, 4, 0.6); /* Glowing effect */
+    transition: box-shadow 0.3s ease;
+}
+
+.glowing-button i {
+    font-size: 24px; /* Adjust icon size */
+}
+
+.glowing-button:hover {
+    box-shadow: 0 0 20px rgb(255, 9, 9), 0 0 30px rgba(236, 4, 4, 0.8); /* Enhanced glow on hover */
+}
+
+.button-label {
+    display: block; /* Ensure label is on a new line */
+    color: #fff; /* White color for visibility */
+    text-align: center; /* Center the label */
+    font-size: 12px; /* Appropriate size for labels */
+    margin-top: 5px; /* Space between icon and label */
+}
 </style>
 </head>
 
@@ -333,6 +399,9 @@
         <img id="profile-pic" src="R.png" alt="Profile Picture" style="width: 50px; height: 50px; border-radius: 50%;">
         <span id="username" style="color: #fff; margin-left: 10px;">User Name</span>
     </div>
+    <div class="switch1" style="top: 20px; left: 20px;">
+        <button id="modeToggle">switch mode</button>
+    </div> 
     <div class="balance-container">
         <div class="balance">
             <div class="card">
@@ -343,6 +412,9 @@
                 <div class="card-header">
                     <span class="daily2k">DAILY2K</span>
                 </div>
+                <div id="loading">
+                    <i class="fas fa-spinner fa-spin"></i>  
+                </div> 
                  <span class="acc-name">User Name.</span>
                  <span id="user-full-name"></span> <!-- Placeholder for user's full name -->
                  <span class="acc-number">****2KCoin.</span>
@@ -350,21 +422,23 @@
             </div>
         </div>
     </div>
-
-    <div id="loading">Loading...</div>
-
+ 
     <div class="switch">
-        <a href="dashboard.html" style="background-color: #ec8f04;">Dashboard</a>
-        <a href="advertise.html">Advertise</a>
-        <button id="modeToggle" style="margin-left: 10px; background-color: #555; color: white; border: none; border-radius: 5px; padding: 5px 10px;">Toggle Mode</button>
+        <a href="advertise.html" >Advertise</a> 
     </div>
-
+     
     <div class="middle-container">
         <div>
             <button class="button" onclick="window.location.href='task.html'">
                 <i class="fas fa-tasks" alt="Tasks Icon"></i>
             </button>
-            <span class="button-label">Tasks</span>
+            <span class="button-label" style="margin-bottom: 30px; right: 20px;">Tasks</span>
+        </div>
+        <div class="weekly-contest-button">
+            <button class="glowing-button" onclick="window.location.href='weeklycontest.html'">
+                <i class="fas fa-trophy" alt="Trophy Icon"></i>
+            </button>
+            <span class="button-label">Weekly Contest</span>
         </div>
         <div>
             <button class="button" onclick="handleWatchAdsClick()" id="watchAdsButton">
@@ -478,12 +552,7 @@ onAuthStateChanged(auth, async (user) => {
         
         // Log the user object to check its structure
         console.log("User object:", user);
-
-        // Check if the account is inactive
-        if (user.isActive === false) {
-            alert("Your account has been disabled.");
-            window.location.href = 'login.html';
-        }
+ 
     } else {
         console.log("User not logged in. Redirecting to login page.");
         window.location.href = 'login.html';
@@ -1023,7 +1092,13 @@ onAuthStateChanged(auth, async (user) => {
             // Save the current mode to localStorage
             const newMode = document.body.classList.contains('light-mode') ? 'light' : 'dark';
             localStorage.setItem('mode', newMode);
+            
+            // Update button text based on the current mode
+            modeToggle.textContent = newMode === 'light' ? 'Light Mode' : 'Dark Mode';
         });
+        
+        // Set initial button text based on the current mode
+        modeToggle.textContent = currentMode === 'light' ? 'Light Mode' : 'Dark Mode';
     </script>
 </body>
 
