@@ -8,10 +8,13 @@
     <style>
         body {
             font-family: 'Roboto', Arial, sans-serif;
-            background: linear-gradient(to top, #19e2b0, #000000);
+            background: linear-gradient(to top, #19e2b0, #f58c79);
             color: #f0f0f0;
             margin: 0;
             padding: 20px;
+        }
+        body.light-mode {
+            background: linear-gradient(to top, #ec8f04, black); /* Change to black in light mode */
         }
         h1 {
             text-align: center;
@@ -353,6 +356,13 @@
                 window.location.href = 'login.html';
             }
         });
+    </script>
+    <script>
+        // Check localStorage for the user's mode preference
+        const currentMode = localStorage.getItem('mode') || 'dark';
+        if (currentMode === 'light') {
+            document.body.classList.add('light-mode'); // Apply light mode if set
+        }
     </script>
 </body>
 </html>
