@@ -8,10 +8,13 @@
     <style>
         body {
             font-family: 'Roboto', Arial, sans-serif;
-            background: linear-gradient(to top, #19e2b0, #000000);
+            background: linear-gradient(to top, #19e2b0, #f58c79);
             color: #f0f0f0;
             margin: 0;
             padding: 20px;
+        }
+        body.light-mode {
+            background: linear-gradient(to top, #ec8f04, black); /* Change to black in light mode */
         }
         h1 {
             text-align: center;
@@ -120,18 +123,18 @@
         }
     </style>
 </head>
-<body>
-    <a href="advertise.html" class="back-button">
-        <i class="fas fa-arrow-left"></i> Back
-    </a>
-
-
-    <h1>Create Campaign</h1>
-    <form id="campaignForm" enctype="multipart/form-data">
-        <div class="balance-container">
-            <span class="balance-text">Your Balance (₦): <span id="balance">0</span></span>
-            <button type="button" onclick="window.location.href='addcash.html';" class="btn">Add Cash</button>
-        </div>
+<body>  
+      <h1>Create Campaign</h1>
+    <form id="campaignForm" enctype="multipart/form-data"> 
+ 
+            <div style="max-width: 600px; margin: 0 auto 20px; background: #222; padding: 20px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
+                <div> <span class="balance-text">Your Balance (₦): <span id="balance">0</span></span>
+                </div>
+                <div>
+                    <a href="advertise.html" class="btn" style="width: auto; margin-right: 10px;">Back</a>
+                    <a href="addcash.html" class="btn" style="width: auto;">Add Cash</a>
+                </div>
+            </div>
         
         <label for="campaign-name">Your Campaign name:</label>
         <input type="text" id="campaign-name" name="campaign-name" required>
@@ -343,6 +346,11 @@
                     }
                 }
             });
+                    // Check localStorage for the user's mode preference
+        const currentMode = localStorage.getItem('mode') || 'dark';
+        if (currentMode === 'light') {
+            document.body.classList.add('light-mode'); // Apply light mode if set
+        }
 
             overlayOkButton.addEventListener('click', function() {
                 successOverlay.style.display = 'none';
