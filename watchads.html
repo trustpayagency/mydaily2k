@@ -18,7 +18,7 @@
             background-color: #000000;
         }
         .image-container {
-            background-image: url('1.jpg'); /* Set the image as background */
+            background-image: url('watchads.jpg'); /* Set the image as background */
             background-size: contain; /* Ensure the entire image is visible */
             background-repeat: no-repeat;
             background-position: center; /* Center the image */
@@ -28,11 +28,11 @@
             justify-content: center;
             align-items: center;
             position: relative; /* Position relative for absolute positioning of buttons */
-            background-color: linear-gradient(to top, #ec8f04, #000000); /* Fallback background color */
+            background-color:linear-gradient(to top, #ec8f04, #000000); /* Fallback background color */
         }
         .button-container {
             position: absolute; /* Position the button container absolutely */
-            bottom: 10px; /* Distance from the bottom */
+            bottom: 25px; /* Distance from the bottom */
             left: 20px; /* Align to the left with some padding */
             right: 20px; /* Align to the right with some padding */
             display: flex; /* Use flexbox for button alignment */
@@ -44,8 +44,8 @@
             border: none; /* No border */
             padding: 10px 10px; /* Increased padding for better touch targets */
             cursor: pointer; /* Pointer cursor on hover */
-            border-radius: 5px; /* Rounded corners */
-            font-size: 14px; /* Increased font size for readability */
+            border-radius: 15px; /* Rounded corners */
+            font-size: 10px; /* Increased font size for readability */
             transition: background-color 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -61,27 +61,70 @@
                 right: 10px;
             }
             .button {
-                width: 30%; /* Allow buttons to take up nearly half the width each */
+                width: 48%; /* Allow buttons to take up nearly half the width each */
                 padding: 10px 0; /* Uniform vertical padding */
-                font-size: 14px; /* Consistent font size */
+                font-size: 10px; /* Consistent font size */
+            }
+        }
+        .skip-button {
+            position: absolute; /* Position the skip button */
+            top: 10px; /* Distance from the top */
+            right: 20px; /* Distance from the right */
+            background-color: transparent; /* Transparent background */
+            color: white; /* Text color */
+            border: none; /* No border */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 14px; /* Font size */
+            text-transform: uppercase; /* Uppercase text */
+        }
+        .swipe-left {
+            animation: swipe-left 0.5s forwards;
+        }
+        .swipe-right {
+            animation: swipe-right 0.5s forwards;
+        }
+        @keyframes swipe-left {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-100%);
+            }
+        }
+        @keyframes swipe-right {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(100%);
             }
         }
     </style>
 </head>
 <body>
     <div class="image-container">
+        <button class="skip-button" onclick="window.location.href='directlink.html'">Skip</button>
         <div class="button-container">
-            <button class="button back-button" onclick="window.location.href='login.html'">
+            <button class="button back-button" onclick="navigate('login.html', 'right')">
                 <i class="fas fa-arrow-left"></i> Back
             </button>
-            <button class="button next-button" onclick="window.location.href='dotask.HTML'">
+            <button class="button next-button" onclick="navigate('dotask.html', 'left')">
                 Next <i class="fas fa-arrow-right"></i>
             </button>
         </div>
     </div>
-    
     <script>
-        // Placeholder for any additional functionality if needed
+        function navigate(url, direction) {
+            const container = document.querySelector('.image-container');
+            if (direction === 'left') {
+                container.classList.add('swipe-left');
+            } else {
+                container.classList.add('swipe-right');
+            }
+            setTimeout(() => {
+                window.location.href = url;
+            }, 500); // Match the duration of the animation
+        }
     </script>
 </body>
 </html>
