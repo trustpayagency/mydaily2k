@@ -241,9 +241,19 @@
             document.getElementById('submitButton').classList.remove('enabled');
         }
 
+        function copyToClipboard() {
+            const accountNumber = document.getElementById('accountNumber').innerText;
+            navigator.clipboard.writeText(accountNumber).then(() => {
+                alert("Account number copied to clipboard!");
+            }).catch(err => {
+                console.error("Failed to copy: ", err);
+            });
+        }
+
         window.addCash = addCash;
         window.checkFormCompletion = checkFormCompletion;
         window.hideOverlay = hideOverlay;
+        window.copyToClipboard = copyToClipboard;
     </script>
 </head>
 <body>
@@ -268,7 +278,7 @@
         <div class="bank-info">
             <h3>Bank Information</h3>
             <p><strong>Bank Name:</strong> opay</p>
-            <p><strong>Account Number:</strong> 8146129606</p>
+            <p><strong>Account Number:</strong> <span id="accountNumber">8146129606</span> <button onclick="copyToClipboard()">Copy</button></p>
             <p><strong>Account Name:</strong> faruq olasunkunmi muritala</p>
         </div>
 
