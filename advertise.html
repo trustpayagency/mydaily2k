@@ -8,7 +8,7 @@
     <style> 
     body {
         font-family: 'Roboto', Arial, sans-serif; 
-        background: linear-gradient(to top, #19e2b0, #000000);
+        background: linear-gradient(to top, #19e2b0, #f58c79);
         color: #f0f0f0;
         margin: 0;
         padding: 0;
@@ -16,10 +16,14 @@
         display: flex;
         flex-direction: column;
     } 
+    body.light-mode {
+            background: linear-gradient(to top, #ec8f04, black); /* Change to black in light mode */
+        }
+
     .switch {
         position: absolute;
         top: 20px;
-        right: 20px;
+        left: 20px;
         display: flex;
         align-items: center;
     }
@@ -33,7 +37,7 @@
     }
     .switch1 {
         position: absolute;
-        top: 60px;
+        top: 20px;
         right: 50px;
         display: flex;
         align-items: center;
@@ -42,7 +46,7 @@
         margin-right: 0px;
         color: white;
         text-decoration: none;
-        padding: 10px 20px;
+        padding: 5px 10px;
         background-color: #19e2b0;
         border-radius: 5px;
         font-weight: bold;
@@ -135,11 +139,10 @@
 <body>
 
      <div class="switch">
-            <a href="dashboard.html">Dashboard</a>
-            <a href="advertise.html" style="background-color: #19e2b0;">Advertise</a>
+            <a href="dashboard.html" style="background-color: #ec8f04;">Dashboard</a> 
         </div>
 
-     <div class="switch1" style="top: 60px; right: 20px;"> 
+     <div class="switch1" style="top: 20px; right: 20px;"> 
             <a href="createcampaign.html" style="background-color: #19e2b0;">POST ADS</a>
         </div>
 
@@ -290,13 +293,13 @@
             </div>
             <div class="pricing-plan">
                 <h2>YouTube Views</h2>
-                <div class="price" id="price-youtube-views">₦4000 for 1 day</div>
+                <div class="price" id="price-youtube-views">₦4800 for 1 day</div>
                 <ul class="features">
                     <li>Real views from real users</li>
                     <li>High retention</li>
                     <li>Gradual delivery</li>
                 </ul>
-                <select id="days-select-youtube-views" onchange="updatePrice(this, document.getElementById('price-youtube-views'), {1: 4000, 3: 6500, 5: 8000, 7: 9500})">
+                <select id="days-select-youtube-views" onchange="updatePrice(this, document.getElementById('price-youtube-views'), {1: 4800, 3: 7800, 5: 9600, 7: 11400})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
@@ -336,12 +339,12 @@
             </div>
             <div class="pricing-plan" > 
                 <h2>Spotify Streams</h2>
-                <div class="price" id="price-spotify-streams">₦3500 for 1 day</div>
+                <div class="price" id="price-spotify-streams">₦4200 for 1 day</div>
                 <ul class="features">
                     <li>Real and active members</li> 
                     <li>Gradual delivery</li>
                 </ul>
-                <select id="days-select-spotify-streams" onchange="updatePrice(this, document.getElementById('price-spotify-streams'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
+                <select id="days-select-spotify-streams" onchange="updatePrice(this, document.getElementById('price-spotify-streams'), {1: 4200, 3: 7200, 5: 9000, 7: 10800})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
@@ -351,12 +354,12 @@
             </div>
             <div class="pricing-plan"> 
                 <h2>apple Music Streams</h2>
-                <div class="price" id="price-apple-music-streams">₦3500 for 1 day</div>
+                <div class="price" id="price-apple-music-streams">₦4200 for 1 day</div>
                 <ul class="features">
                     <li>Real and active members</li> 
                     <li>Gradual delivery</li>
                 </ul>
-                <select id="days-select-apple-music-streams" onchange="updatePrice(this, document.getElementById('price-apple-music-streams'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
+                <select id="days-select-apple-music-streams" onchange="updatePrice(this, document.getElementById('price-apple-music-streams'), {1: 4200, 3: 7200, 5: 9000, 7: 10800})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
@@ -366,12 +369,12 @@
             </div>
             <div class="pricing-plan"> 
                 <h2>youtube music Streams</h2>
-                <div class="price" id="price-youtube-music-streams">₦3500 for 1 day</div>
+                <div class="price" id="price-youtube-music-streams">₦4200 for 1 day</div>
                 <ul class="features">
                     <li>Real and active members</li> 
                     <li>Gradual delivery</li>
                 </ul>
-                <select id="days-select-youtube-music-streams" onchange="updatePrice(this, document.getElementById('price-youtube-music-streams'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
+                <select id="days-select-youtube-music-streams" onchange="updatePrice(this, document.getElementById('price-youtube-music-streams'), {1: 4200, 3: 7200, 5: 9000, 7: 10800})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
@@ -381,12 +384,12 @@
             </div>
             <div class="pricing-plan" > 
                 <h2>audiomack Streams</h2>  
-                <div class="price" id="price-audiomack-streams">₦3500 for 1 day</div>
+                <div class="price" id="price-audiomack-streams">₦4200 for 1 day</div>
                 <ul class="features">
                     <li>Real and active members</li> 
                     <li>Gradual delivery</li>
                 </ul>
-                <select id="days-select-audiomack-streams" onchange="updatePrice(this, document.getElementById('price-audiomack-streams'), {1: 3500, 3: 6000, 5: 7500, 7: 9000})">
+                <select id="days-select-audiomack-streams" onchange="updatePrice(this, document.getElementById('price-audiomack-streams'), {1: 4200, 3: 7200, 5: 9000, 7: 10800})">
                     <option value="1">1 day</option>
                     <option value="3">3 days</option>
                     <option value="5">5 days</option>
@@ -421,6 +424,11 @@
             }
         });
     });
+    // Check localStorage for the user's mode preference
+    const currentMode = localStorage.getItem('mode') || 'dark';
+    if (currentMode === 'light') {
+        document.body.classList.add('light-mode'); // Apply light mode if set
+    }
     </script>
 </body> 
 </html>
