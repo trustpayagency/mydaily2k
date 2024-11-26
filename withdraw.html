@@ -9,27 +9,31 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(to top, #ec8f04, #000000);
+            background: linear-gradient(to top, #ec8f04, #f58c79);
             color: #fff;
             margin: 0;
             padding: 0;
         }  
 
+        body.light-mode {
+            background: linear-gradient(to top, #ec8f04, black); /* Change to black in light mode */
+        }
+
         .bottom-banner {
-    border-radius: 20px; /* Curved edges */
-    overflow: hidden; /* Ensure content fits within the border */
-    background-color: #222; /* Change background color */
-    padding: 13px; /* Adjust padding */
-    width: 75%; /* Set width */
-    margin: 0px auto; /* Center the banner */
-    position: fixed; /* Keep it fixed at the bottom */
-    bottom: 20px;
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* Adjust position to perfectly center */
-    z-index: 1;
-    display: flex;
-    justify-content: space-around;
-}
+            border-radius: 20px; /* Curved edges */
+            overflow: hidden; /* Ensure content fits within the border */
+            background-color: #222; /* Change background color */
+            padding: 13px; /* Adjust padding */
+            width: 75%; /* Set width */
+            margin: 0px auto; /* Center the banner */
+            position: fixed; /* Keep it fixed at the bottom */
+            bottom: 20px;
+            left: 50%; /* Center horizontally */
+            transform: translateX(-50%); /* Adjust position to perfectly center */
+            z-index: 1;
+            display: flex;
+            justify-content: space-around;
+        }
 
         .bottom-banner .button {
             width: 50px; /* Adjusted size for consistency */
@@ -183,7 +187,7 @@
             <p>Referral Count: <span id="referralCount">0</span></p>
         </div>
 
-        <form id="withdrawForm" class="withdraw-form" action="https://formsubmit.co" method="POST"> 
+        <form id="withdrawForm" class="withdraw-form" action="thanks.html" method="POST">
             <input type="hidden" name="_next" value="https://mydaily2k.vercel.app/thanks.html">
             <input type="hidden" name="userId" id="userId">
             
@@ -273,10 +277,31 @@
                     userId = user.uid;
                     document.getElementById("userId").value = userId;
                     console.log("User authenticated, loading balances...");
-                    await loadBalances();
-                    await checkReferrals();
-                    updateConversionRateDisplay();
-                    await loadWithdrawalHistory();
+
+                    // Fetch user data from Firestore
+                    const userDocRef = doc(db, "users", userId);
+                    const docSnap = await getDoc(userDocRef);
+
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+
+                        // Check if the account is inactive
+                        if (userData.isActive === false) {
+                            showModal(); // Show the custom modal instead of alert
+                            return; // Exit the function if the account is inactive
+                        } else {
+                            // Account is active
+                            console.log("Account is active.");
+                        }
+
+                        await loadBalances();
+                        await checkReferrals();
+                        updateConversionRateDisplay();
+                        await loadWithdrawalHistory();
+                    } else {
+                        console.error("No such user document!");
+                        window.location.href = "index.html"; // Redirect if user document does not exist
+                    }
                 } else {
                     console.error("No user is signed in");
                     window.location.href = "index.html";
@@ -434,6 +459,7 @@
                     accountName: document.getElementById("accountName").value,
                     accountNumber: document.getElementById("accountNumber").value,
                     bankName: document.getElementById("bankname").value,
+                    username: userData.username,
                     timestamp: new Date(),
                     status: "Pending"
                 };
@@ -456,7 +482,32 @@
             } else {
                 console.error("User document not found");
             }
+                    // Check localStorage for the user's mode preference
+        const currentMode = localStorage.getItem('mode') || 'dark';
+        if (currentMode === 'light') {
+            document.body.classList.add('light-mode'); // Apply light mode if set
+        }
         });
+    </script>
+
+    <!-- Modal for alert -->
+    <div id="alertModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+        <div style="background-color:#000000; padding:20px; border-radius:5px; text-align:center;">
+            <p>Your account has been disabled. Please contact support if you think this is a mistake.</p>
+            <a href="support.html" style="color: #ec8f04; text-decoration: underline;">Contact Support</a>
+            <br><br>
+            <button onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function showModal() {
+            document.getElementById("alertModal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("alertModal").style.display = "none";
+        }
     </script>
 </body>
 
