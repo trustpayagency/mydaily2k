@@ -23,26 +23,27 @@
             background-repeat: no-repeat;
             background-position: center; /* Center the image */
             width: 100%;
-            height: 100vh; /* Full viewport height */
+            height: 100%; /* Full viewport height */
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative; /* Position relative for absolute positioning of buttons */
-            background-color: linear-gradient(to top, #19e2b0, #000000); /* Fallback background color */
+            background-color:linear-gradient(to top, #19e2b0, #000000); /* Fallback background color */
         }
         .button-container {
             position: absolute; /* Position the button container absolutely */
-            bottom: 25px; /* Distance from the bottom */
+            bottom: 10px; /* Distance from the bottom */
             left: 20px; /* Align to the left with some padding */
             right: 20px; /* Align to the right with some padding */
             display: flex; /* Use flexbox for button alignment */
             justify-content: space-between;  
         }
         .button {
-            background-color: #19e2b0; /* Button color */
+            background-color: #000000; /* Button color */
             color: white; /* Text color */
             border: none; /* No border */
-            padding: 10px 10px; /* Increased padding for better touch targets */
+            box-shadow: 0 4px 8px rgba(228, 21, 21, 0.3);
+            padding: 50px 10px; /* Increased padding for better touch targets */
             cursor: pointer; /* Pointer cursor on hover */
             border-radius: 15px; /* Rounded corners */
             font-size: 10px; /* Increased font size for readability */
@@ -51,7 +52,7 @@
             letter-spacing: 1px;
         }
         .button:hover {
-            background-color: #17c1a8; /* Darker on hover */
+            background-color: #19e2b0; /* Darker on hover */
         }
         @media (max-width: 600px) {
             .button-container {
@@ -61,7 +62,7 @@
                 right: 10px;
             }
             .button {
-                width: 48%; /* Allow buttons to take up nearly half the width each */
+                width: 18%; /* Allow buttons to take up nearly half the width each */
                 padding: 10px 0; /* Uniform vertical padding */
                 font-size: 10px; /* Consistent font size */
             }
@@ -103,13 +104,13 @@
 </head>
 <body>
     <div class="image-container">
-        <button class="skip-button" onclick="window.location.href='directlink.html'">Skip</button>
+        <button class="skip-button" onclick="window.location.href='signup.html'">Skip</button>
         <div class="button-container">
-            <button class="button back-button" onclick="navigate('watchads.html', 'right')">
+            <button class="button back-button" onclick="navigate('directlink.html', 'right')">
                 <i class="fas fa-arrow-left"></i> Back
             </button>
             <button class="button next-button" onclick="navigate('signup.html', 'left')">
-                sign up<i class="fas fa-arrow-right"></i>
+                sign up <i class="fas fa-arrow-right"></i>
             </button>
         </div>
     </div>
