@@ -9,7 +9,7 @@
     <style>
         body {
             font-family: 'Roboto', Arial, sans-serif;
-            background: linear-gradient(to top, #ec8f04, #000000);
+            background: linear-gradient(to top, #ec8f04, #f58c79);
             color: #f0f0f0;
             margin: 0;
             padding: 0;
@@ -17,6 +17,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+        }
+        body.light-mode {
+            background: linear-gradient(to top, #ec8f04, black); /* Change to black in light mode */
         }
 
         .content {
@@ -252,9 +255,8 @@
                             document.getElementById("profilePic").style.backgroundImage = `url('${imageData}')`;
 
                             const userId = auth.currentUser.uid;
-                            // Add timestamp to prevent caching issues
-                            const timestamp = new Date().getTime();
-                            const storageRef = ref(storage, `profilePics/${userId}_${timestamp}`);
+                            // Simplified storage reference without timestamp
+                            const storageRef = ref(storage, `profilePics/${userId}`);
 
                             await uploadString(storageRef, imageData, 'data_url');
                             const downloadURL = await getDownloadURL(storageRef);
@@ -294,6 +296,11 @@
                 }
             });
         });
+                // Check localStorage for the user's mode preference
+                const currentMode = localStorage.getItem('mode') || 'dark';
+        if (currentMode === 'light') {
+            document.body.classList.add('light-mode'); // Apply light mode if set
+        }
     </script>
 
 </body>
