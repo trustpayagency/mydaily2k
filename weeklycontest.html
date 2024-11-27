@@ -1270,8 +1270,8 @@
 
             try {
                 // File validation
-                if (file.size > 50 * 1024 * 1024) {
-                    throw new Error('Video size must be less than 50MB');
+                if (file.size > 200 * 1024 * 1024) {
+                    throw new Error('Video size must be less than 200MB');
                 }
                 if (!file.type.startsWith('video/')) {
                     throw new Error('Please upload a valid video file');
