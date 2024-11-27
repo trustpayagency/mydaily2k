@@ -749,12 +749,27 @@
                 width: 90%;
                 margin: 10px auto;
             }
+                .switch {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        display: flex;
+        align-items: center;
+    }
+    .switch a {
+        margin-left: 10px;
+        color: white;
+        text-decoration: none;
+        padding: 5px 10px;
+        background-color: #555;
+        border-radius: 5px;
+    }
         }
     </style>
 </head>
 <body>
          <div class="switch">
-            <a href="dashboard.html" style="background-color: #ec8f04; top: 20px; right: 20px;">Dashboard</a> 
+            <a href="dashboard.html" style="background-color: #ec8f04; ">Dashboard</a> 
         </div>
     <div class="header">
         <h1>🎉 Join the Weekly Video Contest! 🎥</h1>
@@ -1281,7 +1296,7 @@
                 }
 
                 loadingIndicator.style.display = 'block';
-                loadingText.textContent = 'Uploading video...';
+                loadingText.textContent = 'Uploading video... this will take a min';
 
                 // Check if slots are available
                 const slotsAvailable = await checkAvailableSlots();
