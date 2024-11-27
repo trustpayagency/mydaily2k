@@ -13,6 +13,7 @@
             margin: 0;
             padding: 0;
             min-height: 100vh;
+            line-height: 1.6;
         }
         body.light-mode {
             background: linear-gradient(to top, #ec8f04, black); /* Change to black in light mode */
@@ -74,20 +75,11 @@
         .step-content ul {
             list-style: none;
             padding: 0;
-            margin: 0 0 15px 0;
+            margin: 0;
         }
 
         .step-content ul li {
-            margin-bottom: 5px;
-            padding-left: 20px;
-            position: relative;
-        }
-
-        .step-content ul li:before {
-            content: "•";
-            color: #ec8f04;
-            position: absolute;
-            left: 0;
+            margin-bottom: 10px;
         }
 
         .link-input {
@@ -309,6 +301,7 @@
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
             overflow: hidden;
+            margin-top: 10px;
         }
 
         .progress-fill {
@@ -420,9 +413,8 @@
         }
 
         .prize-info {
-            text-align: center;
+            font-size: 1.5em;
             color: #ec8f04;
-            font-size: 1.1em;
             margin: 10px 0;
         }
 
@@ -687,25 +679,96 @@
             object-fit: cover;
             margin-bottom: 10px;
         }
+
+        /* Updated styles for better accessibility and engagement */
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(to top, #ec8f04, #f58c79);
+            color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            line-height: 1.6; /* Improved readability */
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .prize-info {
+            font-size: 1.5em; /* Increased font size for visibility */
+            color: #ec8f04;
+            margin: 10px 0;
+        }
+
+        .step-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .step-content ul li {
+            margin-bottom: 10px; /* Increased spacing for better readability */
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px; /* Added margin for spacing */
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #ec8f04;
+            transition: width 0.3s ease;
+        }
+
+        .leaderboard-entry {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        .rank-badge {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-right: 15px;
+            color: #ec8f04;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 600px) {
+            .contest-entry {
+                width: 90%;
+                margin: 10px auto;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>Weekly Video Contest</h1>
-        <p>Upload your video and compete for amazing prizes!</p>
+        <h1>🎉 Join the Weekly Video Contest! 🎥</h1>
+        <p>Win up to <span class="prize-info">20,000 2KCoins!</span> Compete for amazing prizes and recognition!</p>
     </div>
 
     <div class="contest-info">
         <div class="prize-cards">
             <div class="prize-card">
                 <i class="fas fa-trophy"></i>
-                <h3>Community Choice Winner</h3>
+                <h3>🏆 Community Choice Winner</h3>
                 <p class="prize-amount">20,000 2KCoins</p>
                 <p class="prize-desc">Most voted video wins!</p>
             </div>
             <div class="prize-card">
                 <i class="fas fa-star"></i>
-                <h3>Admin's Choice Winner</h3>
+                <h3>⭐ Admin's Choice Winner</h3>
                 <p class="prize-amount">10,000 2KCoins</p>
                 <p class="prize-desc">Best quality content wins!</p>
             </div>
@@ -713,43 +776,49 @@
         <div class="contest-tips">
             <h3>🎥 How to Win?</h3>
             <ul>
-                <li>Create high-quality, engaging content</li>
-                <li>Share with friends to get more votes</li>
-                <li>Be creative and original</li>
-                <li>Follow all community guidelines</li>
+                <li>✨ Be Creative: Upload videos that stand out!</li>
+                <li>📣 Share with friends to get more votes!</li>
+                <li>🎯 Follow all community guidelines!</li>
+                <li>🔖 Use hashtags like <strong>#Daily2KAmbassador</strong>!</li>
             </ul>
         </div>
     </div>
+
     <div class="upload-section">
         <div class="steps-container">
-            <h3>How to Submit Your Video</h3>
-            
-            <!-- Step 1 -->
+            <h3>🚀 How to Submit Your Video</h3>
             <div class="step-box">
                 <div class="step-number">1</div>
                 <div class="step-content">
                     <h4>Post Your Video on TikTok</h4>
                     <ul>
                         <li>Upload your video to TikTok</li>
-                        <li>Tag @Daily2K in your post</li>
-                        <li>Use hashtag #Daily2KAmbassador</li>
+                        <li>Tag <strong>@Daily2K</strong> in your post</li>
+                        <li>Use hashtag <strong>#Daily2KAmbassador</strong></li>
                     </ul>
                     <div class="link-input">
                         <input type="text" id="tiktokLink" placeholder="Paste your TikTok post link here">
                         <i class="fab fa-tiktok"></i>
                     </div> 
+                </div>
+            </div>
+            <div class="step-box">
+                <div class="step-number">2</div>
                 <div class="step-content">
                     <h4>Share on Facebook</h4>
                     <ul>
                         <li>Share your video on Facebook</li>
-                        <li>Tag @Daily2KOfficial</li>
-                        <li>Use hashtag #Daily2KAmbassador</li>
+                        <li>Tag <strong>@Daily2KOfficial</strong></li>
+                        <li>Use hashtag <strong>#Daily2KAmbassador</strong></li>
                     </ul>
                     <div class="link-input">
                         <input type="text" id="facebookLink" placeholder="Paste your Facebook post link here">
                         <i class="fab fa-facebook"></i>
                     </div>
-                 
+                </div>
+            </div>
+            <div class="step-box">
+                <div class="step-number">3</div>
                 <div class="step-content">
                     <h4>Submit for Verification</h4>
                     <button id="verifyLinks" class="verify-btn">
@@ -762,6 +831,7 @@
                         </button>
                     </div>
                 </div>
+            </div>
                 <div class="contest-progress">
                     <div class="progress-bar">
                         <div id="progressFill" class="progress-fill"></div>
