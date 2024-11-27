@@ -374,6 +374,7 @@
     justify-content: center; /* Center icon horizontally */
     box-shadow: 0 0 10px rgba(236, 140, 4, 0.8), 0 0 20px rgba(236, 140, 4, 0.6); /* Glowing effect */
     transition: box-shadow 0.3s ease;
+    animation: glow-zoom 1.5s infinite alternate; /* Add animation */
 }
 
 .glowing-button i {
@@ -390,6 +391,18 @@
     text-align: center; /* Center the label */
     font-size: 12px; /* Appropriate size for labels */
     margin-top: 5px; /* Space between icon and label */
+}
+
+/* New keyframes for glowing and zooming effect */
+@keyframes glow-zoom {
+    0% {
+        box-shadow: 0 0 10px rgba(236, 140, 4, 0.8), 0 0 20px rgba(236, 140, 4, 0.6);
+        transform: scale(1);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(236, 140, 4, 1), 0 0 30px rgba(236, 140, 4, 0.8);
+        transform: scale(1.1);
+    }
 }
 </style>
 </head>
