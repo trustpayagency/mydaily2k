@@ -335,5 +335,30 @@
         }
     </script>
 
+    <script>
+        // Function to get query parameters from the URL
+        function getQueryParams() {
+            const params = {};
+            const queryString = window.location.search.substring(1);
+            const regex = /([^&=]+)=([^&]*)/g;
+            let m;
+            while (m = regex.exec(queryString)) {
+                params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+            }
+            return params;
+        }
+
+        // On page load, check for referral code
+        window.onload = function() {
+            const params = getQueryParams();
+            if (params.referralCode) {
+                const referralCodeInput = document.getElementById('referralCode'); // Use the actual input field ID
+                if (referralCodeInput) {
+                    referralCodeInput.value = params.referralCode; // Set the referral code in the input field
+                }
+            }
+        };
+    </script>
+
 </body>
 </html>
