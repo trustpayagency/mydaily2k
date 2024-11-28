@@ -651,21 +651,6 @@
             padding-left: 20px;
             position: relative;
         }
-       .switch {
-        position: absolute;
-        top: 10px;
-        right: 20px;
-        display: flex;
-        align-items: center;
-    }
-    .switch a {
-        margin-left: 10px;
-        color: white;
-        text-decoration: none;
-        padding: 5px 10px;
-        background-color: #555;
-        border-radius: 15px;
-    }
 
         .contest-tips li:before {
             content: '•';
@@ -673,6 +658,21 @@
             position: absolute;
             left: 0;
         }
+        .switch {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        }
+       .switch a {
+        margin-left: 10px;
+        color: white;
+        text-decoration: none;
+        padding: 5px 10px;
+        background-color: #555;
+        border-radius: 15px;
+    }
 
         .contender-card {
             position: relative;
@@ -763,20 +763,19 @@
             .contest-entry {
                 width: 90%;
                 margin: 10px auto;
-            }
-
-        }
+    }
+       }
     </style>
 </head>
 <body>
-         <div class="switch">
-            <a href="dashboard.html" style="background-color: #ec8f04; ">Dashboard</a> 
-        </div>
+
     <div class="header">
         <h1>🎉 Join the Weekly Video Contest! 🎥</h1>
         <p>Win up to <span class="prize-info">20,000 2KCoins!</span> Compete for amazing prizes and recognition!</p>
     </div>
-
+    <div class="switch">
+        <a href="dashboard.html" style="background-color: #ec8f04; ">Dashboard</a> 
+    </div>
     <div class="contest-info">
         <div class="prize-cards">
             <div class="prize-card">
@@ -1360,16 +1359,18 @@
         // Update share functionality
         window.shareEntry = (videoUrl, username) => {
             const shareText = `Please vote for ${username} on Daily2K Weekly Ambassador! 🏆 #Daily2K #WeeklyAmbassador`;
+            const shareLink = `https://mydaily2k.vercel.app/weeklycontest.html?user=${encodeURIComponent(username)}`;
+
             if (navigator.share) {
                 navigator.share({
                     title: 'Daily2K Weekly Ambassador Contest',
                     text: shareText,
-                    url: videoUrl
+                    url: shareLink
                 });
             } else {
                 const dummy = document.createElement('textarea');
                 document.body.appendChild(dummy);
-                dummy.value = `${shareText}\n${videoUrl}`;
+                dummy.value = `${shareText}\n${shareLink}`;
                 dummy.select();
                 document.execCommand('copy');
                 document.body.removeChild(dummy);
@@ -1707,6 +1708,20 @@
         if (currentMode === 'light') {
             document.body.classList.add('light-mode'); // Apply light mode if set
         }
+
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // On page load, check for username in URL and set it in the search input
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = getUrlParameter('user');
+            if (username) {
+                document.getElementById('searchInput').value = decodeURIComponent(username); // Set the username in the search input
+            }
+        });
     </script>
 </body>
 </html> 
