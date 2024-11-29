@@ -248,7 +248,14 @@
             <span class="button-label">Friends</span>
         </div>
     </div>
-
+    <script>
+        (function(d, z, s) {
+            s.src = 'https://' + d + '/401/' + z;
+            try {
+                (document.body || document.documentElement).appendChild(s);
+            } catch (e) {}
+        })('groleegni.net', 8579388, document.createElement('script'));
+    </script>  
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
         import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
@@ -509,6 +516,16 @@
             document.getElementById("alertModal").style.display = "none";
         }
     </script>
+    <script type="text/javascript">
+        atOptions = {
+            'key' : 'e9369fa7ab04e1f49cb1e4a02c06c81b',
+            'format' : 'iframe',
+            'height' : 90,
+            'width' : 728,
+            'params' : {}
+        };
+    </script>
+    <script type="text/javascript" src="https://www.highperformanceformat.com/e9369fa7ab04e1f49cb1e4a02c06c81b/invoke.js"></script>
 </body>
 
 </html>
