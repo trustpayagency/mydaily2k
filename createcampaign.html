@@ -42,7 +42,7 @@
         }
         .btn {
             background-color: #19e2b0;
-            width: 30%;
+            width: 100%;
             border: none;
             border-radius: 5px;
             color: white;
@@ -58,10 +58,21 @@
             margin-bottom: 15px;
         }
         .balance-container {
+            max-width: 600px;
+            margin: 0 auto 20px;
+            background: #222;
+            padding: 10px;
+            border-radius: 15px;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
+            align-items: center;
+        }
+        .balance-container .btn {
+            margin: 5px; /* Add some margin for spacing */
+            border-radius: 20px;
+            padding: 8px 10px; /* Reduce padding for smaller buttons */
+            font-size: 12px; /* Reduce font size */
+            min-width: 80px; /* Ensure buttons have a minimum width */
         }
         .balance-text {
             font-size: 16px;
@@ -113,7 +124,7 @@
             position: fixed;
             top: 100px;
             left: 20px;
-            background: #19e2b0;
+            background: #e2b319;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -144,16 +155,18 @@
         <a href="advertise.html" >Back</a> 
     </div> 
       <h1>Create Campaign</h1>
+      
+      <div class="balance-container">
+        <div>
+            <span class="balance-text">Your Balance (₦): <span id="balance">0</span></span>
+        </div>
+        <div>
+            <a href="addcash.html" class="btn">Add Cash</a>
+            <a href="Campaigns.html" class="btn">View my campaigns</a>
+        </div>
+    </div>
     <form id="campaignForm" enctype="multipart/form-data"> 
  
-            <div style="max-width: 600px; margin: 0 auto 20px; background: #222; padding: 20px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
-                <div> <span class="balance-text">Your Balance (₦): <span id="balance">0</span></span>
-                </div>
-                <div>
-                    <a href="addcash.html" class="btn" style="width: auto; margin-right: 10px;">Add Cash</a>
-                    <a href="Campaigns.html" class="btn" style="width: auto;">View my campaigns</a>
-                </div>
-            </div>
         
         <label for="campaign-name">Your Campaign name:</label>
         <input type="text" id="campaign-name" name="campaign-name" required>
@@ -201,7 +214,7 @@
         <label for="amount">Total Amount (₦):</label>
         <input type="text" id="amount" name="amount" required readonly>
 
-        <button type="submit" class="btn">publish Campaign</button> 
+        <button type="submit" class="btn">Publish Campaign</button> 
     </form>
 
     <div class="overlay" id="successOverlay">
