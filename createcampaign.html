@@ -121,9 +121,28 @@
             cursor: pointer;
             text-decoration: none;
         }
+        .switch {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .switch a {
+            margin-right: 10px;
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            background-color: #19e2b0;
+            border-radius: 5px;
+        } 
     </style>
 </head>
-<body>  
+<body> 
+    <div class="switch">
+        <a href="advertise.html" >Back</a> 
+    </div> 
       <h1>Create Campaign</h1>
     <form id="campaignForm" enctype="multipart/form-data"> 
  
@@ -131,8 +150,8 @@
                 <div> <span class="balance-text">Your Balance (₦): <span id="balance">0</span></span>
                 </div>
                 <div>
-                    <a href="advertise.html" class="btn" style="width: auto; margin-right: 10px;">Back</a>
-                    <a href="addcash.html" class="btn" style="width: auto;">Add Cash</a>
+                    <a href="addcash.html" class="btn" style="width: auto; margin-right: 10px;">Add Cash</a>
+                    <a href="Campaigns.html" class="btn" style="width: auto;">View my campaigns</a>
                 </div>
             </div>
         
@@ -313,17 +332,24 @@
                                     "1 year": 365
                                 }[durationText];
 
-                                return addDoc(collection(db, "campaigns"), {
-                                    name: document.getElementById('campaign-name').value,
-                                    link: document.getElementById('link').value,
-                                    type: document.getElementById('type').value,
-                                    duration: durationDays,
-                                    viewPreference: viewPreferenceSelect.value,
-                                    amount: amountInput.value,
-                                    videoURL: videoDownloadURL,
-                                    logoURL: logoDownloadURL,
-                                    startDate: startDate
-                                });
+                                // Use the current user from auth
+                                const currentUser = auth.currentUser;
+                                if (currentUser) {
+                                    return addDoc(collection(db, "campaigns"), {
+                                        userId: currentUser.uid,
+                                        name: document.getElementById('campaign-name').value,
+                                        link: document.getElementById('link').value,
+                                        type: document.getElementById('type').value,
+                                        duration: durationDays,
+                                        viewPreference: viewPreferenceSelect.value,
+                                        amount: amountInput.value,
+                                        videoURL: videoDownloadURL,
+                                        logoURL: logoDownloadURL,
+                                        startDate: startDate
+                                    });
+                                } else {
+                                    throw new Error("User is not authenticated.");
+                                }
                             });
                         }).then((docRef) => {
                             console.log("Document written with ID: ", docRef.id);
@@ -331,9 +357,9 @@
                             successOverlay.style.display = 'flex';
 
                             // Update the balance in Firestore
-                            const user = auth.currentUser;
-                            if (user) {
-                                const campaignsDocRef = doc(db, "campaigns", user.uid);
+                            const currentUser = auth.currentUser;
+                            if (currentUser) {
+                                const campaignsDocRef = doc(db, "campaigns", currentUser.uid);
                                 setDoc(campaignsDocRef, { balance: newBalance }, { merge: true });
                             }
                         }).catch((error) => {
