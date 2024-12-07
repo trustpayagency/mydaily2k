@@ -7,25 +7,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
-       html {
-          min-height: 100%;
-          height: 100%;
-       }
-           body {
-        font-family: Arial, sans-serif;
-        background: linear-gradient(to top, #ec8f04, #f58c79) fixed; /* Add 'fixed' */
-        color: #fff;
-        margin: 0;
-        padding: 20px 0;
-        min-height: 100%;
-        height: auto; /* Add this */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow-y: auto;
-        background-attachment: fixed; /* Add this */
-        background-size: cover; /* Add this */
-    }
+        html {
+            min-height: 100%;
+            height: 100%;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to top, #ec8f04, #f58c79) fixed;
+            color: #fff;
+            margin: 0;
+            padding: 20px 0;
+            min-height: 100%;
+            height: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+            background-attachment: fixed;
+            background-size: cover;
+        }
         .signup-container {
             background-color: black;
             padding: 20px;
@@ -197,6 +197,7 @@
         @media screen and (max-height: 800px) {
             body {
                 align-items: flex-start;
+                min-height: 100%;
             }
             
             .signup-container {
@@ -270,7 +271,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-        import { getFirestore, doc, setDoc, collection, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, collection, query, where, getDocs, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
@@ -323,8 +324,6 @@
 
             // Reset error messages
             document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-
-            // Show loading indicator
             document.getElementById('loading').style.display = 'block';
 
             try {
@@ -343,6 +342,7 @@
                     throw new Error("Password must be at least 6 characters long");
                 }
 
+                // First create the user account
                 console.log("Creating user...");
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
@@ -351,6 +351,7 @@
                 const referralCode = generateReferralCode();
                 console.log("Generated referral code:", referralCode);
 
+                // Prepare user data
                 const userData = {
                     username: username,
                     fullname: fullname,
@@ -362,46 +363,44 @@
                     referralCount: 0
                 };
 
+                // If there's a referral code, verify it after user creation
                 if (referredByCode) {
                     console.log("Checking referral code:", referredByCode);
-                    const usersRef = collection(db, "users");
-                    const q = query(usersRef, where("referralCode", "==", referredByCode));
-                    const querySnapshot = await getDocs(q);
-                    if (!querySnapshot.empty) {
-                        const referrerDoc = querySnapshot.docs[0];
-                        userData.referredBy = referrerDoc.id;
+                    try {
+                        const usersRef = collection(db, "users");
+                        const q = query(usersRef, where("referralCode", "==", referredByCode));
+                        const querySnapshot = await getDocs(q);
                         
-                        console.log("Updating referrer's balance and referral count...");
-                        const referrerData = referrerDoc.data();
-                        const newBalance = (referrerData.balance || 0) + 100;
-                        const newReferralCount = (referrerData.referralCount || 0) + 1;
-                        await updateDoc(doc(db, "users", referrerDoc.id), { 
-                            balance: newBalance,
-                            referralCount: newReferralCount
-                        });
-                        console.log("Referrer's balance and referral count updated successfully");
-                    } else {
-                        throw new Error("Referral code not found");
+                        if (!querySnapshot.empty) {
+                            const referrerDoc = querySnapshot.docs[0];
+                            userData.referredBy = referrerDoc.id;
+                            
+                            // Update referrer's balance and referral count
+                            console.log("Updating referrer's balance and referral count...");
+                            await updateDoc(doc(db, "users", referrerDoc.id), {
+                                balance: increment(100),
+                                referralCount: increment(1)
+                            });
+                            console.log("Referrer updated successfully");
+                        } else {
+                            console.log("Invalid referral code");
+                            // Optional: throw error or just continue without referral
+                        }
+                    } catch (referralError) {
+                        console.error("Error processing referral:", referralError);
+                        // Continue with signup even if referral processing fails
                     }
                 }
 
+                // Store user data
                 console.log("Storing user data...");
                 await setDoc(doc(db, "users", user.uid), userData);
                 console.log("User data stored successfully");
 
-                // Display user information
-                document.getElementById('infoFullname').textContent = fullname;
-                document.getElementById('infoUsername').textContent = username;
-                document.getElementById('infoEmail').textContent = email;
-                document.getElementById('infoBalance').textContent = '0';
-                document.getElementById('userInfo').style.display = 'block';
-
-                // Hide the form
-                document.getElementById('signupForm').style.display = 'none';
-
+                // Success! Redirect to dashboard
                 alert("Sign up successful!");
-                // Redirect to dashboard.html
                 window.location.href = 'dashboard.html';
+
             } catch (error) {
                 console.error("Error during sign up:", error);
                 if (error.code === 'auth/email-already-in-use') {
@@ -414,15 +413,11 @@
                     document.getElementById('usernameError').textContent = error.message;
                 } else if (error.message.includes("Full name")) {
                     document.getElementById('fullnameError').textContent = error.message;
-                } else if (error.message.includes("Referral code")) {
-                    document.getElementById('referralError').textContent = error.message;
                 } else {
-                    alert('Error: ' + error.message);
+                    document.getElementById('passwordError').textContent = 'An error occurred. Please try again.';
                 }
             } finally {
-                // Hide loading indicator
                 document.getElementById('loading').style.display = 'none';
-                // Reset CAPTCHA after attempt
                 grecaptcha.reset();
             }
         });
