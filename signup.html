@@ -384,11 +384,15 @@
                             console.log("Referrer updated successfully");
                         } else {
                             console.log("Invalid referral code");
-                            // Optional: throw error or just continue without referral
+                            document.getElementById('referralError').textContent = 'Invalid referral code';
+                            // Continue with signup without the referral
                         }
                     } catch (referralError) {
                         console.error("Error processing referral:", referralError);
-                        // Continue with signup even if referral processing fails
+                        // Add user-friendly error message
+                        document.getElementById('referralError').textContent = 'Unable to process referral code at this time';
+                        // Store the referral code to process later
+                        userData.pendingReferralCode = referredByCode;
                     }
                 }
 
