@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MY DAILY2K Sign-up</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -117,24 +118,120 @@
         .user-info p {
             margin: 5px 0;
         }
+        .advertiser-link {
+            text-align: right;
+            margin-bottom: 15px;
+        }
+
+        .advertiser-link a {
+            color: #19e2b0;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .advertiser-link a:hover {
+            background-color: rgba(25, 226, 176, 0.1);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo img {
+            max-width: 70px;
+            height: auto;
+        }
+        
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .input-group i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+        
+        .input-group input {
+            padding-left: 40px;
+        }
+
+        .g-recaptcha {
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .animate-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="signup-container">
+    <div class="signup-container animate-in">
+        <div class="advertiser-link">
+            <a href="adslogin.html">SIGNUP AS ADVERTISER</a>
+        </div>
+        
+        <div class="logo">
+            <img src="logo.png" alt="MY DAILY2K Logo">
+        </div>
+
         <h1>SIGN UP</h1>
         <form id="signupForm">
-            <input type="text" id="username" name="username" placeholder="Username" required>
-            <div id="usernameError" class="error-message"></div>
-            <input type="text" id="fullname" name="fullname" placeholder="Full Name" required>
-            <div id="fullnameError" class="error-message"></div>
-            <input type="email" id="email" name="email" placeholder="Email" required>
-            <div id="emailError" class="error-message"></div>
-            <input type="password" id="password" name="password" placeholder="Password" required>
-            <div id="passwordError" class="error-message"></div>
-            <div class="password-strength-meter"><div id="strengthMeter"></div></div>
-            <input type="text" id="referralCode" name="referralCode" placeholder="Referral Code (optional)">
-            <div id="referralError" class="error-message"></div>
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="username" name="username" placeholder="Username" required>
+                <div id="usernameError" class="error-message"></div>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-user-circle"></i>
+                <input type="text" id="fullname" name="fullname" placeholder="Full Name" required>
+                <div id="fullnameError" class="error-message"></div>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" name="email" placeholder="Email" required>
+                <div id="emailError" class="error-message"></div>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" name="password" placeholder="Password" required>
+                <i class="fas fa-eye toggle-password"></i>
+                <div id="passwordError" class="error-message"></div>
+                <div class="password-strength-meter"><div id="strengthMeter"></div></div>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-user-plus"></i>
+                <input type="text" id="referralCode" name="referralCode" placeholder="Referral Code (optional)">
+                <div id="referralError" class="error-message"></div>
+            </div>
+
+            <div class="g-recaptcha" data-sitekey="6LfFQZUqAAAAAAm39VpYiB7quiKA4__zR3NDGkWq"></div>
+
             <button type="submit">Sign Up</button>
             <div id="loading" class="loading">Signing up</div>
         </form>
@@ -191,6 +288,13 @@
 
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            const recaptchaResponse = grecaptcha.getResponse();
+            if (!recaptchaResponse) {
+                document.getElementById('passwordError').textContent = 'Please complete the CAPTCHA verification';
+                return;
+            }
+
             const username = document.getElementById('username').value;
             const fullname = document.getElementById('fullname').value;
             const email = document.getElementById('email').value;
@@ -298,6 +402,8 @@
             } finally {
                 // Hide loading indicator
                 document.getElementById('loading').style.display = 'none';
+                // Reset CAPTCHA after attempt
+                grecaptcha.reset();
             }
         });
 
@@ -333,6 +439,14 @@
         function sanitizeFullName(input) {
             return input.replace(/[^a-zA-Z\s]/g, '');
         }
+
+        document.querySelector('.toggle-password').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
     </script>
 
     <script>
