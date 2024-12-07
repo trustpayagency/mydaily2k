@@ -12,12 +12,12 @@
             background: linear-gradient(to top, #ec8f04, #f58c79);
             color: #fff;
             margin: 0;
-            padding: 0;
+            padding: 20px 0;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            overflow-y: auto;
         }
         .signup-container {
             background-color: black;
@@ -27,6 +27,8 @@
             width: 90%;
             max-width: 350px;
             box-sizing: border-box;
+            margin: 20px auto;
+            position: relative;
         }
         h1 {
             text-align: center;
@@ -181,6 +183,17 @@
             to {
                 opacity: 1;
                 transform: translateY(0);
+            }
+        }
+
+        /* For smaller screens */
+        @media screen and (max-height: 800px) {
+            body {
+                align-items: flex-start;
+            }
+            
+            .signup-container {
+                margin: 20px auto;
             }
         }
     </style>
