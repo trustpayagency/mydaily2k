@@ -404,7 +404,70 @@
         transform: scale(1.1);
     }
 } 
-</style>
+
+.tooltip {
+    position: fixed;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    max-width: 250px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.tooltip-content {
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 10px;
+}
+
+.tooltip-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+.tooltip-arrow[data-position="tasks"] {
+    border-width: 8px;
+    border-color: transparent transparent rgba(0, 0, 0, 0.9) transparent;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tooltip-arrow[data-position="contest"],
+.tooltip-arrow[data-position="ads"],
+.tooltip-arrow[data-position="direct"] {
+    border-width: 8px;
+    border-color: transparent transparent rgba(0, 0, 0, 0.9) transparent;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.next-tip {
+    background: #ec8f04;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    float: right;
+    font-size: 12px;
+}
+
+.next-tip:hover {
+    background: #d07c03;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+    </style>
     </head>
 
 <body>
@@ -502,6 +565,40 @@
             <span class="button-label">Friends</span>
         </div>
     </footer>
+
+    <div id="intro-tooltips" style="display: none;">
+        <div class="tooltip" id="tasks-tooltip">
+            <div class="tooltip-content">
+                Complete simple tasks to earn 2KCoins! Tasks refresh daily.
+                <button class="next-tip">Next</button>
+            </div>
+            <div class="tooltip-arrow" data-position="tasks"></div>
+        </div>
+        
+        <div class="tooltip" id="contest-tooltip">
+            <div class="tooltip-content">
+                Join weekly contests to win big rewards and compete with others!
+                <button class="next-tip">Next</button>
+            </div>
+            <div class="tooltip-arrow" data-position="contest"></div>
+        </div>
+        
+        <div class="tooltip" id="ads-tooltip">
+            <div class="tooltip-content">
+                Watch ads to earn 2KCoins. Complete more for better rewards!
+                <button class="next-tip">Next</button>
+            </div>
+            <div class="tooltip-arrow" data-position="ads"></div>
+        </div>
+        
+        <div class="tooltip" id="direct-tooltip">
+            <div class="tooltip-content">
+                Visit direct links to quickly earn 2KCoins!
+                <button class="next-tip">Got it!</button>
+            </div>
+            <div class="tooltip-arrow" data-position="direct"></div>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
@@ -989,6 +1086,74 @@ onAuthStateChanged(auth, async (user) => {
         
         // Set initial button text based on the current mode
         modeToggle.textContent = currentMode === 'light' ? 'Light Mode' : 'Dark Mode';
+
+        function showIntroTutorial() {
+            const isNewUser = !localStorage.getItem('tutorialShown');
+            
+            if (isNewUser) {
+                const tooltips = document.getElementById('intro-tooltips');
+                tooltips.style.display = 'block';
+                
+                let currentTip = 0;
+                const tips = ['tasks-tooltip', 'contest-tooltip', 'ads-tooltip', 'direct-tooltip'];
+                
+                function positionTooltip(tipId) {
+                    const tooltip = document.getElementById(tipId);
+                    const targetButton = {
+                        'tasks-tooltip': document.querySelector('.fas.fa-tasks').closest('.button'),
+                        'contest-tooltip': document.querySelector('.fas.fa-trophy').closest('.glowing-button'),
+                        'ads-tooltip': document.querySelector('.fas.fa-ad').closest('.button'),
+                        'direct-tooltip': document.querySelector('.fas.fa-paper-plane').closest('.button')
+                    }[tipId];
+                    
+                    const rect = targetButton.getBoundingClientRect();
+                    tooltip.style.left = `${rect.left + (rect.width / 2) - 125}px`; // Center tooltip
+                    tooltip.style.top = `${rect.bottom + 20}px`; // Position below button
+                }
+                
+                function showNextTip() {
+                    // Hide all tooltips
+                    tips.forEach(tip => document.getElementById(tip).style.display = 'none');
+                    
+                    if (currentTip < tips.length) {
+                        const tipId = tips[currentTip];
+                        const tooltip = document.getElementById(tipId);
+                        tooltip.style.display = 'block';
+                        positionTooltip(tipId);
+                        currentTip++;
+                    } else {
+                        // Tutorial complete
+                        tooltips.style.display = 'none';
+                        localStorage.setItem('tutorialShown', 'true');
+                    }
+                }
+                
+                // Add click handlers to all next buttons
+                document.querySelectorAll('.next-tip').forEach(button => {
+                    button.addEventListener('click', showNextTip);
+                });
+                
+                // Show first tip
+                showNextTip();
+                
+                // Reposition tooltips on window resize
+                window.addEventListener('resize', () => {
+                    if (currentTip > 0 && currentTip <= tips.length) {
+                        positionTooltip(tips[currentTip - 1]);
+                    }
+                });
+            }
+        }
+
+        // Call this function after the page loads and user is authenticated
+        window.addEventListener('load', () => {
+            // If using Firebase Auth, call this after authentication
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    showIntroTutorial();
+                }
+            });
+        });
     </script>
     <script type='text/javascript' src='https://pl25145596.profitablecpmrate.com/a1/91/a1/a191a1a71e1bfd8cf2b8b436068db02a.js'></script>
  </body> 
