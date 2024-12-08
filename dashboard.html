@@ -8,7 +8,1482 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
+            font-family: 'Roboto', Arial, sans-serif;<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
             font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(to top, #ec8f04, #f58c79);
+            color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.light-mode {
+            background: linear-gradient(to top, #ec8f04, black);
+        }
+
+        .balance-container {
+            margin-top: -100px;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .balance {
+            font-size: 36px;
+            margin: 20px 0;
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .balance-icon {
+            margin-right: 10px;
+            color: #ec8f04;
+        }
+
+        .middle-container {
+            margin-top: -350px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        .middle-container .button {
+            width: 80px;
+            height: 80px;
+            background-color: #ec8f04;
+            color: #333;
+            border: none;
+            border-radius: 70%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .button-label {
+            display: block;
+            color: #fff; /* White color for visibility */
+            text-align: center;
+            font-size: 12px; /* Appropriate size for labels */
+            margin-top: 5px; /* Space between icon and label */
+        }
+
+        .button:hover {
+            background-color: #ec8f04;
+        }
+
+        .switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .switch a {
+            margin-left: 10px;
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            background-color: #19e2b0;
+            border-radius: 5px;
+        }
+
+        .switch1 {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .switch1 button {
+            background: linear-gradient(to top, #ec8f04, #000000 50%);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            font-size: 10px;
+            border-radius: 15px;
+            margin-top: 60px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: 0.3s ease;
+        }
+
+        body.light-mode .switch1 button {
+            background:linear-gradient(to top, #ec8f04, #f58c79 50%);
+        }
+
+        .bottom-banner {
+    border-radius: 20px; /* Curved edges */
+    overflow: hidden; /* Ensure content fits within the border */
+    background-color: #222; /* Change background color */
+    padding: 13px; /* Adjust padding */
+    width: 75%; /* Set width */
+    margin: 0px auto; /* Center the banner */
+    position: fixed; /* Keep it fixed at the bottom */
+    bottom: 20px;
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust position to perfectly center */
+    z-index: 1;
+    display: flex;
+    justify-content: space-around;
+}
+ 
+        .bottom-banner .button {
+            width: 50px; /* Adjusted size for consistency */
+            height: 50px;
+            background-color: #ec8f04;
+            color: #000;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 10px; /* Adjusted padding */
+            font-size: 24px; /* Adjusted icon size */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .bottom-banner .button:hover {
+            background-color: #ec8f04;
+            transform: scale(1.1);
+        }
+
+        .button-label {
+            display: block;
+            color: #fff; /* White color for visibility */
+            text-align: center;
+            font-size: 12px; /* Appropriate size for labels */
+            margin-top: 3px; /* Space between icon and label */
+        } 
+
+
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #adsgram-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+        } 
+        .card {
+            background-color: #000000; /* Card background color */
+            border-radius: 10px; /* Rounded corners */
+            padding: 20px; /* Padding inside the card */
+            display: flex; /* Flexbox for layout */
+            flex-direction: column; /* Stack elements vertically */
+            justify-content: space-between; /* Space between header and username */
+            color: #fff; /* Text color */
+            box-shadow: 0 4px 8px rgba(228, 21, 21, 0.3); /* Shadow effect */
+            position: relative; /* Positioning for absolute elements */
+            height: 120px; /* Fixed height for the card */
+            width: 320px;
+        }
+
+        .card-header {
+            display: flex; /* Flexbox for layout */
+            justify-content: space-between; /* Space between balance and daily2k */
+             align-items: flex-start; /* Align items to the start */
+        }
+
+    .daily2k {
+        font-size: 16px; /* Font size for the user's name */
+        font-weight: bold; /* Bold text */
+        position: absolute; /* Absolute positioning */
+        top: 10px; /* Position from the bottom */
+        right: 10px; /* Position from the right */
+    }
+    .acc-name {
+        font-size: 16px; /* Font size for the user's name */
+        font-weight: lighter; /* Bold text */
+        position: absolute; /* Absolute positioning */
+        bottom: 25px; /* Position from the bottom */
+        right: 15px;
+    }
+    
+    .acc-number {
+        font-size: 16px; /* Font size for the user's name */
+        font-weight: lighter; /* Bold text */
+        position: absolute; /* Absolute positioning */
+        bottom: 25px; /* Position from the bottom */
+        left: 15px;
+    }
+
+    .balance-amount {
+        font-size: 20px; /* Font size for the balance amount */
+        display: flex; /* Flexbox for layout */
+        flex-direction: column; /* Stack elements vertically */
+        align-items: flex-start; /* Align items to the start */
+    }
+
+    #user-full-name {
+        font-size: 16px; /* Font size for the user's name */
+        font-weight: bold; /* Bold text */
+        position: absolute; /* Absolute positioning */
+        bottom: 10px; /* Position from the bottom */
+        right: 20px; /* Position from the right */
+    }
+    .profile-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.button.loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.button.loading i {
+    visibility: hidden;
+}
+
+.button.loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-top: -8px;
+    margin-left: -8px;
+    border: 2px solid transparent;
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: button-loading-spinner 1s ease infinite;
+}
+
+@keyframes button-loading-spinner {
+    from {
+        transform: rotate(0turn);
+    }
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid transparent;
+    border-top-color: #ec8f04;
+    border-radius: 50%;
+    animation: button-loading-spinner 1s ease infinite;
+    margin-bottom: 15px;
+}
+
+.loading-text {
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+@keyframes button-loading-spinner {
+    from {
+        transform: rotate(0turn);
+    }
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+.increase-limit-btn {
+    background-color: #ec8f04;
+    color: #fff;
+    border: none;
+    border-radius: 15px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-bottom: -100px;
+    width: 100px;
+    height: 38px;
+}
+
+.increase-limit-btn:hover {
+    background-color: #d07c03;
+}
+
+.increase-limit-btn.loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.weekly-contest-button {
+    position: absolute; /* Position it relative to the parent */
+    background-attachment: fixed;
+    left: 20px; /* Adjust as needed */
+    top: 320px; /* Adjust to position above the Tasks button */
+    z-index: 10; /* Ensure it appears above other elements */
+    text-align: center; /* Center the text below the button */
+}
+
+.glowing-button {
+    background-color: #af320c; /* Button color */
+    color: #dd860b; /* Text color */
+    border: none;
+    margin-left: 13px;
+    border-radius: 100%; /* Make it round */
+    width: 60px; /* Set width */
+    height: 60px; /* Set height */
+    cursor: pointer;
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Center icon vertically */
+    justify-content: center; /* Center icon horizontally */
+    box-shadow: 0 0 10px rgba(236, 140, 4, 0.8), 0 0 20px rgba(236, 140, 4, 0.6); /* Glowing effect */
+    transition: box-shadow 0.3s ease;
+    animation: glow-zoom 1.5s infinite alternate; /* Add animation */
+}
+
+.glowing-button i {
+    font-size: 24px; /* Adjust icon size */
+}
+
+.glowing-button:hover {
+    box-shadow: 0 0 20px rgb(255, 9, 9), 0 0 30px rgba(236, 4, 4, 0.8); /* Enhanced glow on hover */
+}
+
+.button-label {
+    display: block; /* Ensure label is on a new line */
+    color: #fff; /* White color for visibility */
+    text-align: center; /* Center the label */
+    font-size: 12px; /* Appropriate size for labels */
+    margin-top: 5px; /* Space between icon and label */
+}
+
+/* New keyframes for glowing and zooming effect */
+@keyframes glow-zoom {
+    0% {
+        box-shadow: 0 0 10px rgba(236, 140, 4, 0.8), 0 0 20px rgba(236, 140, 4, 0.6);
+        transform: scale(1);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(236, 140, 4, 1), 0 0 30px rgba(236, 140, 4, 0.8);
+        transform: scale(1.1);
+    }
+} 
+
+.tooltip {
+    position: fixed;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    padding: 15px;
+    border-radius: 12px;
+    width: 90px; /* Increased width */
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+/* Arrow for tooltips pointing UP (for bottom banner buttons) */
+.tooltip[id$="-tooltip"]::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid rgba(255, 255, 255, 0.95);
+}
+
+/* Arrow for tooltips pointing DOWN (specifically for bottom banner buttons) */
+.tooltip[id="profile-tooltip"]::before,
+.tooltip[id="withdraw-tooltip"]::before,
+.tooltip[id="friends-tooltip"]::before {
+    top: auto;
+    bottom: -8px;
+    border-bottom: none;
+    border-top: 8px solid rgba(255, 255, 255, 0.95);
+}
+
+#intro-tooltips::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3); /* Lighter overlay */
+    z-index: 999;
+}
+
+.tooltip-content {
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.next-tip {
+    background: #ec8f04;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.next-tip:hover {
+    background: #d07c03;
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translate(-50%, 10px);
+    }
+    to { 
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+    </style>
+    </head>
+
+<body>
+    <script>
+        (function(d, z, s) {
+            s.src = 'https://' + d + '/401/' + z;
+            try {
+                (document.body || document.documentElement).appendChild(s);
+            } catch (e) {}
+        })('groleegni.net', 8579388, document.createElement('script'));
+    </script> 
+    <div id="intro-tooltips" style="display: none;">
+        <div class="tooltip" id="tasks-tooltip">
+            <div class="tooltip-content">
+                Complete simple tasks to earn 2KCoins! Tasks refresh daily.
+                <button class="next-tip">Next</button>
+            </div>
+        </div>
+        
+        <div class="tooltip" id="contest-tooltip">
+            <div class="tooltip-content">
+                Join weekly contests to win big rewards and compete with others!
+                <button class="next-tip">Next</button>
+            </div>
+        </div>
+        
+        <div class="tooltip" id="ads-tooltip">
+            <div class="tooltip-content">
+                Watch ads to earn 2KCoins. Complete more for better rewards!
+                <button class="next-tip">Next</button>
+            </div>
+        </div>
+        
+        <div class="tooltip" id="direct-tooltip">
+            <div class="tooltip-content">
+                Visit direct links to quickly earn 2KCoins!
+                <button class="next-tip">Next</button>
+            </div>
+        </div>
+
+        <div class="tooltip" id="profile-tooltip">
+            <div class="tooltip-content">
+                View and edit your profile settings, track your achievements and stats!
+                <button class="next-tip">Next</button>
+            </div>
+        </div>
+
+        <div class="tooltip" id="withdraw-tooltip">
+            <div class="tooltip-content">
+                Convert your earned 2KCoins into real rewards! Check withdrawal options here.
+                <button class="next-tip">Next</button>
+            </div>
+        </div>
+
+        <div class="tooltip" id="friends-tooltip">
+            <div class="tooltip-content">
+                Connect with friends, share achievements, and earn bonus rewards together!
+                <button class="next-tip">Got it!</button>
+            </div>
+        </div>
+    </div>
+    <div class="profile-container">
+        <img id="profile-pic" src="R.png" alt="Profile Picture" style="width: 50px; height: 50px; border-radius: 50%;">
+        <span id="username" style="color: #fff; margin-left: 10px;">User Name</span>
+    </div>
+    <div class="switch1" style="top: 20px; left: 20px;">
+        <button id="modeToggle">switch mode</button>
+    </div> 
+    <div class="balance-container">
+        <div class="balance">
+            <div class="card">
+                <div class="balance-amount">
+                    <span>2KCoin balance</span>
+                    <span id="balance">0</span> 
+                </div>
+                <div class="card-header">
+                    <span class="daily2k">DAILY2K</span>
+                </div>
+                <div id="loading">
+                    <i class="fas fa-spinner fa-spin"></i>  
+                </div> 
+                 <span class="acc-name">User Name.</span>
+                 <span id="user-full-name"></span> <!-- Placeholder for user's full name -->
+                 <span class="acc-number">****2KCoin.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    <div class="switch">
+        <a href="advertise.html" >Advertise</a> 
+    </div>
+     
+    <div class="middle-container">
+        <div>
+            <button class="button" onclick="window.location.href='task.html'">
+                <i class="fas fa-tasks" alt="Tasks Icon"></i>
+            </button>
+            <span class="button-label" style="margin-bottom: 20px; right: 20px;">Tasks</span>
+        </div>
+        <div class="weekly-contest-button">
+            <button class="glowing-button" onclick="window.location.href='weeklycontest.html'">
+                <i class="fas fa-trophy" alt="Trophy Icon"></i>
+            </button>
+            <span class="button-label">Weekly Contest</span>
+        </div>
+        <div>
+            <button class="button" onclick="handleWatchAdsClick()" id="watchAdsButton">
+                <i class="fas fa-ad" alt="Ads Icon"></i>
+            </button>
+            <span class="button-label">Watch Ads</span>
+            <button onclick="handleIncreaseWatchAdsLimit()" id="increaseWatchAdsButton" class="increase-limit-btn">
+                Increase Daily Limit
+            </button>
+        </div>
+        <div>
+            <button class="button" onclick="window.loadAdsterraAd()">
+                <i class="fas fa-paper-plane" alt="Direct Link Icon"></i>
+            </button>
+            <span class="button-label">Direct Link</span>
+            <button onclick="handleIncreaseDirectLinkLimit()" id="increaseDirectLinkButton" class="increase-limit-btn">
+                Increase Daily Limit
+            </button>
+        </div>
+    </div>
+
+    <div class="bottom-banner">
+        <div>
+            <button class="button" onclick="window.location.href='profile.html'">
+                <i class="fas fa-user" alt="Profile Icon"></i>
+            </button>
+            <span class="button-label">Profile</span>
+        </div>
+        <div>
+            <button class="button" onclick="window.location.href='withdraw.html'">
+                <i class="fas fa-wallet" alt="Wallet Icon"></i>
+            </button>
+            <span class="button-label">Withdraw</span>
+        </div>
+        <div>
+            <button class="button" onclick="window.location.href='friends.html'">
+                <i class="fas fa-user-friends" alt="Friends Icon"></i>
+            </button>
+            <span class="button-label">Friends</span>
+        </div>
+    </footer>
+
+    
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js"; 
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
+            authDomain: "mydaily2kbot.firebaseapp.com",
+            projectId: "mydaily2kbot",
+            storageBucket: "mydaily2kbot.appspot.com",
+            messagingSenderId: "967002689133",
+            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
+            measurementId: "G-2VNDPK8V4J"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        function showLoading(show) {
+            document.getElementById("loading").style.display = show ? "block" : "none";
+        } 
+
+        async function loadUserData(userId) {
+    showLoading(true);
+    let userData = null; // Initialize userData variable
+    try {
+        const userDocRef = doc(db, "users", userId);
+        const docSnap = await getDoc(userDocRef);
+
+        if (docSnap.exists()) {
+            userData = docSnap.data(); // Store user data
+            console.log("User data:", userData); // Log user data
+            document.getElementById("balance").textContent = userData.balance || 0;
+            document.getElementById("user-full-name").textContent = userData.username || "User"; // Set full name
+            
+            // Set profile picture and username
+            document.getElementById("profile-pic").src = userData.profilePic || "default/R.png"; // Set profile picture URL
+            document.getElementById("username").textContent = userData.username || "User Name"; // Set username
+            
+            // Store ad usage limits
+            window.adUsage = userData.adUsage || { 
+                adsWatched: 0,
+                directLinksUsed: 0,
+                increaseLimitUsed: 0,
+                adsWatchLimit: 20,    // Default limit
+                directLinkLimit: 20    // Default limit
+            };
+        } else {
+            console.error("User not found in Firestore.");
+            alert("Error: User data not found. Please contact support.");
+        }
+    } catch (error) {
+        console.error("Error loading user data: ", error);
+        alert("Error loading user data. Please try again later.");
+    } finally {
+        showLoading(false);
+    }
+    return userData; // Return the user data
+}
+
+// Add this function to check and reset daily limits
+async function checkAndResetDailyLimits(userId) {
+    const now = new Date();
+    const lastResetDate = localStorage.getItem('lastLimitReset');
+    const today12PM = new Date(now);
+    today12PM.setHours(12, 0, 0, 0);
+
+    // Check if it's past 12 PM and we haven't reset today
+    if ((!lastResetDate || new Date(lastResetDate) < today12PM) && now >= today12PM) {
+        try {
+            const userDocRef = doc(db, "users", userId);
+            await updateDoc(userDocRef, {
+                adUsage: {
+                    adsWatched: 0,
+                    directLinksUsed: 0,
+                    increaseLimitUsed: 0,
+                    adsWatchLimit: 20,
+                    directLinkLimit: 20
+                }
+            });
+            
+            // Update local storage
+            localStorage.setItem('lastLimitReset', now.toISOString());
+            window.adUsage = {
+                adsWatched: 0,
+                directLinksUsed: 0,
+                increaseLimitUsed: 0,
+                adsWatchLimit: 20,
+                directLinkLimit: 20
+            };
+            
+            console.log("Daily limits reset successfully");
+        } catch (error) {
+            console.error("Error resetting daily limits:", error);
+        }
+    }
+}
+
+// Modify the loadAdCampaign function to include countdown timer
+async function loadAdCampaign() {
+    const user = auth.currentUser;
+    if (!user) {
+        alert("Please log in to watch ads and earn coins.");
+        return;
+    }
+
+    if (window.adUsage.adsWatched >= (window.adUsage.adsWatchLimit || 20)) {
+        alert("You have reached the daily limit for watching ads. Use 'Increase Ads Limit' to watch more.");
+        return;
+    }
+
+    try {
+        // ... existing campaign loading code ...
+
+        // Modify the video container HTML to include countdown
+        adContainer.innerHTML = `
+            <div class="video-wrapper">
+                <div class="countdown-timer">30</div>
+                <a href="createcampaign.html" class="publish-ads-button">Post Ads</a>
+                <video src="${selectedCampaign.videoURL}" autoplay muted playsinline></video>
+                <div class="banner">
+                    <div class="logo-name">
+                        <img src="${selectedCampaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
+                        <span>${selectedCampaign.name || 'App Name'}</span>
+                    </div>
+                    <a href="${selectedCampaign.link || '#'}" target="_blank" class="action-link">
+                        ${selectedCampaign.type === 'application' ? 'Install App' : 'Visit Web'}
+                    </a>
+                </div>
+            </div>
+        `;
+
+        // Add countdown timer styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .countdown-timer {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                background: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 5px 10px;
+                border-radius: 5px;
+                z-index: 1001;
+                font-size: 16px;
+                font-weight: bold;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Start countdown
+        let timeLeft = 30;
+        const countdownElement = adContainer.querySelector('.countdown-timer');
+        const videoElement = adContainer.querySelector('video');
+        const countdownInterval = setInterval(() => {
+            timeLeft--;
+            countdownElement.textContent = timeLeft;
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                // Show claim button
+                const claimButton = document.createElement('button');
+                claimButton.textContent = 'Claim 20 2KCoins';
+                claimButton.className = 'claim-button';
+                claimButton.style.cssText = `
+                    position: absolute;
+                    bottom: 150px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #28a745;
+                    color: white;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    z-index: 1001;
+                `;
+                claimButton.onclick = async () => {
+                    window.adUsage.adsWatched++;
+                    await updateAdUsage(user.uid, window.adUsage);
+                    await updateBalance(user.uid, 20);
+                    adContainer.remove();
+                    alert("You've earned 20 2KCoins!");
+                };
+                videoElement.parentElement.appendChild(claimButton);
+            }
+        }, 1000);
+
+        // ... rest of your existing video container styling code ...
+
+    } catch (error) {
+        console.error("Error loading campaigns:", error);
+        alert("Error loading campaigns. Please try again later.");
+    }
+}
+
+// Add this to your initialization code
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        await loadUserData(user.uid);
+        await checkAndResetDailyLimits(user.uid); // Check and reset limits
+        
+        // Set up interval to check limits every minute
+        setInterval(() => checkAndResetDailyLimits(user.uid), 60000);
+    } else {
+        window.location.href = 'login.html';
+    }
+});
+
+        async function loadAdCampaign() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Please log in to watch ads and earn coins.");
+                return;
+            }
+
+            if (window.adUsage.adsWatched >= (window.adUsage.adsWatchLimit || 20)) {
+                alert("You have reached the daily limit for watching ads. Use 'Increase Ads Limit' to watch more.");
+                return;
+            }
+
+            try {
+                const campaignsCollection = collection(db, 'campaigns');
+                const snapshot = await getDocs(campaignsCollection);
+                const campaigns = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                if (campaigns.length === 0) {
+                    alert("No campaigns available.");
+                    return;
+                }
+
+                // Filter campaigns by view preference
+                const highViewCampaigns = campaigns.filter(c => c.viewpreference === 'high');
+                const lowViewCampaigns = campaigns.filter(c => c.viewpreference !== 'high');
+
+                // Randomly select a campaign with 70% chance for high view preference
+                let selectedCampaign;
+                if (Math.random() < 0.7 && highViewCampaigns.length > 0) {
+                    selectedCampaign = highViewCampaigns[Math.floor(Math.random() * highViewCampaigns.length)];
+                } else if (lowViewCampaigns.length > 0) {
+                    selectedCampaign = lowViewCampaigns[Math.floor(Math.random() * lowViewCampaigns.length)];
+                } else {
+                    selectedCampaign = campaigns[Math.floor(Math.random() * campaigns.length)];
+                }
+
+                if (!selectedCampaign.videoURL) {
+                    console.error("No video URL found in the selected campaign.");
+                    alert("Oops!You trying to watch ads too often.try again");
+                    return;
+                }
+
+                // Create overlay for video
+                const adContainer = document.createElement('div');
+                adContainer.id = 'campaign-container';
+                adContainer.innerHTML = `
+                    <div class="video-wrapper">
+                        <div class="countdown-timer">30</div>
+                        <a href="createcampaign.html" class="publish-ads-button">Post Ads</a>
+                        <video src="${selectedCampaign.videoURL}" autoplay muted playsinline></video>
+                        <div class="banner">
+                            <div class="logo-name">
+                                <img src="${selectedCampaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
+                                <span>${selectedCampaign.name || 'App Name'}</span>
+                            </div>
+                            <a href="${selectedCampaign.link || '#'}" target="_blank" class="action-link">
+                                ${selectedCampaign.type === 'application' ? 'Install App' : 'Visit Web'}
+                            </a>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(adContainer);
+
+                // Style the overlay
+                adContainer.style.display = 'flex';
+                adContainer.style.flexDirection = 'column';
+                adContainer.style.alignItems = 'center';
+                adContainer.style.justifyContent = 'center';
+                adContainer.style.position = 'fixed';
+                adContainer.style.top = '50%';
+                adContainer.style.left = '50%';
+                adContainer.style.transform = 'translate(-50%, -50%)';
+                adContainer.style.zIndex = '1000';
+                adContainer.style.backgroundColor = 'transparent'; // Remove black background
+                adContainer.style.padding = '10px';
+                adContainer.style.borderRadius = '10px';
+                adContainer.style.width = '90%'; // Adjust width for smaller screens
+                adContainer.style.maxWidth = '600px';
+
+                // Style the video wrapper
+                const videoWrapper = adContainer.querySelector('.video-wrapper');
+                videoWrapper.style.position = 'relative';
+                videoWrapper.style.width = '100%';
+                videoWrapper.style.height = 'auto'; // Ensure the height adjusts to maintain aspect ratio
+                videoWrapper.style.overflow = 'hidden'; // Ensure content doesn't overflow
+
+                // Style the video
+                const videoElement = adContainer.querySelector('video');
+                videoElement.style.width = '100%';
+                videoElement.style.height = 'auto'; // Maintain aspect ratio
+                videoElement.style.borderRadius = '10px';
+                videoElement.style.pointerEvents = 'none'; // Disable interaction with the video
+
+                // Style the banner
+                const banner = adContainer.querySelector('.banner');
+                banner.style.position = 'absolute';
+                banner.style.bottom = '-100%'; // Start hidden below
+                banner.style.left = '50%'; // Center horizontally
+                banner.style.transform = 'translateX(-50%)'; // Center adjustment
+                banner.style.width = '91%';
+                banner.style.maxWidth = '500px'; // Optional: limit maximum width
+                banner.style.display = 'flex';
+                banner.style.justifyContent = 'space-between';
+                banner.style.alignItems = 'center';
+                banner.style.backgroundColor = 'rgba(51, 51, 51, 0.8)';
+                banner.style.color = '#fff';
+                banner.style.padding = '10px';
+                banner.style.borderRadius = '5px';
+                banner.style.transition = 'bottom 1.5s ease-in-out';
+
+                // Style the publish ads button
+                const publishButton = adContainer.querySelector('.publish-ads-button');
+                publishButton.style.position = 'absolute';
+                publishButton.style.top = '-50px'; // Start hidden above
+                publishButton.style.right = '10px';
+                publishButton.style.padding = '8px 15px';
+                publishButton.style.backgroundColor = '#ec8f04';
+                publishButton.style.color = '#fff';
+                publishButton.style.textDecoration = 'none';
+                publishButton.style.borderRadius = '5px';
+                publishButton.style.fontWeight = 'bold';
+                publishButton.style.zIndex = '1002';
+                publishButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+                publishButton.style.transition = 'top 1.5s ease-in-out'; // Slower transition (1.5s)
+                publishButton.onmouseover = () => publishButton.style.backgroundColor = '#d07c03';
+                publishButton.onmouseout = () => publishButton.style.backgroundColor = '#ec8f04';
+
+                // Add timer to show both elements after 2 seconds
+                videoElement.addEventListener('play', () => {
+                    setTimeout(() => {
+                        banner.style.bottom = '10px'; // Position closer to bottom
+                        publishButton.style.top = '10px';
+                    }, 2000);
+                });
+
+                // Style the logo and name container
+                const logoName = adContainer.querySelector('.logo-name');
+                logoName.style.display = 'flex';
+                logoName.style.alignItems = 'center';
+
+                // Style the logo
+                const logo = adContainer.querySelector('.logo');
+                logo.style.width = '30px'; // Adjust size as needed
+                logo.style.height = '30px'; // Adjust size as needed
+                logo.style.marginRight = '5px'; // Minimal space between logo and text
+
+                // Style the action link
+                const actionLink = adContainer.querySelector('.action-link');
+                actionLink.style.backgroundColor = '#ec8f04';
+                actionLink.style.color = '#fff';
+                actionLink.style.padding = '5px 10px';
+                actionLink.style.borderRadius = '5px';
+                actionLink.style.textDecoration = 'none';
+                actionLink.style.transition = 'background-color 0.3s';
+                actionLink.onmouseover = () => actionLink.style.backgroundColor = '#d07c03';
+                actionLink.onmouseout = () => actionLink.style.backgroundColor = '#ec8f04';
+
+                // Add event listener to detect video end
+                videoElement.addEventListener('ended', async () => {
+                    // Increment views count
+                    const campaignDocRef = doc(db, 'campaigns', selectedCampaign.id);
+                    await updateDoc(campaignDocRef, {
+                        views: (selectedCampaign.views || 0) + 1
+                    });
+
+                    const claimButton = document.createElement('button');
+                    claimButton.textContent = 'Claim 20 2KCoins';
+                    claimButton.style.position = 'absolute';
+                    claimButton.style.bottom = '150px'; // Position above the banner
+                    claimButton.style.left = '50%';
+                    claimButton.style.transform = 'translateX(-50%)';
+                    claimButton.style.backgroundColor = '#28a745';
+                    claimButton.style.color = '#fff';
+                    claimButton.style.padding = '10px 20px';
+                    claimButton.style.border = 'none';
+                    claimButton.style.borderRadius = '5px';
+                    claimButton.style.cursor = 'pointer';
+                    claimButton.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
+                    claimButton.style.transition = 'background-color 0.3s, transform 0.3s';
+                    claimButton.onmouseover = () => claimButton.style.backgroundColor = '#218838';
+                    claimButton.onmouseout = () => claimButton.style.backgroundColor = '#28a745';
+                    claimButton.onclick = async () => {
+                        window.adUsage.adsWatched++;
+                        await updateAdUsage(user.uid, window.adUsage);
+                        await updateBalance(user.uid, 20);
+                        adContainer.remove();
+                        alert("You've earned 20 2KCoins!");
+                    };
+                    videoWrapper.appendChild(claimButton); // Append to videoWrapper to overlay on video
+                });
+
+                // Add countdown timer styles
+                const style = document.createElement('style');
+                style.textContent = `
+                    .countdown-timer {
+                        position: absolute;
+                        top: 10px;
+                        left: 10px;
+                        background: rgba(0, 0, 0, 0.7);
+                        color: white;
+                        padding: 5px 10px;
+                        border-radius: 5px;
+                        z-index: 1001;
+                        font-size: 16px;
+                        font-weight: bold;
+                    }
+                `;
+                document.head.appendChild(style);
+
+                // Start countdown
+                let timeLeft = 30;
+                const countdownElement = adContainer.querySelector('.countdown-timer');
+                const countdownInterval = setInterval(() => {
+                    timeLeft--;
+                    countdownElement.textContent = timeLeft;
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(countdownInterval);
+                        // Show claim button
+                        const claimButton = document.createElement('button');
+                        claimButton.textContent = 'Claim 20 2KCoins';
+                        claimButton.className = 'claim-button';
+                        claimButton.style.cssText = `
+                            position: absolute;
+                            bottom: 150px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            background: #28a745;
+                            color: white;
+                            padding: 10px 20px;
+                            border: none;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            font-weight: bold;
+                            z-index: 1001;
+                        `;
+                        claimButton.onclick = async () => {
+                            window.adUsage.adsWatched++;
+                            await updateAdUsage(user.uid, window.adUsage);
+                            await updateBalance(user.uid, 20);
+                            adContainer.remove();
+                            alert("You've earned 20 2KCoins!");
+                        };
+                        videoElement.parentElement.appendChild(claimButton);
+                    }
+                }, 1000);
+
+            } catch (error) {
+                console.error("Error loading campaigns:", error);
+                alert("Error loading campaigns. Please try again later.");
+            }
+        }
+
+        async function checkRewardConfirmation(userId) {
+            const checkRewardUrl = `https://vercel-backend-liart.vercel.app/api/check-reward?userId=${userId}`;
+
+            const checkReward = async () => {
+                try {
+                    const response = await fetch(checkRewardUrl);
+                    const data = await response.json();
+
+                    if (data.rewarded) {
+                        alert("Ad completed. You've earned 10 2KCoins!");
+                        await updateBalance(userId, 10);
+                        document.getElementById('campaign-container').remove();
+                    } else {
+                        // Check again after 5 seconds
+                        setTimeout(checkReward, 5000);
+                    }
+                } catch (error) {
+                    console.error('Error checking reward:', error);
+                    // Retry after 5 seconds
+                    setTimeout(checkReward, 5000);
+                }
+            };
+
+            checkReward();
+        }
+
+        async function loadAdsterraAd() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Please log in to watch ads and earn coins.");
+                return;
+            }
+
+            if (window.adUsage.directLinksUsed >= (window.adUsage.directLinkLimit || 20)) {
+                alert("You have reached the daily limit for direct links. Use 'Increase Link Limit' to use more.");
+                return;
+            }
+
+            try {
+                // Store start time in localStorage
+                localStorage.setItem('directLinkStartTime', Date.now().toString());
+                
+                // Open in new tab
+                const link = document.createElement('a');
+                link.href = 'https://www.profitablecpmrate.com/e9ap8ata9?key=4899d6aafddc404944002ca071108e1c';
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Start checking for reward immediately
+                startRewardCheck();
+                
+            } catch (error) {
+                console.error("Error processing direct link:", error);
+                alert("Error processing direct link. Please try again later.");
+            }
+        }
+
+        // New function to handle reward checking
+        function startRewardCheck() {
+            const startTime = localStorage.getItem('directLinkStartTime');
+            if (!startTime) return;
+
+            const checkInterval = setInterval(async () => {
+                const timeSpent = Date.now() - parseInt(startTime);
+                if (timeSpent >= 10000) { // Changed to 5 seconds
+                    clearInterval(checkInterval);
+                    const user = auth.currentUser;
+                    if (user) {
+                        // Clear the stored time
+                        localStorage.removeItem('directLinkStartTime');
+                        
+                        // Update usage and balance
+                        window.adUsage.directLinksUsed++;
+                        await updateAdUsage(user.uid, window.adUsage);
+                        await updateBalance(user.uid, 10);
+                        
+                        // Update the balance display immediately
+                        const newBalance = parseInt(document.getElementById("balance").textContent) + 10;
+                        document.getElementById("balance").textContent = newBalance;
+                        
+                        alert("Directlink used! You've earned 10 2KCoins!");
+                    }
+                }
+            }, 1000); // Check every second
+
+            // Clear interval after 1 minute if something goes wrong
+            setTimeout(() => clearInterval(checkInterval), 60000);
+        }
+
+        async function updateAdUsage(userId, adUsage) {
+            showLoading(true);
+            try {
+                const userDocRef = doc(db, "users", userId);
+                await updateDoc(userDocRef, { adUsage });
+            } catch (error) {
+                console.error("Error updating ad usage: ", error);
+                alert("Error updating ad usage. Please try again later.");
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function updateBalance(userId, amount) {
+            showLoading(true);
+            try {
+                const userDocRef = doc(db, "users", userId);
+                const userDoc = await getDoc(userDocRef);
+
+                if (userDoc.exists()) {
+                    const newBalance = (userDoc.data().balance || 0) + amount;
+                    await updateDoc(userDocRef, { balance: newBalance });
+                    document.getElementById("balance").textContent = newBalance;
+                } else {
+                    console.error("User not found.");
+                    alert("Error: Unable to update balance. Please contact support.");
+                }
+            } catch (error) {
+                console.error("Error updating balance: ", error);
+                alert("Error updating balance. Please try again later.");
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        window.loadAdgramAd = loadAdCampaign;
+        window.loadAdsterraAd = loadAdsterraAd;
+        window.updateBalance = updateBalance;
+
+        // Load campaigns
+        async function loadCampaigns() {
+            const highViewsGallery = document.getElementById('highViewsGallery');
+            const lowViewsGallery = document.getElementById('lowViewsGallery');
+            highViewsGallery.innerHTML = '';
+            lowViewsGallery.innerHTML = '';
+
+            try {
+                const snapshot = await db.collection('campaigns').get();
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    console.log("Campaign data:", data); // Log the data to check its structure
+
+                    // Check if videoURL exists and is not empty, and ignore documents with a balance field
+                    if (data.videoURL && data.videoURL.trim() !== '' && !data.hasOwnProperty('balance')) {
+                        const videoContainer = document.createElement('div');
+                        videoContainer.className = 'campaign';
+                        videoContainer.dataset.preference = data.viewPreference;
+
+                        const videoElement = document.createElement('video');
+                        videoElement.src = data.videoURL;
+                        videoElement.controls = true;
+
+                        const videoName = document.createElement('p');
+                        videoName.textContent = data.name;
+
+                        videoContainer.appendChild(videoElement);
+                        videoContainer.appendChild(videoName);
+
+                        // Append to the appropriate gallery based on viewPreference
+                        if (data.viewPreference === 'high') {
+                            highViewsGallery.appendChild(videoContainer);
+                        } else {
+                            lowViewsGallery.appendChild(videoContainer);
+                        }
+                    } else {
+                        console.warn(`Missing or empty videoURL for document: ${doc.id}`);
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading campaigns:", error);
+            }
+        }
+
+        // Make handleWatchAdsClick globally accessible
+        window.handleWatchAdsClick = async function() {
+            const button = document.getElementById('watchAdsButton');
+            
+            // Add loading state
+            button.classList.add('loading');
+            
+            try {
+                // Call your existing ad loading function
+                await loadAdCampaign();
+            } catch (error) {
+                console.error('Error loading ad:', error);
+                alert('Failed to load ad. Please try again.');
+            } finally {
+                // Remove loading state
+                button.classList.remove('loading');
+            }
+        }
+
+        // Check localStorage for the user's mode preference
+        const currentMode = localStorage.getItem('mode') || 'dark';
+        if (currentMode === 'light') {
+            document.body.classList.add('light-mode'); // Apply light mode if set
+        }
+
+        const modeToggle = document.getElementById('modeToggle');
+        modeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode'); // Toggle light mode class
+            // Save the current mode to localStorage
+            const newMode = document.body.classList.contains('light-mode') ? 'light' : 'dark';
+            localStorage.setItem('mode', newMode);
+            
+            // Update button text based on the current mode
+            modeToggle.textContent = newMode === 'light' ? 'Light Mode' : 'Dark Mode';
+        });
+        
+        // Set initial button text based on the current mode
+        modeToggle.textContent = currentMode === 'light' ? 'Light Mode' : 'Dark Mode';
+
+        function showIntroTutorial() {
+            console.log("Checking tutorial status...");
+            const isNewUser = !localStorage.getItem('tutorialShown');
+            console.log("Is new user:", isNewUser);
+            
+            if (isNewUser) {
+                const tooltips = document.getElementById('intro-tooltips');
+                if (!tooltips) {
+                    console.error("Tooltips container not found!");
+                    return;
+                }
+                
+                tooltips.style.display = 'block';
+                
+                let currentTip = 0;
+                const tips = [
+                    'tasks-tooltip', 
+                    'contest-tooltip', 
+                    'ads-tooltip', 
+                    'direct-tooltip',
+                    'profile-tooltip',
+                    'withdraw-tooltip',
+                    'friends-tooltip'
+                ];
+                
+                function positionTooltip(tipId) {
+                    console.log("Positioning tooltip:", tipId);
+                    const tooltip = document.getElementById(tipId);
+                    
+                    const targetButton = {
+                        'tasks-tooltip': document.querySelector('.fas.fa-tasks')?.closest('.button'),
+                        'contest-tooltip': document.querySelector('.fas.fa-trophy')?.closest('.glowing-button'),
+                        'ads-tooltip': document.querySelector('.fas.fa-ad')?.closest('.button'),
+                        'direct-tooltip': document.querySelector('.fas.fa-paper-plane')?.closest('.button'),
+                        'profile-tooltip': document.querySelector('.fas.fa-user')?.closest('.button'),
+                        'withdraw-tooltip': document.querySelector('.fas.fa-wallet')?.closest('.button'),
+                        'friends-tooltip': document.querySelector('.fas.fa-user-friends')?.closest('.button')
+                    }[tipId];
+                    
+                    if (!tooltip || !targetButton) {
+                        console.error("Missing elements for tooltip positioning:", { tooltip, targetButton });
+                        return;
+                    }
+                    
+                    const rect = targetButton.getBoundingClientRect();
+                    tooltip.style.display = 'block';
+                    
+                    // Position tooltips for bottom banner buttons
+                    const isBottomButton = ['profile-tooltip', 'withdraw-tooltip', 'friends-tooltip'].includes(tipId);
+                    if (isBottomButton) {
+                        tooltip.style.top = 'auto'; // Clear any previous top value
+                        tooltip.style.bottom = `${window.innerHeight - rect.top + 15}px`; // Position above bottom buttons
+                    } else {
+                        tooltip.style.bottom = 'auto'; // Clear any previous bottom value
+                        tooltip.style.top = `${rect.bottom + 15}px`; // Position below other buttons
+                    }
+                    
+                    tooltip.style.left = `${rect.left + (rect.width / 2)}px`;
+                    tooltip.style.transform = 'translateX(-50%)';
+                }
+                
+                function showNextTip() {
+                    console.log("Showing next tip, current index:", currentTip);
+                    tips.forEach(tip => {
+                        const element = document.getElementById(tip);
+                        if (element) element.style.display = 'none';
+                    });
+                    
+                    if (currentTip < tips.length) {
+                        const tipId = tips[currentTip];
+                        positionTooltip(tipId);
+                        currentTip++;
+                    } else {
+                        tooltips.style.display = 'none';
+                        localStorage.setItem('tutorialShown', 'true');
+                        console.log("Tutorial completed");
+                    }
+                }
+                
+                document.querySelectorAll('.next-tip').forEach(button => {
+                    button.addEventListener('click', showNextTip);
+                });
+                
+                setTimeout(showNextTip, 500);
+                
+                window.addEventListener('resize', () => {
+                    if (currentTip > 0 && currentTip <= tips.length) {
+                        positionTooltip(tips[currentTip - 1]);
+                    }
+                });
+            }
+        }
+
+        // Modify the initialization to ensure it runs at the right time
+        document.addEventListener('DOMContentLoaded', () => {
+            // If using Firebase Auth, we'll wait for auth state
+            if (typeof auth !== 'undefined') {
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        console.log("User authenticated, showing tutorial");
+                        showIntroTutorial();
+                    }
+                });
+            } else {
+                // If not using Firebase Auth, show tutorial directly
+                console.log("No auth detected, showing tutorial directly");
+                showIntroTutorial();
+            }
+        });
+
+        // Add this to force reset the tutorial (for testing)
+        // Comment out or remove in production
+        window.resetTutorial = function() {
+            localStorage.removeItem('tutorialShown');
+            location.reload();
+        };
+
+        // Add this function to check and reset daily limits
+        async function checkAndResetDailyLimits(userId) {
+            const now = new Date();
+            const lastResetDate = localStorage.getItem('lastLimitReset');
+            const today12PM = new Date(now);
+            today12PM.setHours(12, 0, 0, 0);
+
+            // Check if it's past 12 PM and we haven't reset today
+            if ((!lastResetDate || new Date(lastResetDate) < today12PM) && now >= today12PM) {
+                try {
+                    const userDocRef = doc(db, "users", userId);
+                    await updateDoc(userDocRef, {
+                        adUsage: {
+                            adsWatched: 0,
+                            directLinksUsed: 0,
+                            increaseLimitUsed: 0,
+                            adsWatchLimit: 20,
+                            directLinkLimit: 20
+                        }
+                    });
+                    
+                    // Update local storage
+                    localStorage.setItem('lastLimitReset', now.toISOString());
+                    window.adUsage = {
+                        adsWatched: 0,
+                        directLinksUsed: 0,
+                        increaseLimitUsed: 0,
+                        adsWatchLimit: 20,
+                        directLinkLimit: 20
+                    };
+                    
+                    console.log("Daily limits reset successfully");
+                } catch (error) {
+                    console.error("Error resetting daily limits:", error);
+                }
+            }
+        }
+    </script>
+    <script type='text/javascript' src='https://pl25145596.profitablecpmrate.com/a1/91/a1/a191a1a71e1bfd8cf2b8b436068db02a.js'></script>
+ </body> 
+</html>
             background: linear-gradient(to top, #ec8f04, #f58c79);
             color: #f0f0f0;
             margin: 0;
