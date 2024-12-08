@@ -479,7 +479,39 @@
             } catch (e) {}
         })('groleegni.net', 8579388, document.createElement('script'));
     </script> 
- 
+    <div id="intro-tooltips" style="display: none;">
+        <div class="tooltip" id="tasks-tooltip">
+            <div class="tooltip-content">
+                Complete simple tasks to earn 2KCoins! Tasks refresh daily.
+                <button class="next-tip">Next</button>
+            </div>
+            <div class="tooltip-arrow" data-position="tasks"></div>
+        </div>
+        
+        <div class="tooltip" id="contest-tooltip">
+            <div class="tooltip-content">
+                Join weekly contests to win big rewards and compete with others!
+                <button class="next-tip">Next</button>
+            </div>
+            <div class="tooltip-arrow" data-position="contest"></div>
+        </div>
+        
+        <div class="tooltip" id="ads-tooltip">
+            <div class="tooltip-content">
+                Watch ads to earn 2KCoins. Complete more for better rewards!
+                <button class="next-tip">Next</button>
+            </div>
+            <div class="tooltip-arrow" data-position="ads"></div>
+        </div>
+        
+        <div class="tooltip" id="direct-tooltip">
+            <div class="tooltip-content">
+                Visit direct links to quickly earn 2KCoins!
+                <button class="next-tip">Got it!</button>
+            </div>
+            <div class="tooltip-arrow" data-position="direct"></div>
+        </div>
+    </div>
     <div class="profile-container">
         <img id="profile-pic" src="R.png" alt="Profile Picture" style="width: 50px; height: 50px; border-radius: 50%;">
         <span id="username" style="color: #fff; margin-left: 10px;">User Name</span>
@@ -566,39 +598,7 @@
         </div>
     </footer>
 
-    <div id="intro-tooltips" style="display: none;">
-        <div class="tooltip" id="tasks-tooltip">
-            <div class="tooltip-content">
-                Complete simple tasks to earn 2KCoins! Tasks refresh daily.
-                <button class="next-tip">Next</button>
-            </div>
-            <div class="tooltip-arrow" data-position="tasks"></div>
-        </div>
-        
-        <div class="tooltip" id="contest-tooltip">
-            <div class="tooltip-content">
-                Join weekly contests to win big rewards and compete with others!
-                <button class="next-tip">Next</button>
-            </div>
-            <div class="tooltip-arrow" data-position="contest"></div>
-        </div>
-        
-        <div class="tooltip" id="ads-tooltip">
-            <div class="tooltip-content">
-                Watch ads to earn 2KCoins. Complete more for better rewards!
-                <button class="next-tip">Next</button>
-            </div>
-            <div class="tooltip-arrow" data-position="ads"></div>
-        </div>
-        
-        <div class="tooltip" id="direct-tooltip">
-            <div class="tooltip-content">
-                Visit direct links to quickly earn 2KCoins!
-                <button class="next-tip">Got it!</button>
-            </div>
-            <div class="tooltip-arrow" data-position="direct"></div>
-        </div>
-    </div>
+    
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
