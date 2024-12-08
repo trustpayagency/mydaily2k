@@ -503,13 +503,6 @@
                 <button class="next-tip">Next</button>
             </div>
         </div>
-
-        <div class="tooltip" id="switch-tooltip">
-            <div class="tooltip-content">
-                Switch between light and dark mode to suit your preferences!
-                <button class="next-tip">Next</button>
-            </div>
-        </div>
         
         <div class="tooltip" id="contest-tooltip">
             <div class="tooltip-content">
@@ -549,6 +542,20 @@
         <div class="tooltip" id="friends-tooltip">
             <div class="tooltip-content">
                 Connect with friends, share achievements, and earn bonus rewards together!
+                <button class="next-tip">Got it!</button>
+            </div>
+        </div>
+
+        <div class="tooltip" id="mode-tooltip">
+            <div class="tooltip-content">
+                Switch between dark and light mode for your preferred viewing experience!
+                <button class="next-tip">Next</button>
+            </div>
+        </div>
+        
+        <div class="tooltip" id="advertise-tooltip">
+            <div class="tooltip-content">
+                Create and publish your own ads to promote your business or content!
                 <button class="next-tip">Got it!</button>
             </div>
         </div>
@@ -1150,7 +1157,9 @@ onAuthStateChanged(auth, async (user) => {
                     'direct-tooltip',
                     'profile-tooltip',
                     'withdraw-tooltip',
-                    'friends-tooltip'
+                    'friends-tooltip',
+                    'mode-tooltip',    // Add mode switch tooltip
+                    'advertise-tooltip'  // Add advertise tooltip
                 ];
                 
                 function positionTooltip(tipId) {
@@ -1159,13 +1168,14 @@ onAuthStateChanged(auth, async (user) => {
                     
                     const targetButton = {
                         'tasks-tooltip': document.querySelector('.fas.fa-tasks')?.closest('.button'),
-                        'switch-tooltip': document.querySelector('.modeToggle')?.closest('.button'),
                         'contest-tooltip': document.querySelector('.fas.fa-trophy')?.closest('.glowing-button'),
                         'ads-tooltip': document.querySelector('.fas.fa-ad')?.closest('.button'),
                         'direct-tooltip': document.querySelector('.fas.fa-paper-plane')?.closest('.button'),
                         'profile-tooltip': document.querySelector('.fas.fa-user')?.closest('.button'),
                         'withdraw-tooltip': document.querySelector('.fas.fa-wallet')?.closest('.button'),
-                        'friends-tooltip': document.querySelector('.fas.fa-user-friends')?.closest('.button')
+                        'friends-tooltip': document.querySelector('.fas.fa-user-friends')?.closest('.button'),
+                        'mode-tooltip': document.getElementById('modeToggle'),  // Add mode switch button
+                        'advertise-tooltip': document.querySelector('.switch a')  // Add advertise button
                     }[tipId];
                     
                     if (!tooltip || !targetButton) {
@@ -1176,14 +1186,18 @@ onAuthStateChanged(auth, async (user) => {
                     const rect = targetButton.getBoundingClientRect();
                     tooltip.style.display = 'block';
                     
-                    // Position tooltips for bottom banner buttons
-                    const isBottomButton = ['profile-tooltip', 'withdraw-tooltip', 'friends-tooltip'].includes(tipId);
-                    if (isBottomButton) {
-                        tooltip.style.top = 'auto'; // Clear any previous top value
-                        tooltip.style.bottom = `${window.innerHeight - rect.top + 15}px`; // Position above bottom buttons
+                    // Position tooltips for top buttons (mode switch and advertise)
+                    if (['mode-tooltip', 'advertise-tooltip'].includes(tipId)) {
+                        tooltip.style.top = `${rect.bottom + 15}px`;
+                        tooltip.style.bottom = 'auto';
+                    } else if (['profile-tooltip', 'withdraw-tooltip', 'friends-tooltip'].includes(tipId)) {
+                        // Position tooltips for bottom banner buttons
+                        tooltip.style.top = 'auto';
+                        tooltip.style.bottom = `${window.innerHeight - rect.top + 15}px`;
                     } else {
-                        tooltip.style.bottom = 'auto'; // Clear any previous bottom value
-                        tooltip.style.top = `${rect.bottom + 15}px`; // Position below other buttons
+                        // Position tooltips for other buttons
+                        tooltip.style.bottom = 'auto';
+                        tooltip.style.top = `${rect.bottom + 15}px`;
                     }
                     
                     tooltip.style.left = `${rect.left + (rect.width / 2)}px`;
