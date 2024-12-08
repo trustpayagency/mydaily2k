@@ -775,18 +775,30 @@ onAuthStateChanged(auth, async (user) => {
                 
                 // Determine if it's a video or image campaign
                 const isVideo = selectedCampaign.videoURL && selectedCampaign.videoURL.trim() !== '';
-                const requiredTime = isVideo ? 30000 : 15000; // 30 seconds for video, 15 for image
-                let timeSpent = 0;
-                let timer;
+                const requiredTime = isVideo ? 30 : 15; // 30 seconds for video, 15 for image
+                let timeLeft = requiredTime;
 
                 adContainer.innerHTML = `
                     <div class="video-wrapper">
                         <a href="createcampaign.html" class="publish-ads-button">Post Ads</a>
                         ${isVideo ? 
                             `<video src="${selectedCampaign.videoURL}" autoplay muted playsinline loop></video>` :
-                            `<img src="${selectedCampaign.imageURL}" alt="Ad Content" style="width: 100%; height: auto; border-radius: 10px;">`
+                            (selectedCampaign.imageURL ? 
+                                `<img src="${selectedCampaign.imageURL}" alt="Ad Content" style="width: 100%; height: auto; border-radius: 10px;">` :
+                                `<div class="error-message">No content available</div>`
+                            )
                         }
-                        <div class="timer-bar" style="position: absolute; bottom: 0; left: 0; height: 4px; background-color: #ec8f04; width: 0%;"></div>
+                        <div class="countdown" style="
+                            position: absolute;
+                            top: 10px;
+                            left: 10px;
+                            background-color: rgba(0, 0, 0, 0.7);
+                            color: #fff;
+                            padding: 5px 10px;
+                            border-radius: 5px;
+                            font-size: 16px;
+                            font-weight: bold;
+                        ">${requiredTime}s</div>
                         <div class="banner">
                             <div class="logo-name">
                                 <img src="${selectedCampaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
@@ -806,14 +818,13 @@ onAuthStateChanged(auth, async (user) => {
                 // Style the container and elements (previous styles remain the same)
                 // ... (previous styling code)
 
-                // Start timer and update progress bar
-                const timerBar = adContainer.querySelector('.timer-bar');
-                timer = setInterval(() => {
-                    timeSpent += 100; // Update every 100ms
-                    const progress = (timeSpent / requiredTime) * 100;
-                    timerBar.style.width = `${Math.min(progress, 100)}%`;
+                // Start countdown timer
+                const countdownElement = adContainer.querySelector('.countdown');
+                const timer = setInterval(() => {
+                    timeLeft--;
+                    countdownElement.textContent = `${timeLeft}s`;
 
-                    if (timeSpent >= requiredTime) {
+                    if (timeLeft <= 0) {
                         clearInterval(timer);
                         // Show claim button
                         const claimButton = document.createElement('button');
@@ -841,7 +852,7 @@ onAuthStateChanged(auth, async (user) => {
                         };
                         adContainer.querySelector('.video-wrapper').appendChild(claimButton);
                     }
-                }, 100);
+                }, 1000);
 
                 // Clean up if user closes the ad
                 adContainer.addEventListener('click', (e) => {
