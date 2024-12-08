@@ -747,124 +747,164 @@ onAuthStateChanged(auth, async (user) => {
                     return;
                 }
 
-                // Filter only video campaigns
-                const videoCampaigns = campaigns.filter(c => c.videoURL);
-                
-                if (videoCampaigns.length === 0) {
-                    alert("No video ads available at the moment.");
-                    return;
-                }
+                // Filter campaigns by view preference
+                const highViewCampaigns = campaigns.filter(c => c.viewpreference === 'high');
+                const lowViewCampaigns = campaigns.filter(c => c.viewpreference !== 'high');
 
-                // Video ad selection logic
-                const highViewCampaigns = videoCampaigns.filter(c => c.viewpreference === 'high');
-                const lowViewCampaigns = videoCampaigns.filter(c => c.viewpreference !== 'high');
-                
+                // Randomly select a campaign with 70% chance for high view preference
                 let selectedCampaign;
                 if (Math.random() < 0.7 && highViewCampaigns.length > 0) {
                     selectedCampaign = highViewCampaigns[Math.floor(Math.random() * highViewCampaigns.length)];
                 } else if (lowViewCampaigns.length > 0) {
                     selectedCampaign = lowViewCampaigns[Math.floor(Math.random() * lowViewCampaigns.length)];
                 } else {
-                    selectedCampaign = videoCampaigns[Math.floor(Math.random() * videoCampaigns.length)];
+                    selectedCampaign = campaigns[Math.floor(Math.random() * campaigns.length)];
                 }
 
-                // Detect device type
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                const isAndroid = /Android/.test(navigator.userAgent);
-                
-                // Get appropriate store link
-                const storeLink = isIOS ? selectedCampaign.appStoreLink : 
-                                 isAndroid ? selectedCampaign.playStoreLink :
-                                 selectedCampaign.webLink || '#';
+                if (!selectedCampaign.videoURL) {
+                    console.error("No video URL found in the selected campaign.");
+                    alert("Oops!You trying to watch ads too often.try again");
+                    return;
+                }
 
-                // Create overlay for video ad
+                // Create overlay for video
                 const adContainer = document.createElement('div');
                 adContainer.id = 'campaign-container';
-                
                 adContainer.innerHTML = `
                     <div class="video-wrapper">
                         <a href="createcampaign.html" class="publish-ads-button">Post Ads</a>
-                        <video src="${selectedCampaign.videoURL}" autoplay muted playsinline loop></video>
+                        <video src="${selectedCampaign.videoURL}" autoplay muted playsinline></video>
                         <div class="banner">
                             <div class="logo-name">
                                 <img src="${selectedCampaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
                                 <span>${selectedCampaign.name || 'App Name'}</span>
                             </div>
-                            <a href="${storeLink}" target="_blank" class="action-link">
-                                ${isIOS ? 'Download on App Store' : 
-                                  isAndroid ? 'Get it on Play Store' : 
-                                  'Visit Website'}
+                            <a href="${selectedCampaign.link || '#'}" target="_blank" class="action-link">
+                                ${selectedCampaign.type === 'application' ? 'Install App' : 'Visit Web'}
                             </a>
                         </div>
-                        <div class="timer">30</div>
                     </div>
                 `;
-
                 document.body.appendChild(adContainer);
 
-                // Add styles
-                const adStyle = document.createElement('style');
-                adStyle.textContent = `
-                    .timer {
-                        position: absolute;
-                        top: 10px;
-                        left: 10px;
-                        background: rgba(0, 0, 0, 0.7);
-                        color: white;
-                        padding: 5px 10px;
-                        border-radius: 5px;
-                        font-size: 14px;
-                    }
+                // Style the overlay
+                adContainer.style.display = 'flex';
+                adContainer.style.flexDirection = 'column';
+                adContainer.style.alignItems = 'center';
+                adContainer.style.justifyContent = 'center';
+                adContainer.style.position = 'fixed';
+                adContainer.style.top = '50%';
+                adContainer.style.left = '50%';
+                adContainer.style.transform = 'translate(-50%, -50%)';
+                adContainer.style.zIndex = '1000';
+                adContainer.style.backgroundColor = 'transparent'; // Remove black background
+                adContainer.style.padding = '10px';
+                adContainer.style.borderRadius = '10px';
+                adContainer.style.width = '90%'; // Adjust width for smaller screens
+                adContainer.style.maxWidth = '600px';
 
-                    .claim-button {
-                        position: absolute;
-                        bottom: 20px;
-                        left: 50%;
-                        transform: translateX(-50%);
-                        background: #ec8f04;
-                        color: white;
-                        border: none;
-                        padding: 10px 20px;
-                        border-radius: 5px;
-                        cursor: pointer;
-                        font-weight: bold;
-                        transition: background-color 0.3s;
-                    }
+                // Style the video wrapper
+                const videoWrapper = adContainer.querySelector('.video-wrapper');
+                videoWrapper.style.position = 'relative';
+                videoWrapper.style.width = '100%';
+                videoWrapper.style.height = 'auto'; // Ensure the height adjusts to maintain aspect ratio
+                videoWrapper.style.overflow = 'hidden'; // Ensure content doesn't overflow
 
-                    .claim-button:hover {
-                        background: #d07c03;
-                    }
-                `;
-                document.head.appendChild(adStyle);
-
-                // Setup video and timer
+                // Style the video
                 const videoElement = adContainer.querySelector('video');
-                const timerElement = adContainer.querySelector('.timer');
-                let timeLeft = 30;
-                
-                // Start 30-second timer
-                const timerInterval = setInterval(() => {
-                    timeLeft--;
-                    timerElement.textContent = timeLeft;
-                    
-                    if (timeLeft <= 0) {
-                        clearInterval(timerInterval);
-                        videoElement.loop = false; // Stop looping
-                        showClaimButton();
-                    }
-                }, 1000);
+                videoElement.style.width = '100%';
+                videoElement.style.height = 'auto'; // Maintain aspect ratio
+                videoElement.style.borderRadius = '10px';
+                videoElement.style.pointerEvents = 'none'; // Disable interaction with the video
 
-                // Ensure video plays and loops
+                // Style the banner
+                const banner = adContainer.querySelector('.banner');
+                banner.style.position = 'absolute';
+                banner.style.bottom = '-100%'; // Start hidden below
+                banner.style.left = '50%'; // Center horizontally
+                banner.style.transform = 'translateX(-50%)'; // Center adjustment
+                banner.style.width = '91%';
+                banner.style.maxWidth = '500px'; // Optional: limit maximum width
+                banner.style.display = 'flex';
+                banner.style.justifyContent = 'space-between';
+                banner.style.alignItems = 'center';
+                banner.style.backgroundColor = 'rgba(51, 51, 51, 0.8)';
+                banner.style.color = '#fff';
+                banner.style.padding = '10px';
+                banner.style.borderRadius = '5px';
+                banner.style.transition = 'bottom 1.5s ease-in-out';
+
+                // Style the publish ads button
+                const publishButton = adContainer.querySelector('.publish-ads-button');
+                publishButton.style.position = 'absolute';
+                publishButton.style.top = '-50px'; // Start hidden above
+                publishButton.style.right = '10px';
+                publishButton.style.padding = '8px 15px';
+                publishButton.style.backgroundColor = '#ec8f04';
+                publishButton.style.color = '#fff';
+                publishButton.style.textDecoration = 'none';
+                publishButton.style.borderRadius = '5px';
+                publishButton.style.fontWeight = 'bold';
+                publishButton.style.zIndex = '1002';
+                publishButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+                publishButton.style.transition = 'top 1.5s ease-in-out'; // Slower transition (1.5s)
+                publishButton.onmouseover = () => publishButton.style.backgroundColor = '#d07c03';
+                publishButton.onmouseout = () => publishButton.style.backgroundColor = '#ec8f04';
+
+                // Add timer to show both elements after 2 seconds
                 videoElement.addEventListener('play', () => {
-                    videoElement.play().catch(error => {
-                        console.error("Error playing video:", error);
-                    });
+                    setTimeout(() => {
+                        banner.style.bottom = '10px'; // Position closer to bottom
+                        publishButton.style.top = '10px';
+                    }, 2000);
                 });
 
-                function showClaimButton() {
+                // Style the logo and name container
+                const logoName = adContainer.querySelector('.logo-name');
+                logoName.style.display = 'flex';
+                logoName.style.alignItems = 'center';
+
+                // Style the logo
+                const logo = adContainer.querySelector('.logo');
+                logo.style.width = '30px'; // Adjust size as needed
+                logo.style.height = '30px'; // Adjust size as needed
+                logo.style.marginRight = '5px'; // Minimal space between logo and text
+
+                // Style the action link
+                const actionLink = adContainer.querySelector('.action-link');
+                actionLink.style.backgroundColor = '#ec8f04';
+                actionLink.style.color = '#fff';
+                actionLink.style.padding = '5px 10px';
+                actionLink.style.borderRadius = '5px';
+                actionLink.style.textDecoration = 'none';
+                actionLink.style.transition = 'background-color 0.3s';
+                actionLink.onmouseover = () => actionLink.style.backgroundColor = '#d07c03';
+                actionLink.onmouseout = () => actionLink.style.backgroundColor = '#ec8f04';
+
+                // Add event listener to detect video end
+                videoElement.addEventListener('ended', async () => {
+                    // Increment views count
+                    const campaignDocRef = doc(db, 'campaigns', selectedCampaign.id);
+                    await updateDoc(campaignDocRef, {
+                        views: (selectedCampaign.views || 0) + 1
+                    });
+
                     const claimButton = document.createElement('button');
                     claimButton.textContent = 'Claim 20 2KCoins';
-                    claimButton.className = 'claim-button';
+                    claimButton.style.position = 'absolute';
+                    claimButton.style.bottom = '150px'; // Position above the banner
+                    claimButton.style.left = '50%';
+                    claimButton.style.transform = 'translateX(-50%)';
+                    claimButton.style.backgroundColor = '#28a745';
+                    claimButton.style.color = '#fff';
+                    claimButton.style.padding = '10px 20px';
+                    claimButton.style.border = 'none';
+                    claimButton.style.borderRadius = '5px';
+                    claimButton.style.cursor = 'pointer';
+                    claimButton.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
+                    claimButton.style.transition = 'background-color 0.3s, transform 0.3s';
+                    claimButton.onmouseover = () => claimButton.style.backgroundColor = '#218838';
+                    claimButton.onmouseout = () => claimButton.style.backgroundColor = '#28a745';
                     claimButton.onclick = async () => {
                         window.adUsage.adsWatched++;
                         await updateAdUsage(user.uid, window.adUsage);
@@ -872,10 +912,8 @@ onAuthStateChanged(auth, async (user) => {
                         adContainer.remove();
                         alert("You've earned 20 2KCoins!");
                     };
-                    
-                    const wrapper = adContainer.querySelector('.video-wrapper');
-                    wrapper.appendChild(claimButton);
-                }
+                    videoWrapper.appendChild(claimButton); // Append to videoWrapper to overlay on video
+                });
 
             } catch (error) {
                 console.error("Error loading campaigns:", error);
