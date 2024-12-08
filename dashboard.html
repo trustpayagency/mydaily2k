@@ -411,7 +411,7 @@
     color: #333;
     padding: 15px;
     border-radius: 12px;
-    width: 250px; /* Fixed width for consistency */
+    width: 300px; /* Increased width */
     z-index: 1000;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     animation: fadeIn 0.3s ease-in-out;
@@ -419,8 +419,8 @@
     border: 1px solid #ddd;
 }
 
-/* Add arrow pointing up to the button */
-.tooltip::before {
+/* Arrow for tooltips pointing UP (for bottom banner buttons) */
+.tooltip[id$="-tooltip"]::before {
     content: '';
     position: absolute;
     top: -8px;
@@ -431,11 +431,14 @@
     border-bottom: 8px solid rgba(255, 255, 255, 0.95);
 }
 
-.tooltip-content {
-    font-size: 14px;
-    line-height: 1.4;
-    margin-bottom: 15px;
-    color: #333;
+/* Arrow for tooltips pointing DOWN (specifically for bottom banner buttons) */
+.tooltip[id="profile-tooltip"]::before,
+.tooltip[id="withdraw-tooltip"]::before,
+.tooltip[id="friends-tooltip"]::before {
+    top: auto;
+    bottom: -8px;
+    border-bottom: none;
+    border-top: 8px solid rgba(255, 255, 255, 0.95);
 }
 
 #intro-tooltips::before {
@@ -445,8 +448,30 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.3); /* Lighter overlay */
     z-index: 999;
+}
+
+.tooltip-content {
+    font-size: 14px;
+    line-height: 1.4;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.next-tip {
+    background: #ec8f04;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.next-tip:hover {
+    background: #d07c03;
 }
 
 @keyframes fadeIn {
@@ -477,7 +502,6 @@
                 Complete simple tasks to earn 2KCoins! Tasks refresh daily.
                 <button class="next-tip">Next</button>
             </div>
-            <div class="tooltip-arrow" data-position="tasks"></div>
         </div>
         
         <div class="tooltip" id="contest-tooltip">
@@ -485,7 +509,6 @@
                 Join weekly contests to win big rewards and compete with others!
                 <button class="next-tip">Next</button>
             </div>
-            <div class="tooltip-arrow" data-position="contest"></div>
         </div>
         
         <div class="tooltip" id="ads-tooltip">
@@ -493,15 +516,13 @@
                 Watch ads to earn 2KCoins. Complete more for better rewards!
                 <button class="next-tip">Next</button>
             </div>
-            <div class="tooltip-arrow" data-position="ads"></div>
         </div>
         
         <div class="tooltip" id="direct-tooltip">
             <div class="tooltip-content">
                 Visit direct links to quickly earn 2KCoins!
-                <button class="next-tip">Got it!</button>
+                <button class="next-tip">Next</button>
             </div>
-            <div class="tooltip-arrow" data-position="direct"></div>
         </div>
 
         <div class="tooltip" id="profile-tooltip">
