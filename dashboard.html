@@ -407,65 +407,57 @@
 
 .tooltip {
     position: fixed;
-    background: rgba(0, 0, 0, 0.9);
-    color: white;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
     padding: 15px;
-    border-radius: 8px;
-    max-width: 250px;
+    border-radius: 12px;
+    width: 250px; /* Fixed width for consistency */
     z-index: 1000;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     animation: fadeIn 0.3s ease-in-out;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+/* Add arrow pointing up to the button */
+.tooltip::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid rgba(255, 255, 255, 0.95);
 }
 
 .tooltip-content {
     font-size: 14px;
     line-height: 1.4;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    color: #333;
 }
 
-.tooltip-arrow {
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-style: solid;
-}
-
-.tooltip-arrow[data-position="tasks"] {
-    border-width: 8px;
-    border-color: transparent transparent rgba(0, 0, 0, 0.9) transparent;
-    top: -16px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.tooltip-arrow[data-position="contest"],
-.tooltip-arrow[data-position="ads"],
-.tooltip-arrow[data-position="direct"] {
-    border-width: 8px;
-    border-color: transparent transparent rgba(0, 0, 0, 0.9) transparent;
-    top: -16px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.next-tip {
-    background: #ec8f04;
-    color: white;
-    border: none;
-    padding: 5px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    float: right;
-    font-size: 12px;
-}
-
-.next-tip:hover {
-    background: #d07c03;
+#intro-tooltips::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { 
+        opacity: 0; 
+        transform: translate(-50%, 10px);
+    }
+    to { 
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
 }
     </style>
     </head>
@@ -1110,13 +1102,27 @@ onAuthStateChanged(auth, async (user) => {
                     console.log("Positioning tooltip:", tipId);
                     const tooltip = document.getElementById(tipId);
                     
-                    if (!tooltip) {
-                        console.error("Missing tooltip element:", tipId);
+                    // Map tooltips to their target buttons
+                    const targetButton = {
+                        'tasks-tooltip': document.querySelector('.fas.fa-tasks')?.closest('.button'),
+                        'contest-tooltip': document.querySelector('.fas.fa-trophy')?.closest('.glowing-button'),
+                        'ads-tooltip': document.querySelector('.fas.fa-ad')?.closest('.button'),
+                        'direct-tooltip': document.querySelector('.fas.fa-paper-plane')?.closest('.button')
+                    }[tipId];
+                    
+                    if (!tooltip || !targetButton) {
+                        console.error("Missing elements for tooltip positioning:", { tooltip, targetButton });
                         return;
                     }
                     
-                    // No need to calculate position as tooltips are centered by CSS
+                    const rect = targetButton.getBoundingClientRect();
                     tooltip.style.display = 'block';
+                    
+                    // Position tooltip below the button
+                    tooltip.style.position = 'fixed';
+                    tooltip.style.left = `${rect.left + (rect.width / 2)}px`;
+                    tooltip.style.top = `${rect.bottom + 15}px`; // 15px gap between button and tooltip
+                    tooltip.style.transform = 'translateX(-50%)'; // Center horizontally relative to button
                 }
                 
                 function showNextTip() {
