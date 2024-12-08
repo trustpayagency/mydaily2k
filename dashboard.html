@@ -747,15 +747,15 @@ onAuthStateChanged(auth, async (user) => {
                     return;
                 }
 
-                // Filter campaigns by type (video or image)
+                // Separate video and image campaigns
                 const videoCampaigns = campaigns.filter(c => c.videoURL);
-                const imageCampaigns = campaigns.filter(c => c.imageURL);
+                const imageCampaigns = campaigns.filter(c => c.imageURL && !c.videoURL); // Only pure image ads
                 
                 // Randomly select between video and image ad
                 const isVideoAd = Math.random() < 0.5 && videoCampaigns.length > 0;
                 
                 let selectedCampaign;
-                if (isVideoAd) {
+                if (isVideoAd && videoCampaigns.length > 0) {
                     // Video ad selection logic (existing code)
                     const highViewCampaigns = videoCampaigns.filter(c => c.viewpreference === 'high');
                     const lowViewCampaigns = videoCampaigns.filter(c => c.viewpreference !== 'high');
@@ -767,9 +767,12 @@ onAuthStateChanged(auth, async (user) => {
                     } else {
                         selectedCampaign = videoCampaigns[Math.floor(Math.random() * videoCampaigns.length)];
                     }
-                } else {
+                } else if (imageCampaigns.length > 0) {
                     // Image ad selection
                     selectedCampaign = imageCampaigns[Math.floor(Math.random() * imageCampaigns.length)];
+                } else {
+                    alert("No ads available at the moment.");
+                    return;
                 }
 
                 // Detect device type
@@ -785,12 +788,12 @@ onAuthStateChanged(auth, async (user) => {
                 const adContainer = document.createElement('div');
                 adContainer.id = 'campaign-container';
                 
-                if (isVideoAd) {
+                if (selectedCampaign.videoURL) {
                     // Video ad content
                     adContainer.innerHTML = `
                         <div class="video-wrapper">
                             <a href="createcampaign.html" class="publish-ads-button">Post Ads</a>
-                            <video src="${selectedCampaign.videoURL}" autoplay muted playsinline></video>
+                            <video src="${selectedCampaign.videoURL}" autoplay muted playsinline loop></video>
                             <div class="banner">
                                 <div class="logo-name">
                                     <img src="${selectedCampaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
@@ -805,6 +808,29 @@ onAuthStateChanged(auth, async (user) => {
                             <div class="timer">30</div>
                         </div>
                     `;
+
+                    const videoElement = adContainer.querySelector('video');
+                    const timerElement = adContainer.querySelector('.timer');
+                    let timeLeft = 30;
+                    
+                    // Start 30-second timer for video
+                    const timerInterval = setInterval(() => {
+                        timeLeft--;
+                        timerElement.textContent = timeLeft;
+                        
+                        if (timeLeft <= 0) {
+                            clearInterval(timerInterval);
+                            videoElement.loop = false; // Stop looping
+                            showClaimButton();
+                        }
+                    }, 1000);
+
+                    // Ensure video plays and loops
+                    videoElement.addEventListener('play', () => {
+                        videoElement.play().catch(error => {
+                            console.error("Error playing video:", error);
+                        });
+                    });
                 } else {
                     // Image ad content
                     adContainer.innerHTML = `
@@ -829,9 +855,9 @@ onAuthStateChanged(auth, async (user) => {
 
                 document.body.appendChild(adContainer);
 
-                // Add styles for timer
-                const timerStyle = document.createElement('style');
-                timerStyle.textContent = `
+                // Add styles
+                const adStyle = document.createElement('style');
+                adStyle.textContent = `
                     .timer {
                         position: absolute;
                         top: 10px;
@@ -848,48 +874,71 @@ onAuthStateChanged(auth, async (user) => {
                         width: 100%;
                         max-width: 600px;
                         margin: 0 auto;
+                        background: #000;
+                        border-radius: 10px;
+                        overflow: hidden;
                     }
                     
                     .image-wrapper img {
                         width: 100%;
                         height: auto;
-                        border-radius: 10px;
+                        display: block;
+                    }
+
+                    .claim-button {
+                        position: absolute;
+                        bottom: 20px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background: #ec8f04;
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-weight: bold;
+                        transition: background-color 0.3s;
+                    }
+
+                    .claim-button:hover {
+                        background: #d07c03;
                     }
                 `;
-                document.head.appendChild(timerStyle);
+                document.head.appendChild(adStyle);
 
-                // Start timer
-                const timerElement = adContainer.querySelector('.timer');
-                const duration = isVideoAd ? 30 : 15;
-                let timeLeft = duration;
-                
-                const timerInterval = setInterval(() => {
-                    timeLeft--;
-                    timerElement.textContent = timeLeft;
+                // Start timer for image ads only
+                if (!selectedCampaign.videoURL) {
+                    const timerElement = adContainer.querySelector('.timer');
+                    let timeLeft = 15;
                     
-                    if (timeLeft <= 0) {
-                        clearInterval(timerInterval);
-                        const claimButton = document.createElement('button');
-                        claimButton.textContent = 'Claim 20 2KCoins';
-                        claimButton.className = 'claim-button';
-                        claimButton.onclick = async () => {
-                            window.adUsage.adsWatched++;
-                            await updateAdUsage(user.uid, window.adUsage);
-                            await updateBalance(user.uid, 20);
-                            adContainer.remove();
-                            alert("You've earned 20 2KCoins!");
-                        };
+                    const timerInterval = setInterval(() => {
+                        timeLeft--;
+                        timerElement.textContent = timeLeft;
                         
-                        if (isVideoAd) {
-                            adContainer.querySelector('.video-wrapper').appendChild(claimButton);
-                        } else {
-                            adContainer.querySelector('.image-wrapper').appendChild(claimButton);
+                        if (timeLeft <= 0) {
+                            clearInterval(timerInterval);
+                            showClaimButton();
                         }
-                    }
-                }, 1000);
+                    }, 1000);
+                }
 
-                // Style the container and elements (existing styles remain the same)
-                // ... (keep existing styling code)
+                function showClaimButton() {
+                    const claimButton = document.createElement('button');
+                    claimButton.textContent = 'Claim 20 2KCoins';
+                    claimButton.className = 'claim-button';
+                    claimButton.onclick = async () => {
+                        window.adUsage.adsWatched++;
+                        await updateAdUsage(user.uid, window.adUsage);
+                        await updateBalance(user.uid, 20);
+                        adContainer.remove();
+                        alert("You've earned 20 2KCoins!");
+                    };
+                    
+                    const wrapper = selectedCampaign.videoURL ? 
+                        adContainer.querySelector('.video-wrapper') : 
+                        adContainer.querySelector('.image-wrapper');
+                    wrapper.appendChild(claimButton);
+                }
 
             } catch (error) {
                 console.error("Error loading campaigns:", error);
