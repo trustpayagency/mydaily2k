@@ -1088,43 +1088,62 @@ onAuthStateChanged(auth, async (user) => {
         modeToggle.textContent = currentMode === 'light' ? 'Light Mode' : 'Dark Mode';
 
         function showIntroTutorial() {
+            // Add console.log for debugging
+            console.log("Checking tutorial status...");
             const isNewUser = !localStorage.getItem('tutorialShown');
+            console.log("Is new user:", isNewUser);
             
             if (isNewUser) {
+                // Ensure tooltips container exists and is visible
                 const tooltips = document.getElementById('intro-tooltips');
+                if (!tooltips) {
+                    console.error("Tooltips container not found!");
+                    return;
+                }
+                
                 tooltips.style.display = 'block';
                 
                 let currentTip = 0;
                 const tips = ['tasks-tooltip', 'contest-tooltip', 'ads-tooltip', 'direct-tooltip'];
                 
                 function positionTooltip(tipId) {
+                    console.log("Positioning tooltip:", tipId);
                     const tooltip = document.getElementById(tipId);
                     const targetButton = {
-                        'tasks-tooltip': document.querySelector('.fas.fa-tasks').closest('.button'),
-                        'contest-tooltip': document.querySelector('.fas.fa-trophy').closest('.glowing-button'),
-                        'ads-tooltip': document.querySelector('.fas.fa-ad').closest('.button'),
-                        'direct-tooltip': document.querySelector('.fas.fa-paper-plane').closest('.button')
+                        'tasks-tooltip': document.querySelector('.fas.fa-tasks')?.closest('.button'),
+                        'contest-tooltip': document.querySelector('.fas.fa-trophy')?.closest('.glowing-button'),
+                        'ads-tooltip': document.querySelector('.fas.fa-ad')?.closest('.button'),
+                        'direct-tooltip': document.querySelector('.fas.fa-paper-plane')?.closest('.button')
                     }[tipId];
                     
+                    if (!tooltip || !targetButton) {
+                        console.error("Missing elements for tooltip positioning:", { tooltip, targetButton });
+                        return;
+                    }
+                    
                     const rect = targetButton.getBoundingClientRect();
-                    tooltip.style.left = `${rect.left + (rect.width / 2) - 125}px`; // Center tooltip
-                    tooltip.style.top = `${rect.bottom + 20}px`; // Position below button
+                    tooltip.style.display = 'block'; // Ensure tooltip is visible
+                    tooltip.style.left = `${rect.left + (rect.width / 2) - 125}px`;
+                    tooltip.style.top = `${rect.bottom + 20}px`;
                 }
                 
                 function showNextTip() {
+                    console.log("Showing next tip, current index:", currentTip);
                     // Hide all tooltips
-                    tips.forEach(tip => document.getElementById(tip).style.display = 'none');
+                    tips.forEach(tip => {
+                        const element = document.getElementById(tip);
+                        if (element) element.style.display = 'none';
+                    });
                     
                     if (currentTip < tips.length) {
                         const tipId = tips[currentTip];
-                        const tooltip = document.getElementById(tipId);
-                        tooltip.style.display = 'block';
                         positionTooltip(tipId);
                         currentTip++;
                     } else {
                         // Tutorial complete
                         tooltips.style.display = 'none';
                         localStorage.setItem('tutorialShown', 'true');
+                        console.log("Tutorial completed");
                     }
                 }
                 
@@ -1133,8 +1152,8 @@ onAuthStateChanged(auth, async (user) => {
                     button.addEventListener('click', showNextTip);
                 });
                 
-                // Show first tip
-                showNextTip();
+                // Show first tip after a short delay to ensure DOM is ready
+                setTimeout(showNextTip, 500);
                 
                 // Reposition tooltips on window resize
                 window.addEventListener('resize', () => {
@@ -1145,15 +1164,29 @@ onAuthStateChanged(auth, async (user) => {
             }
         }
 
-        // Call this function after the page loads and user is authenticated
-        window.addEventListener('load', () => {
-            // If using Firebase Auth, call this after authentication
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    showIntroTutorial();
-                }
-            });
+        // Modify the initialization to ensure it runs at the right time
+        document.addEventListener('DOMContentLoaded', () => {
+            // If using Firebase Auth, we'll wait for auth state
+            if (typeof auth !== 'undefined') {
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        console.log("User authenticated, showing tutorial");
+                        showIntroTutorial();
+                    }
+                });
+            } else {
+                // If not using Firebase Auth, show tutorial directly
+                console.log("No auth detected, showing tutorial directly");
+                showIntroTutorial();
+            }
         });
+
+        // Add this to force reset the tutorial (for testing)
+        // Comment out or remove in production
+        window.resetTutorial = function() {
+            localStorage.removeItem('tutorialShown');
+            location.reload();
+        };
     </script>
     <script type='text/javascript' src='https://pl25145596.profitablecpmrate.com/a1/91/a1/a191a1a71e1bfd8cf2b8b436068db02a.js'></script>
  </body> 
