@@ -503,6 +503,27 @@
             </div>
             <div class="tooltip-arrow" data-position="direct"></div>
         </div>
+
+        <div class="tooltip" id="profile-tooltip">
+            <div class="tooltip-content">
+                View and edit your profile settings, track your achievements and stats!
+                <button class="next-tip">Next</button>
+            </div>
+        </div>
+
+        <div class="tooltip" id="withdraw-tooltip">
+            <div class="tooltip-content">
+                Convert your earned 2KCoins into real rewards! Check withdrawal options here.
+                <button class="next-tip">Next</button>
+            </div>
+        </div>
+
+        <div class="tooltip" id="friends-tooltip">
+            <div class="tooltip-content">
+                Connect with friends, share achievements, and earn bonus rewards together!
+                <button class="next-tip">Got it!</button>
+            </div>
+        </div>
     </div>
     <div class="profile-container">
         <img id="profile-pic" src="R.png" alt="Profile Picture" style="width: 50px; height: 50px; border-radius: 50%;">
@@ -1080,13 +1101,11 @@ onAuthStateChanged(auth, async (user) => {
         modeToggle.textContent = currentMode === 'light' ? 'Light Mode' : 'Dark Mode';
 
         function showIntroTutorial() {
-            // Add console.log for debugging
             console.log("Checking tutorial status...");
             const isNewUser = !localStorage.getItem('tutorialShown');
             console.log("Is new user:", isNewUser);
             
             if (isNewUser) {
-                // Ensure tooltips container exists and is visible
                 const tooltips = document.getElementById('intro-tooltips');
                 if (!tooltips) {
                     console.error("Tooltips container not found!");
@@ -1096,18 +1115,29 @@ onAuthStateChanged(auth, async (user) => {
                 tooltips.style.display = 'block';
                 
                 let currentTip = 0;
-                const tips = ['tasks-tooltip', 'contest-tooltip', 'ads-tooltip', 'direct-tooltip'];
+                const tips = [
+                    'tasks-tooltip', 
+                    'contest-tooltip', 
+                    'ads-tooltip', 
+                    'direct-tooltip',
+                    'profile-tooltip',
+                    'withdraw-tooltip',
+                    'friends-tooltip'
+                ];
                 
                 function positionTooltip(tipId) {
                     console.log("Positioning tooltip:", tipId);
                     const tooltip = document.getElementById(tipId);
                     
-                    // Map tooltips to their target buttons
+                    // Updated mapping to include bottom banner buttons
                     const targetButton = {
                         'tasks-tooltip': document.querySelector('.fas.fa-tasks')?.closest('.button'),
                         'contest-tooltip': document.querySelector('.fas.fa-trophy')?.closest('.glowing-button'),
                         'ads-tooltip': document.querySelector('.fas.fa-ad')?.closest('.button'),
-                        'direct-tooltip': document.querySelector('.fas.fa-paper-plane')?.closest('.button')
+                        'direct-tooltip': document.querySelector('.fas.fa-paper-plane')?.closest('.button'),
+                        'profile-tooltip': document.querySelector('.fas.fa-user')?.closest('.button'),
+                        'withdraw-tooltip': document.querySelector('.fas.fa-wallet')?.closest('.button'),
+                        'friends-tooltip': document.querySelector('.fas.fa-user-friends')?.closest('.button')
                     }[tipId];
                     
                     if (!tooltip || !targetButton) {
@@ -1118,16 +1148,20 @@ onAuthStateChanged(auth, async (user) => {
                     const rect = targetButton.getBoundingClientRect();
                     tooltip.style.display = 'block';
                     
-                    // Position tooltip below the button
-                    tooltip.style.position = 'fixed';
+                    // Position tooltip above the button for bottom banner buttons
+                    const isBottomButton = ['profile-tooltip', 'withdraw-tooltip', 'friends-tooltip'].includes(tipId);
+                    if (isBottomButton) {
+                        tooltip.style.top = `${rect.top - tooltip.offsetHeight - 15}px`; // 15px gap above button
+                    } else {
+                        tooltip.style.top = `${rect.bottom + 15}px`; // 15px gap below button
+                    }
+                    
                     tooltip.style.left = `${rect.left + (rect.width / 2)}px`;
-                    tooltip.style.top = `${rect.bottom + 15}px`; // 15px gap between button and tooltip
-                    tooltip.style.transform = 'translateX(-50%)'; // Center horizontally relative to button
+                    tooltip.style.transform = 'translateX(-50%)';
                 }
                 
                 function showNextTip() {
                     console.log("Showing next tip, current index:", currentTip);
-                    // Hide all tooltips
                     tips.forEach(tip => {
                         const element = document.getElementById(tip);
                         if (element) element.style.display = 'none';
@@ -1138,22 +1172,18 @@ onAuthStateChanged(auth, async (user) => {
                         positionTooltip(tipId);
                         currentTip++;
                     } else {
-                        // Tutorial complete
                         tooltips.style.display = 'none';
                         localStorage.setItem('tutorialShown', 'true');
                         console.log("Tutorial completed");
                     }
                 }
                 
-                // Add click handlers to all next buttons
                 document.querySelectorAll('.next-tip').forEach(button => {
                     button.addEventListener('click', showNextTip);
                 });
                 
-                // Show first tip after a short delay to ensure DOM is ready
                 setTimeout(showNextTip, 500);
                 
-                // Reposition tooltips on window resize
                 window.addEventListener('resize', () => {
                     if (currentTip > 0 && currentTip <= tips.length) {
                         positionTooltip(tips[currentTip - 1]);
