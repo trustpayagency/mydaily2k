@@ -503,6 +503,13 @@
                 <button class="next-tip">Next</button>
             </div>
         </div>
+
+        <div class="tooltip" id="switch-tooltip">
+            <div class="tooltip-content">
+                Switch between light and dark mode to suit your preferences!
+                <button class="next-tip">Next</button>
+            </div>
+        </div>
         
         <div class="tooltip" id="contest-tooltip">
             <div class="tooltip-content">
@@ -1152,6 +1159,7 @@ onAuthStateChanged(auth, async (user) => {
                     
                     const targetButton = {
                         'tasks-tooltip': document.querySelector('.fas.fa-tasks')?.closest('.button'),
+                        'switch-tooltip': document.querySelector('.modeToggle')?.closest('.button'),
                         'contest-tooltip': document.querySelector('.fas.fa-trophy')?.closest('.glowing-button'),
                         'ads-tooltip': document.querySelector('.fas.fa-ad')?.closest('.button'),
                         'direct-tooltip': document.querySelector('.fas.fa-paper-plane')?.closest('.button'),
