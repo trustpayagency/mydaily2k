@@ -1109,22 +1109,14 @@ onAuthStateChanged(auth, async (user) => {
                 function positionTooltip(tipId) {
                     console.log("Positioning tooltip:", tipId);
                     const tooltip = document.getElementById(tipId);
-                    const targetButton = {
-                        'tasks-tooltip': document.querySelector('.fas.fa-tasks')?.closest('.button'),
-                        'contest-tooltip': document.querySelector('.fas.fa-trophy')?.closest('.glowing-button'),
-                        'ads-tooltip': document.querySelector('.fas.fa-ad')?.closest('.button'),
-                        'direct-tooltip': document.querySelector('.fas.fa-paper-plane')?.closest('.button')
-                    }[tipId];
                     
-                    if (!tooltip || !targetButton) {
-                        console.error("Missing elements for tooltip positioning:", { tooltip, targetButton });
+                    if (!tooltip) {
+                        console.error("Missing tooltip element:", tipId);
                         return;
                     }
                     
-                    const rect = targetButton.getBoundingClientRect();
-                    tooltip.style.display = 'block'; // Ensure tooltip is visible
-                    tooltip.style.left = `${rect.left + (rect.width / 2) - 125}px`;
-                    tooltip.style.top = `${rect.bottom + 20}px`;
+                    // No need to calculate position as tooltips are centered by CSS
+                    tooltip.style.display = 'block';
                 }
                 
                 function showNextTip() {
