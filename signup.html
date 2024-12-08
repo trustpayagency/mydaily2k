@@ -7,272 +7,61 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
-        html {
-            min-height: 100%;
-            height: 100%;
-        }
+        /* Style your form here */
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(to top, #ec8f04, #f58c79) fixed;
             color: #fff;
             margin: 0;
             padding: 20px 0;
-            min-height: 100%;
-            height: auto;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-y: auto;
-            background-attachment: fixed;
-            background-size: cover;
+            height: 100vh;
         }
         .signup-container {
             background-color: black;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
-            width: 90%;
-            max-width: 350px;
-            box-sizing: border-box;
-            margin: 20px auto;
-            position: relative;
+            width: 100%;
+            max-width: 400px;
         }
-        h1 {
-            text-align: center;
-            font-size: 24px;
-            color: #ec8f04;
-            margin-bottom: 20px;
-        }
-        input {
-            width: calc(100% - 24px);
-            padding: 12px;
+        input, button {
+            width: 100%;
+            padding: 10px;
             margin: 10px 0;
-            border: none;
             border-radius: 5px;
-            background-color: #444;
-            color: white;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        input:focus {
-            outline: none;
-            background-color: #555;
+            border: none;
         }
         button {
-            width: 100%;
-            padding: 12px;
             background-color: #ec8f04;
-            border: none;
-            border-radius: 5px;
-            color: rgb(0, 0, 0);
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #ec8f04;
-        }
-        p {
-            text-align: center;
-            margin-top: 15px;
-        }
-        p a {
-            color: #ec8f04;
-            text-decoration: none;
-        }
-        p a:hover {
-            text-decoration: underline;
-        }
-        .error-message {
-            color: #e23838;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-        .password-strength-meter {
-            height: 5px;
-            background-color: #ddd;
-            margin-top: 5px;
-        }
-        .password-strength-meter div {
-            height: 100%;
-            width: 0;
-            transition: width 0.3s;
-        }
-        .loading {
-            display: none;
-            text-align: center;
-            margin-top: 10px;
-        }
-        .loading::after {
-            content: "...";
-            animation: dots 1s steps(5, end) infinite;
-        }
-        @keyframes dots {
-            0%, 20% { content: "."; }
-            40% { content: ".."; }
-            60% { content: "..."; }
-            80%, 100% { content: ""; }
-        }
-        .user-info {
-            background-color: #444;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-            display: none;
-        }
-        .user-info h2 {
-            color: #ec8f04;
-            margin-bottom: 10px;
-        }
-        .user-info p {
-            margin: 5px 0;
-        }
-        .advertiser-link {
-            text-align: right;
-            margin-bottom: 15px;
-        }
-
-        .advertiser-link a {
-            color: #19e2b0;
-            text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.9em;
-            transition: all 0.3s ease;
-        }
-
-        .advertiser-link a:hover {
-            background-color: rgba(25, 226, 176, 0.1);
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .logo img {
-            max-width: 70px;
-            height: auto;
-        }
-        
-        .input-group {
-            position: relative;
-            margin-bottom: 15px;
-        }
-        
-        .input-group i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #666;
-        }
-        
-        .input-group input {
-            padding-left: 40px;
-        }
-
-        .g-recaptcha {
-            margin: 15px 0;
-            display: flex;
-            justify-content: center;
-        }
-
-        .animate-in {
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* For smaller screens */
-        @media screen and (max-height: 800px) {
-            body {
-                align-items: flex-start;
-                min-height: 100%;
-            }
-            
-            .signup-container {
-                margin: 20px auto;
-            }
+            color: black;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-
-    <div class="signup-container animate-in">
-        <div class="advertiser-link">
-            <a href="adssignup.html">SIGNUP AS ADVERTISER</a>
-        </div>
-        
-        <div class="logo">
-            <img src="logo.png" alt="MY DAILY2K Logo">
-        </div>
-
-        <h1>SIGN UP</h1>
+    <div class="signup-container">
+        <h1>Sign Up</h1>
         <form id="signupForm">
-            <div class="input-group">
-                <i class="fas fa-user"></i>
-                <input type="text" id="username" name="username" placeholder="Username" required>
-                <div id="usernameError" class="error-message"></div>
-            </div>
-
-            <div class="input-group">
-                <i class="fas fa-user-circle"></i>
-                <input type="text" id="fullname" name="fullname" placeholder="Full Name" required>
-                <div id="fullnameError" class="error-message"></div>
-            </div>
-
-            <div class="input-group">
-                <i class="fas fa-envelope"></i>
-                <input type="email" id="email" name="email" placeholder="Email" required>
-                <div id="emailError" class="error-message"></div>
-            </div>
-
-            <div class="input-group">
-                <i class="fas fa-lock"></i>
-                <input type="password" id="password" name="password" placeholder="Password" required>
-                <i class="fas fa-eye toggle-password"></i>
-                <div id="passwordError" class="error-message"></div>
-                <div class="password-strength-meter"><div id="strengthMeter"></div></div>
-            </div>
-
-            <div class="input-group">
-                <i class="fas fa-user-plus"></i>
-                <input type="text" id="referralCode" name="referralCode" placeholder="Referral Code (optional)">
-                <div id="referralError" class="error-message"></div>
-            </div>
-
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="text" id="fullname" placeholder="Full Name" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <input type="text" id="referralCode" placeholder="Referral Code (optional)">
             <div class="g-recaptcha" data-sitekey="6LfFQZUqAAAAAMTDu1ZhHQabWXrGeGPb48rM0XYa"></div>
-
             <button type="submit">Sign Up</button>
-            <div id="loading" class="loading">Signing up</div>
         </form>
         <p>Already have an account? <a href="login.html">Login here</a></p>
-
-        <div id="userInfo" class="user-info">
-            <h2>User Information</h2>
-            <p><strong>Full Name:</strong> <span id="infoFullname"></span></p>
-            <p><strong>Username:</strong> <span id="infoUsername"></span></p>
-            <p><strong>Email:</strong> <span id="infoEmail"></span></p>
-            <p><strong>Balance:</strong> <span id="infoBalance"></span> 2KCoin</p>
-        </div>
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
+        // Import Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-        import { getFirestore, doc, setDoc, collection, query, where, getDocs, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
             authDomain: "mydaily2kbot.firebaseapp.com",
@@ -288,210 +77,68 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const passwordInput = document.getElementById('password');
-            const usernameInput = document.getElementById('username');
-            const fullnameInput = document.getElementById('fullname');
-
-            passwordInput.addEventListener('input', () => {
-                const strength = calculatePasswordStrength(passwordInput.value);
-                updatePasswordStrengthMeter(strength);
-            });
-
-            usernameInput.addEventListener('input', () => {
-                usernameInput.value = sanitizeInput(usernameInput.value);
-            });
-
-            fullnameInput.addEventListener('input', () => {
-                fullnameInput.value = sanitizeFullName(fullnameInput.value);
-            });
-        });
-
-        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+        document.getElementById("signupForm").addEventListener("submit", async (e) => {
             e.preventDefault();
-            
-            const recaptchaResponse = grecaptcha.getResponse();
-            if (!recaptchaResponse) {
-                document.getElementById('passwordError').textContent = 'Please complete the CAPTCHA verification';
+
+            const username = document.getElementById("username").value.trim();
+            const fullname = document.getElementById("fullname").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const referralCode = document.getElementById("referralCode").value.trim();
+
+            // Validate inputs
+            if (!username || !fullname || !email || !password) {
+                alert("Please fill out all required fields!");
                 return;
             }
 
-            const username = document.getElementById('username').value;
-            const fullname = document.getElementById('fullname').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const referredByCode = document.getElementById('referralCode').value;
-
-            // Reset error messages
-            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-            document.getElementById('loading').style.display = 'block';
-
             try {
-                console.log("Validating username...");
-                if (username.length < 3) {
-                    throw new Error("Username must be at least 3 characters long");
-                }
-
-                console.log("Validating full name...");
-                if (fullname.length < 2) {
-                    throw new Error("Full name must be at least 2 characters long");
-                }
-
-                console.log("Validating password...");
-                if (password.length < 6) {
-                    throw new Error("Password must be at least 6 characters long");
-                }
-
-                // First create the user account
-                console.log("Creating user...");
+                // Create user in Firebase Authentication
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
-                console.log("User created successfully:", user.uid);
 
-                const referralCode = generateReferralCode();
-                console.log("Generated referral code:", referralCode);
+                // Generate a unique referral code for the user
+                const userReferralCode = `REF${user.uid.slice(-6)}`;
 
                 // Prepare user data
                 const userData = {
-                    username: username,
-                    fullname: fullname,
-                    email: email,
-                    referralCode: referralCode,
-                    balance: 0,
+                    username,
+                    fullname,
+                    email,
+                    referralCode: userReferralCode,
                     referredBy: null,
+                    balance: 0,
                     joinedAt: new Date(),
-                    referralCount: 0
                 };
 
-                // If there's a referral code, verify it after user creation
-                if (referredByCode) {
-                    console.log("Checking referral code:", referredByCode);
-                    try {
-                        const usersRef = collection(db, "users");
-                        const q = query(usersRef, where("referralCode", "==", referredByCode));
-                        const querySnapshot = await getDocs(q);
-                        
-                        if (!querySnapshot.empty) {
-                            const referrerDoc = querySnapshot.docs[0];
-                            userData.referredBy = referrerDoc.id;
-                            
-                            // Update referrer's balance and referral count
-                            console.log("Updating referrer's balance and referral count...");
-                            await updateDoc(doc(db, "users", referrerDoc.id), {
-                                balance: increment(100),
-                                referralCount: increment(1)
-                            });
-                            console.log("Referrer updated successfully");
-                        } else {
-                            console.log("Invalid referral code");
-                            document.getElementById('referralError').textContent = 'Invalid referral code';
-                            // Continue with signup without the referral
-                        }
-                    } catch (referralError) {
-                        console.error("Error processing referral:", referralError);
-                        // Add user-friendly error message
-                        document.getElementById('referralError').textContent = 'Unable to process referral code at this time';
-                        // Store the referral code to process later
-                        userData.pendingReferralCode = referredByCode;
+                // Handle referral logic
+                if (referralCode) {
+                    const referredByDoc = await getDoc(doc(db, "users", referralCode));
+                    if (referredByDoc.exists()) {
+                        userData.referredBy = referralCode;
+
+                        // Update referrer's referral count and balance
+                        await updateDoc(doc(db, "users", referralCode), {
+                            referralCount: increment(1),
+                            balance: increment(100), // Reward for referring
+                        });
+                    } else {
+                        alert("Invalid referral code.");
+                        return;
                     }
                 }
 
-                // Store user data
-                console.log("Storing user data...");
+                // Save user data in Firestore
                 await setDoc(doc(db, "users", user.uid), userData);
-                console.log("User data stored successfully");
 
-                // Success! Redirect to dashboard
-                alert("Sign up successful!");
-                window.location.href = 'dashboard.html';
+                alert("Signup successful! Your referral code is " + userReferralCode);
+                document.getElementById("signupForm").reset();
 
             } catch (error) {
-                console.error("Error during sign up:", error);
-                if (error.code === 'auth/email-already-in-use') {
-                    document.getElementById('emailError').textContent = 'This email is already registered.';
-                } else if (error.code === 'auth/invalid-email') {
-                    document.getElementById('emailError').textContent = 'Invalid email address.';
-                } else if (error.code === 'auth/weak-password') {
-                    document.getElementById('passwordError').textContent = 'Password should be at least 6 characters long.';
-                } else if (error.message.includes("Username")) {
-                    document.getElementById('usernameError').textContent = error.message;
-                } else if (error.message.includes("Full name")) {
-                    document.getElementById('fullnameError').textContent = error.message;
-                } else {
-                    document.getElementById('passwordError').textContent = 'An error occurred. Please try again.';
-                }
-            } finally {
-                document.getElementById('loading').style.display = 'none';
-                grecaptcha.reset();
+                console.error("Error signing up:", error.message);
+                alert("Error signing up: " + error.message);
             }
         });
-
-        function generateReferralCode() {
-            return Math.random().toString(36).substring(2, 8).toUpperCase();
-        }
-
-        function calculatePasswordStrength(password) {
-            let strength = 0;
-            if (password.length >= 8) strength += 25;
-            if (password.match(/[a-z]+/)) strength += 25;
-            if (password.match(/[A-Z]+/)) strength += 25;
-            if (password.match(/[0-9]+/)) strength += 25;
-            return strength;
-        }
-
-        function updatePasswordStrengthMeter(strength) {
-            const meter = document.getElementById('strengthMeter');
-            meter.style.width = strength + '%';
-            if (strength < 50) {
-                meter.style.backgroundColor = '#ff4d4d';
-            } else if (strength < 75) {
-                meter.style.backgroundColor = '#ffd700';
-            } else {
-                meter.style.backgroundColor = '#5cd65c';
-            }
-        }
-
-        function sanitizeInput(input) {
-            return input.replace(/[^a-zA-Z0-9_]/g, '');
-        }
-
-        function sanitizeFullName(input) {
-            return input.replace(/[^a-zA-Z\s]/g, '');
-        }
-
-        document.querySelector('.toggle-password').addEventListener('click', function() {
-            const passwordInput = document.getElementById('password');
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            this.classList.toggle('fa-eye');
-            this.classList.toggle('fa-eye-slash');
-        });
     </script>
-
-    <script>
-        // Function to get query parameters from the URL
-        function getQueryParams() {
-            const params = {};
-            const queryString = window.location.search.substring(1);
-            const regex = /([^&=]+)=([^&]*)/g;
-            let m;
-            while (m = regex.exec(queryString)) {
-                params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-            }
-            return params;
-        }
-
-        // On page load, check for referral code
-        window.onload = function() {
-            const params = getQueryParams();
-            if (params.referralCode) {
-                const referralCodeInput = document.getElementById('referralCode'); // Use the actual input field ID
-                if (referralCodeInput) {
-                    referralCodeInput.value = params.referralCode; // Set the referral code in the input field
-                }
-            }
-        };
-    </script>
-
 </body>
 </html>
