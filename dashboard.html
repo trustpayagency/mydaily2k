@@ -699,18 +699,155 @@
     return userData; // Return the user data
 }
 
+// Add this function to check and reset daily limits
+async function checkAndResetDailyLimits(userId) {
+    const now = new Date();
+    const lastResetDate = localStorage.getItem('lastLimitReset');
+    const today12PM = new Date(now);
+    today12PM.setHours(12, 0, 0, 0);
+
+    // Check if it's past 12 PM and we haven't reset today
+    if ((!lastResetDate || new Date(lastResetDate) < today12PM) && now >= today12PM) {
+        try {
+            const userDocRef = doc(db, "users", userId);
+            await updateDoc(userDocRef, {
+                adUsage: {
+                    adsWatched: 0,
+                    directLinksUsed: 0,
+                    increaseLimitUsed: 0,
+                    adsWatchLimit: 20,
+                    directLinkLimit: 20
+                }
+            });
+            
+            // Update local storage
+            localStorage.setItem('lastLimitReset', now.toISOString());
+            window.adUsage = {
+                adsWatched: 0,
+                directLinksUsed: 0,
+                increaseLimitUsed: 0,
+                adsWatchLimit: 20,
+                directLinkLimit: 20
+            };
+            
+            console.log("Daily limits reset successfully");
+        } catch (error) {
+            console.error("Error resetting daily limits:", error);
+        }
+    }
+}
+
+// Modify the loadAdCampaign function to include countdown timer
+async function loadAdCampaign() {
+    const user = auth.currentUser;
+    if (!user) {
+        alert("Please log in to watch ads and earn coins.");
+        return;
+    }
+
+    if (window.adUsage.adsWatched >= (window.adUsage.adsWatchLimit || 20)) {
+        alert("You have reached the daily limit for watching ads. Use 'Increase Ads Limit' to watch more.");
+        return;
+    }
+
+    try {
+        // ... existing campaign loading code ...
+
+        // Modify the video container HTML to include countdown
+        adContainer.innerHTML = `
+            <div class="video-wrapper">
+                <div class="countdown-timer">30</div>
+                <a href="createcampaign.html" class="publish-ads-button">Post Ads</a>
+                <video src="${selectedCampaign.videoURL}" autoplay muted playsinline></video>
+                <div class="banner">
+                    <div class="logo-name">
+                        <img src="${selectedCampaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
+                        <span>${selectedCampaign.name || 'App Name'}</span>
+                    </div>
+                    <a href="${selectedCampaign.link || '#'}" target="_blank" class="action-link">
+                        ${selectedCampaign.type === 'application' ? 'Install App' : 'Visit Web'}
+                    </a>
+                </div>
+            </div>
+        `;
+
+        // Add countdown timer styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .countdown-timer {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                background: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 5px 10px;
+                border-radius: 5px;
+                z-index: 1001;
+                font-size: 16px;
+                font-weight: bold;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Start countdown
+        let timeLeft = 30;
+        const countdownElement = adContainer.querySelector('.countdown-timer');
+        const videoElement = adContainer.querySelector('video');
+        const countdownInterval = setInterval(() => {
+            timeLeft--;
+            countdownElement.textContent = timeLeft;
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                // Show claim button
+                const claimButton = document.createElement('button');
+                claimButton.textContent = 'Claim 20 2KCoins';
+                claimButton.className = 'claim-button';
+                claimButton.style.cssText = `
+                    position: absolute;
+                    bottom: 150px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #28a745;
+                    color: white;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    z-index: 1001;
+                `;
+                claimButton.onclick = async () => {
+                    window.adUsage.adsWatched++;
+                    await updateAdUsage(user.uid, window.adUsage);
+                    await updateBalance(user.uid, 20);
+                    adContainer.remove();
+                    alert("You've earned 20 2KCoins!");
+                };
+                videoElement.parentElement.appendChild(claimButton);
+            }
+        }, 1000);
+
+        // ... rest of your existing video container styling code ...
+
+    } catch (error) {
+        console.error("Error loading campaigns:", error);
+        alert("Error loading campaigns. Please try again later.");
+    }
+}
+
+// Add this to your initialization code
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         await loadUserData(user.uid);
+        await checkAndResetDailyLimits(user.uid); // Check and reset limits
         
-        // Log the user object to check its structure
-        console.log("User object:", user);
- 
+        // Set up interval to check limits every minute
+        setInterval(() => checkAndResetDailyLimits(user.uid), 60000);
     } else {
-        console.log("User not logged in. Redirecting to login page.");
         window.location.href = 'login.html';
     }
-});   
+});
         async function loadAdCampaign() {
             const user = auth.currentUser;
             if (!user) {
@@ -758,6 +895,7 @@ onAuthStateChanged(auth, async (user) => {
                 adContainer.id = 'campaign-container';
                 adContainer.innerHTML = `
                     <div class="video-wrapper">
+                        <div class="countdown-timer">30</div>
                         <a href="createcampaign.html" class="publish-ads-button">Post Ads</a>
                         <video src="${selectedCampaign.videoURL}" autoplay muted playsinline></video>
                         <div class="banner">
@@ -900,6 +1038,62 @@ onAuthStateChanged(auth, async (user) => {
                     };
                     videoWrapper.appendChild(claimButton); // Append to videoWrapper to overlay on video
                 });
+
+                // Add countdown timer styles
+                const style = document.createElement('style');
+                style.textContent = `
+                    .countdown-timer {
+                        position: absolute;
+                        top: 10px;
+                        left: 10px;
+                        background: rgba(0, 0, 0, 0.7);
+                        color: white;
+                        padding: 5px 10px;
+                        border-radius: 5px;
+                        z-index: 1001;
+                        font-size: 16px;
+                        font-weight: bold;
+                    }
+                `;
+                document.head.appendChild(style);
+
+                // Start countdown
+                let timeLeft = 30;
+                const countdownElement = adContainer.querySelector('.countdown-timer');
+                const countdownInterval = setInterval(() => {
+                    timeLeft--;
+                    countdownElement.textContent = timeLeft;
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(countdownInterval);
+                        // Show claim button
+                        const claimButton = document.createElement('button');
+                        claimButton.textContent = 'Claim 20 2KCoins';
+                        claimButton.className = 'claim-button';
+                        claimButton.style.cssText = `
+                            position: absolute;
+                            bottom: 150px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            background: #28a745;
+                            color: white;
+                            padding: 10px 20px;
+                            border: none;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            font-weight: bold;
+                            z-index: 1001;
+                        `;
+                        claimButton.onclick = async () => {
+                            window.adUsage.adsWatched++;
+                            await updateAdUsage(user.uid, window.adUsage);
+                            await updateBalance(user.uid, 20);
+                            adContainer.remove();
+                            alert("You've earned 20 2KCoins!");
+                        };
+                        videoElement.parentElement.appendChild(claimButton);
+                    }
+                }, 1000);
 
             } catch (error) {
                 console.error("Error loading campaigns:", error);
@@ -1237,6 +1431,44 @@ onAuthStateChanged(auth, async (user) => {
             localStorage.removeItem('tutorialShown');
             location.reload();
         };
+
+        // Add this function to check and reset daily limits
+        async function checkAndResetDailyLimits(userId) {
+            const now = new Date();
+            const lastResetDate = localStorage.getItem('lastLimitReset');
+            const today12PM = new Date(now);
+            today12PM.setHours(12, 0, 0, 0);
+
+            // Check if it's past 12 PM and we haven't reset today
+            if ((!lastResetDate || new Date(lastResetDate) < today12PM) && now >= today12PM) {
+                try {
+                    const userDocRef = doc(db, "users", userId);
+                    await updateDoc(userDocRef, {
+                        adUsage: {
+                            adsWatched: 0,
+                            directLinksUsed: 0,
+                            increaseLimitUsed: 0,
+                            adsWatchLimit: 20,
+                            directLinkLimit: 20
+                        }
+                    });
+                    
+                    // Update local storage
+                    localStorage.setItem('lastLimitReset', now.toISOString());
+                    window.adUsage = {
+                        adsWatched: 0,
+                        directLinksUsed: 0,
+                        increaseLimitUsed: 0,
+                        adsWatchLimit: 20,
+                        directLinkLimit: 20
+                    };
+                    
+                    console.log("Daily limits reset successfully");
+                } catch (error) {
+                    console.error("Error resetting daily limits:", error);
+                }
+            }
+        }
     </script>
     <script type='text/javascript' src='https://pl25145596.profitablecpmrate.com/a1/91/a1/a191a1a71e1bfd8cf2b8b436068db02a.js'></script>
  </body> 
