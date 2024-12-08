@@ -1129,7 +1129,6 @@ onAuthStateChanged(auth, async (user) => {
                     console.log("Positioning tooltip:", tipId);
                     const tooltip = document.getElementById(tipId);
                     
-                    // Updated mapping to include bottom banner buttons
                     const targetButton = {
                         'tasks-tooltip': document.querySelector('.fas.fa-tasks')?.closest('.button'),
                         'contest-tooltip': document.querySelector('.fas.fa-trophy')?.closest('.glowing-button'),
@@ -1148,12 +1147,14 @@ onAuthStateChanged(auth, async (user) => {
                     const rect = targetButton.getBoundingClientRect();
                     tooltip.style.display = 'block';
                     
-                    // Position tooltip above the button for bottom banner buttons
+                    // Position tooltips for bottom banner buttons
                     const isBottomButton = ['profile-tooltip', 'withdraw-tooltip', 'friends-tooltip'].includes(tipId);
                     if (isBottomButton) {
-                        tooltip.style.top = `${rect.top - tooltip.offsetHeight - 15}px`; // 15px gap above button
+                        tooltip.style.top = 'auto'; // Clear any previous top value
+                        tooltip.style.bottom = `${window.innerHeight - rect.top + 15}px`; // Position above bottom buttons
                     } else {
-                        tooltip.style.top = `${rect.bottom + 15}px`; // 15px gap below button
+                        tooltip.style.bottom = 'auto'; // Clear any previous bottom value
+                        tooltip.style.top = `${rect.bottom + 15}px`; // Position below other buttons
                     }
                     
                     tooltip.style.left = `${rect.left + (rect.width / 2)}px`;
