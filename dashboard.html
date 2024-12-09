@@ -16,6 +16,8 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
         }
 
         body.light-mode {
@@ -1248,7 +1250,7 @@
 
                 // Position and show tooltip
                 const rect = element.getBoundingClientRect();
-                tooltip.className = `tour-tooltip ${tourStep.position}`;
+                tooltip.className = 'tour-tooltip';
                 tooltip.innerHTML = `
                     <h3 style="margin: 0 0 10px 0">${tourStep.title}</h3>
                     <p style="margin: 0">${tourStep.content}</p>
@@ -1258,10 +1260,32 @@
                     </div>
                 `;
 
-                // Position tooltip
+                // Calculate tooltip position
+                let tooltipX = rect.left + rect.width/2;
+                let tooltipY = rect.top - 20;
+
+                // Show tooltip first to get its dimensions
                 tooltip.style.display = 'block';
-                tooltip.style.left = `${rect.left + rect.width/2 - tooltip.offsetWidth/2}px`;
-                tooltip.style.top = `${rect.top - tooltip.offsetHeight - 20}px`;
+                
+                // Adjust position to keep tooltip on screen
+                const tooltipRect = tooltip.getBoundingClientRect();
+                
+                // Adjust horizontal position
+                if (tooltipX - tooltipRect.width/2 < 10) {
+                    tooltipX = tooltipRect.width/2 + 10;
+                } else if (tooltipX + tooltipRect.width/2 > window.innerWidth - 10) {
+                    tooltipX = window.innerWidth - tooltipRect.width/2 - 10;
+                }
+                
+                // Adjust vertical position
+                if (tooltipY - tooltipRect.height < 10) {
+                    // Place tooltip below the element if it would go off the top
+                    tooltipY = rect.bottom + tooltipRect.height + 20;
+                }
+
+                // Apply final position
+                tooltip.style.left = `${tooltipX - tooltipRect.width/2}px`;
+                tooltip.style.top = `${tooltipY - tooltipRect.height}px`;
 
                 // Add button listeners
                 const nextBtn = tooltip.querySelector('.next-btn');
