@@ -852,7 +852,7 @@
             }
         }
 
-        // Add this after Firebase initialization
+        // Fix 1: Improve ad usage tracking and limits
         async function resetDailyLimits(userId) {
             try {
                 const userDocRef = doc(db, "users", userId);
@@ -860,29 +860,28 @@
                 
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
-                    const lastResetDate = userData.lastLimitReset ? new Date(userData.lastLimitReset) : null;
+                    const lastResetDate = userData.lastLimitReset ? new Date(userData.lastLimitReset.toDate()) : null;
                     const now = new Date();
                     
-                    // Check if it's a new day (past midnight)
                     if (!lastResetDate || !isSameDay(lastResetDate, now)) {
-                        // Reset the limits
-                        const resetAdUsage = {
+                        await updateDoc(userDocRef, {
+                            adUsage: {
+                                adsWatched: 0,
+                                directLinksUsed: 0,
+                                increaseLimitUsed: 0,
+                                adsWatchLimit: 20,
+                                directLinkLimit: 20
+                            },
+                            lastLimitReset: now
+                        });
+                        
+                        window.adUsage = {
                             adsWatched: 0,
                             directLinksUsed: 0,
                             increaseLimitUsed: 0,
-                            adsWatchLimit: 20,    // Reset to default
-                            directLinkLimit: 20    // Reset to default
+                            adsWatchLimit: 20,
+                            directLinkLimit: 20
                         };
-                        
-                        await updateDoc(userDocRef, {
-                            adUsage: resetAdUsage,
-                            lastLimitReset: now.toISOString()
-                        });
-                        
-                        // Update the global adUsage object
-                        window.adUsage = resetAdUsage;
-                        
-                        console.log("Daily limits reset successfully");
                     }
                 }
             } catch (error) {
@@ -1014,21 +1013,29 @@
 }
 
         async function loadAdCampaign() {
-            const user = auth.currentUser;
-            if (!user) {
-                alert("Please log in to watch ads and earn coins.");
-                return;
-            }
-
-            // Check if limits need to be reset
-            await resetDailyLimits(user.uid);
-
-            if (window.adUsage.adsWatched >= (window.adUsage.adsWatchLimit || 20)) {
-                alert("You have reached the daily limit for watching ads. Use 'Increase Ads Limit' to watch more.");
-                return;
-            }
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.className = 'loading-overlay';
+            loadingOverlay.innerHTML = `
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Loading Ad...</div>
+            `;
+            document.body.appendChild(loadingOverlay);
 
             try {
+                const user = auth.currentUser;
+                if (!user) {
+                    alert("Please log in to watch ads and earn coins.");
+                    return;
+                }
+
+                // Check if limits need to be reset
+                await resetDailyLimits(user.uid);
+
+                if (window.adUsage.adsWatched >= (window.adUsage.adsWatchLimit || 20)) {
+                    alert("You have reached the daily limit for watching ads. Use 'Increase Ads Limit' to watch more.");
+                    return;
+                }
+
                 const campaignsCollection = collection(db, 'campaigns');
                 const snapshot = await getDocs(campaignsCollection);
                 const campaigns = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -1206,9 +1213,21 @@
                     videoWrapper.appendChild(claimButton); // Append to videoWrapper to overlay on video
                 });
 
+                // Add timeout for ad loading
+                const timeout = setTimeout(() => {
+                    throw new Error('Ad loading timeout');
+                }, 15000);
+
+                // Clear timeout when video loads
+                videoElement.addEventListener('loadeddata', () => {
+                    clearTimeout(timeout);
+                    loadingOverlay.remove();
+                });
+
             } catch (error) {
-                console.error("Error loading campaigns:", error);
-                alert("Error loading campaigns. Please try again later.");
+                console.error("Error loading ad:", error);
+                loadingOverlay.remove();
+                alert("Failed to load ad. Please try again later.");
             }
         }
 
@@ -1320,25 +1339,26 @@
             }
         }
 
+        // Fix 4: Improve balance updates
         async function updateBalance(userId, amount) {
-            showLoading(true);
+            const userDocRef = doc(db, "users", userId);
+            
             try {
-                const userDocRef = doc(db, "users", userId);
-                const userDoc = await getDoc(userDocRef);
-
-                if (userDoc.exists()) {
+                await db.runTransaction(async (transaction) => {
+                    const userDoc = await transaction.get(userDocRef);
+                    if (!userDoc.exists()) {
+                        throw new Error("User document not found");
+                    }
+                    
                     const newBalance = (userDoc.data().balance || 0) + amount;
-                    await updateDoc(userDocRef, { balance: newBalance });
+                    transaction.update(userDocRef, { balance: newBalance });
+                    
+                    // Update UI after successful transaction
                     document.getElementById("balance").textContent = newBalance;
-                } else {
-                    console.error("User not found.");
-                    alert("Error: Unable to update balance. Please contact support.");
-                }
+                });
             } catch (error) {
-                console.error("Error updating balance: ", error);
-                alert("Error updating balance. Please try again later.");
-            } finally {
-                showLoading(false);
+                console.error("Error updating balance:", error);
+                alert("Failed to update balance. Please try again.");
             }
         }
 
@@ -1459,9 +1479,7 @@
                 ];
                 
                 function positionTooltip(tipId) {
-                    console.log("Positioning tooltip:", tipId);
                     const tooltip = document.getElementById(tipId);
-                    
                     const targetButton = {
                         'tasks-tooltip': document.querySelector('.fas.fa-tasks')?.closest('.button'),
                         'contest-tooltip': document.querySelector('.fas.fa-trophy')?.closest('.glowing-button'),
@@ -1477,27 +1495,25 @@
                     }[tipId];
                     
                     if (!tooltip || !targetButton) {
-                        console.error("Missing elements for tooltip positioning:", { tooltip, targetButton });
+                        console.error(`Missing elements for tooltip: ${tipId}`);
                         return;
                     }
                     
                     const rect = targetButton.getBoundingClientRect();
+                    const viewportHeight = window.innerHeight;
+                    
                     tooltip.style.display = 'block';
                     
-                    // Position tooltips for top buttons (mode switch and advertise)
+                    // Adjust positioning based on viewport
                     if (['mode-tooltip', 'advertise-tooltip'].includes(tipId)) {
-                        tooltip.style.top = `${rect.bottom + 15}px`;
-                        tooltip.style.bottom = 'auto';
+                        tooltip.style.top = Math.min(rect.bottom + 15, viewportHeight - 100) + 'px';
                     } else if (['profile-tooltip', 'withdraw-tooltip', 'friends-tooltip'].includes(tipId)) {
-                        // Position tooltips for bottom banner buttons
-                        tooltip.style.top = 'auto';
-                        tooltip.style.bottom = `${window.innerHeight - rect.top + 15}px`;
+                        tooltip.style.bottom = Math.max(viewportHeight - rect.top + 15, 100) + 'px';
                     } else {
-                        // Position tooltips for other buttons
-                        tooltip.style.bottom = 'auto';
-                        tooltip.style.top = `${rect.bottom + 15}px`;
+                        tooltip.style.top = Math.min(rect.bottom + 15, viewportHeight - 100) + 'px';
                     }
                     
+                    // Center horizontally
                     tooltip.style.left = `${rect.left + (rect.width / 2)}px`;
                     tooltip.style.transform = 'translateX(-50%)';
                 }
