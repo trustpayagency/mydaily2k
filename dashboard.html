@@ -845,9 +845,55 @@
             }
         }
 
-        // Update the onAuthStateChanged handler
+        // Add this after Firebase initialization
+        async function resetDailyLimits(userId) {
+            try {
+                const userDocRef = doc(db, "users", userId);
+                const userDoc = await getDoc(userDocRef);
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    const lastResetDate = userData.lastLimitReset ? new Date(userData.lastLimitReset) : null;
+                    const now = new Date();
+                    
+                    // Check if it's a new day (past midnight)
+                    if (!lastResetDate || !isSameDay(lastResetDate, now)) {
+                        // Reset the limits
+                        const resetAdUsage = {
+                            adsWatched: 0,
+                            directLinksUsed: 0,
+                            increaseLimitUsed: 0,
+                            adsWatchLimit: 20,    // Reset to default
+                            directLinkLimit: 20    // Reset to default
+                        };
+                        
+                        await updateDoc(userDocRef, {
+                            adUsage: resetAdUsage,
+                            lastLimitReset: now.toISOString()
+                        });
+                        
+                        // Update the global adUsage object
+                        window.adUsage = resetAdUsage;
+                        
+                        console.log("Daily limits reset successfully");
+                    }
+                }
+            } catch (error) {
+                console.error("Error resetting daily limits:", error);
+            }
+        }
+
+        // Helper function to check if two dates are the same day
+        function isSameDay(date1, date2) {
+            return date1.getFullYear() === date2.getFullYear() &&
+                   date1.getMonth() === date2.getMonth() &&
+                   date1.getDate() === date2.getDate();
+        }
+
+        // Modify the onAuthStateChanged handler to include the reset check
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                await resetDailyLimits(user.uid); // Add this line
                 await loadUserData(user.uid);
                 setupFeatureAccessListener();
                 updateLockStatus();
@@ -856,6 +902,67 @@
                 window.location.href = 'login.html';
             }
         });
+
+        // Modify the handleWatchAdsClick function
+        window.handleWatchAdsClick = async function() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Please log in to watch ads and earn coins.");
+                return;
+            }
+
+            // Check if limits need to be reset
+            await resetDailyLimits(user.uid);
+
+            if (window.adUsage.adsWatched >= (window.adUsage.adsWatchLimit || 20)) {
+                alert("You have reached the daily limit for watching ads. Use 'Increase Ads Limit' to watch more.");
+                return;
+            }
+
+            const button = document.getElementById('watchAdsButton');
+            button.classList.add('loading');
+            
+            try {
+                await loadAdCampaign();
+            } catch (error) {
+                console.error('Error loading ad:', error);
+                alert('Failed to load ad. Please try again.');
+            } finally {
+                button.classList.remove('loading');
+            }
+        }
+
+        // Modify the loadAdsterraAd function
+        window.loadAdsterraAd = async function() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Please log in to use direct links.");
+                return;
+            }
+
+            // Check if limits need to be reset
+            await resetDailyLimits(user.uid);
+
+            if (window.adUsage.directLinksUsed >= (window.adUsage.directLinkLimit || 20)) {
+                alert("You have reached the daily limit for direct links. Use 'Increase Link Limit' to use more.");
+                return;
+            }
+
+            try {
+                localStorage.setItem('directLinkStartTime', Date.now().toString());
+                const link = document.createElement('a');
+                link.href = 'https://www.profitablecpmrate.com/e9ap8ata9?key=4899d6aafddc404944002ca071108e1c';
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                startRewardCheck();
+            } catch (error) {
+                console.error("Error processing direct link:", error);
+                alert("Error processing direct link. Please try again later.");
+            }
+        }
 
         function showLoading(show) {
             document.getElementById("loading").style.display = show ? "block" : "none";
@@ -905,6 +1012,9 @@
                 alert("Please log in to watch ads and earn coins.");
                 return;
             }
+
+            // Check if limits need to be reset
+            await resetDailyLimits(user.uid);
 
             if (window.adUsage.adsWatched >= (window.adUsage.adsWatchLimit || 20)) {
                 alert("You have reached the daily limit for watching ads. Use 'Increase Ads Limit' to watch more.");
@@ -1127,6 +1237,9 @@
                 alert("Please log in to watch ads and earn coins.");
                 return;
             }
+
+            // Check if limits need to be reset
+            await resetDailyLimits(user.uid);
 
             if (window.adUsage.directLinksUsed >= (window.adUsage.directLinkLimit || 20)) {
                 alert("You have reached the daily limit for direct links. Use 'Increase Link Limit' to use more.");
