@@ -366,8 +366,8 @@
     border: none;
     margin-left: 13px;
     border-radius: 100%; /* Make it round */
-    width: 60px; /* Set width */
-    height: 60px; /* Set height */
+    width: 40px; /* Set width */
+    height: 40px; /* Set height */
     cursor: pointer;
     display: flex; /* Use flexbox for alignment */
     align-items: center; /* Center icon vertically */
@@ -378,7 +378,7 @@
 }
 
 .glowing-button i {
-    font-size: 24px; /* Adjust icon size */
+    font-size: 19px; /* Adjust icon size */
 }
 
 .glowing-button:hover {
@@ -484,6 +484,40 @@
         transform: translate(-50%, 0);
     }
 }
+
+.live-stream-button, .auction-button {
+    position: absolute;
+    right: 20px;
+    text-align: center;
+}
+
+.live-stream-button {
+    top: 320px;
+}
+
+.auction-button {
+    top: 420px;
+}
+
+.lock-icon {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    font-size: 5px;
+    color: #ff0000; 
+    border-radius: 50%;
+    padding: 3px;
+    transition: all 0.3s ease;
+}
+
+.unlocked {
+    color: #28a745 !important;
+    transform: scale(1.1);
+}
+
+.weekly-contest-button .glowing-button {
+    position: relative;  /* For lock icon positioning */
+}
     </style>
     </head>
 
@@ -546,6 +580,20 @@
             </div>
         </div>
 
+        <div class="tooltip" id="livestream-tooltip">
+            <div class="tooltip-content">
+                Watch live streams and interact with other users in real-time!
+                <button class="next-tip">Next</button>
+            </div>
+        </div>
+
+        <div class="tooltip" id="auction-tooltip">
+            <div class="tooltip-content">
+                Bid on exclusive items and win special rewards in our auction house!
+                <button class="next-tip">Next</button>
+            </div>
+        </div>
+
         <div class="tooltip" id="mode-tooltip">
             <div class="tooltip-content">
                 Switch between dark and light mode for your preferred viewing experience!
@@ -600,8 +648,9 @@
             <span class="button-label" style="margin-bottom: 20px; right: 20px;">Tasks</span>
         </div>
         <div class="weekly-contest-button">
-            <button class="glowing-button" onclick="window.location.href='weeklycontest.html'">
+            <button class="glowing-button" id="weeklyContestBtn" onclick="checkWeeklyContestAccess()">
                 <i class="fas fa-trophy" alt="Trophy Icon"></i>
+                <i class="fas fa-lock lock-icon" id="weeklyContestLock"></i>
             </button>
             <span class="button-label">Weekly Contest</span>
         </div>
@@ -622,6 +671,21 @@
             <button onclick="handleIncreaseDirectLinkLimit()" id="increaseDirectLinkButton" class="increase-limit-btn">
                 Increase Daily Limit
             </button>
+        </div>
+        <div class="live-stream-button">
+            <button class="glowing-button" id="liveStreamBtn" onclick="checkLiveStreamAccess()">
+                <i class="fas fa-video" alt="Live Stream Icon"></i>
+                <i class="fas fa-lock lock-icon" id="liveStreamLock"></i>
+            </button>
+            <span class="button-label">Live Stream</span>
+        </div>
+
+        <div class="auction-button">
+            <button class="glowing-button" id="auctionBtn" onclick="checkAuctionAccess()">
+                <i class="fas fa-gavel" alt="Auction Icon"></i>
+                <i class="fas fa-lock lock-icon" id="auctionLock"></i>
+            </button>
+            <span class="button-label">Auction</span>
         </div>
     </div>
 
@@ -651,7 +715,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
         import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js"; 
 
         // Firebase configuration
@@ -670,6 +734,128 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
+
+        // Function to check feature access
+        async function checkFeatureAccess(feature) {
+            const accessRef = doc(db, "featureAccess", "controls");
+            try {
+                const docSnap = await getDoc(accessRef);
+                if (docSnap.exists()) {
+                    return docSnap.data()[feature] || false;
+                }
+                return false;
+            } catch (error) {
+                console.error(`Error checking ${feature} access:`, error);
+                return false;
+            }
+        }
+
+        // Expose functions to global scope
+        window.checkWeeklyContestAccess = async function() {
+            const isUnlocked = await checkFeatureAccess('weeklyContestUnlocked');
+            const lockIcon = document.getElementById('weeklyContestLock');
+            
+            if (isUnlocked) {
+                lockIcon.classList.add('unlocked');
+                window.location.href = 'weeklycontest.html';
+            } else {
+                alert('Weekly Contest is not available at the moment. Please try again later.');
+            }
+        };
+
+        window.checkLiveStreamAccess = async function() {
+            const isUnlocked = await checkFeatureAccess('liveStreamUnlocked');
+            const lockIcon = document.getElementById('liveStreamLock');
+            
+            if (isUnlocked) {
+                lockIcon.classList.add('unlocked');
+                window.location.href = 'livestream.html';
+            } else {
+                alert('Live Stream is currently locked. Please wait for it to be unlocked.');
+            }
+        };
+
+        window.checkAuctionAccess = async function() {
+            const isUnlocked = await checkFeatureAccess('auctionUnlocked');
+            const lockIcon = document.getElementById('auctionLock');
+            
+            if (isUnlocked) {
+                lockIcon.classList.add('unlocked');
+                window.location.href = 'auction.html';
+            } else {
+                alert('Auction is currently locked. Please wait for it to be unlocked.');
+            }
+        };
+
+        // Set up real-time listener for feature access changes
+        function setupFeatureAccessListener() {
+            const accessRef = doc(db, "featureAccess", "controls");
+            onSnapshot(accessRef, async (docSnapshot) => {
+                if (docSnapshot.exists()) {
+                    await updateLockStatus();
+                    console.log("Feature access updated:", docSnapshot.data());
+                }
+            });
+        }
+
+        async function updateLockStatus() {
+            const liveStreamLocked = await checkFeatureAccess('liveStreamUnlocked');
+            const auctionLocked = await checkFeatureAccess('auctionUnlocked');
+            const weeklyContestLocked = await checkFeatureAccess('weeklyContestUnlocked');
+            
+            const liveStreamLock = document.getElementById('liveStreamLock');
+            const auctionLock = document.getElementById('auctionLock');
+            const weeklyContestLock = document.getElementById('weeklyContestLock');
+            
+            // Update lock icons if they exist
+            if (liveStreamLock) {
+                if (liveStreamLocked) {
+                    liveStreamLock.classList.add('unlocked');
+                    liveStreamLock.classList.remove('fa-lock');
+                    liveStreamLock.classList.add('fa-lock-open');
+                } else {
+                    liveStreamLock.classList.remove('unlocked');
+                    liveStreamLock.classList.remove('fa-lock-open');
+                    liveStreamLock.classList.add('fa-lock');
+                }
+            }
+            
+            if (auctionLock) {
+                if (auctionLocked) {
+                    auctionLock.classList.add('unlocked');
+                    auctionLock.classList.remove('fa-lock');
+                    auctionLock.classList.add('fa-lock-open');
+                } else {
+                    auctionLock.classList.remove('unlocked');
+                    auctionLock.classList.remove('fa-lock-open');
+                    auctionLock.classList.add('fa-lock');
+                }
+            }
+            
+            if (weeklyContestLock) {
+                if (weeklyContestLocked) {
+                    weeklyContestLock.classList.add('unlocked');
+                    weeklyContestLock.classList.remove('fa-lock');
+                    weeklyContestLock.classList.add('fa-lock-open');
+                } else {
+                    weeklyContestLock.classList.remove('unlocked');
+                    weeklyContestLock.classList.remove('fa-lock-open');
+                    weeklyContestLock.classList.add('fa-lock');
+                }
+            }
+        }
+
+        // Update the onAuthStateChanged handler
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                await loadUserData(user.uid);
+                setupFeatureAccessListener();
+                updateLockStatus();
+                showIntroTutorial();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
 
         function showLoading(show) {
             document.getElementById("loading").style.display = show ? "block" : "none";
@@ -713,18 +899,6 @@
     return userData; // Return the user data
 }
 
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        await loadUserData(user.uid);
-        
-        // Log the user object to check its structure
-        console.log("User object:", user);
- 
-    } else {
-        console.log("User not logged in. Redirecting to login page.");
-        window.location.href = 'login.html';
-    }
-});   
         async function loadAdCampaign() {
             const user = auth.currentUser;
             if (!user) {
@@ -1155,11 +1329,13 @@ onAuthStateChanged(auth, async (user) => {
                     'contest-tooltip', 
                     'ads-tooltip', 
                     'direct-tooltip',
+                    'livestream-tooltip',  // Add livestream tooltip
+                    'auction-tooltip',     // Add auction tooltip
                     'profile-tooltip',
                     'withdraw-tooltip',
                     'friends-tooltip',
-                    'mode-tooltip',    // Add mode switch tooltip
-                    'advertise-tooltip'  // Add advertise tooltip
+                    'mode-tooltip',
+                    'advertise-tooltip'
                 ];
                 
                 function positionTooltip(tipId) {
@@ -1171,11 +1347,13 @@ onAuthStateChanged(auth, async (user) => {
                         'contest-tooltip': document.querySelector('.fas.fa-trophy')?.closest('.glowing-button'),
                         'ads-tooltip': document.querySelector('.fas.fa-ad')?.closest('.button'),
                         'direct-tooltip': document.querySelector('.fas.fa-paper-plane')?.closest('.button'),
+                        'livestream-tooltip': document.querySelector('.fas.fa-video')?.closest('.glowing-button'),
+                        'auction-tooltip': document.querySelector('.fas.fa-gavel')?.closest('.glowing-button'),
                         'profile-tooltip': document.querySelector('.fas.fa-user')?.closest('.button'),
                         'withdraw-tooltip': document.querySelector('.fas.fa-wallet')?.closest('.button'),
                         'friends-tooltip': document.querySelector('.fas.fa-user-friends')?.closest('.button'),
-                        'mode-tooltip': document.getElementById('modeToggle'),  // Add mode switch button
-                        'advertise-tooltip': document.querySelector('.switch a')  // Add advertise button
+                        'mode-tooltip': document.getElementById('modeToggle'),
+                        'advertise-tooltip': document.querySelector('.switch a')
                     }[tipId];
                     
                     if (!tooltip || !targetButton) {
