@@ -366,8 +366,8 @@
     border: none;
     margin-left: 13px;
     border-radius: 100%; /* Make it round */
-    width: 40px; /* Set width */
-    height: 40px; /* Set height */
+    width: 60px; /* Set width */
+    height: 60px; /* Set height */
     cursor: pointer;
     display: flex; /* Use flexbox for alignment */
     align-items: center; /* Center icon vertically */
@@ -378,7 +378,7 @@
 }
 
 .glowing-button i {
-    font-size: 19px; /* Adjust icon size */
+    font-size: 24px; /* Adjust icon size */
 }
 
 .glowing-button:hover {
@@ -405,126 +405,40 @@
     }
 } 
 
-.tooltip {
-    position: fixed;
-    background: rgba(255, 255, 255, 0.95);
-    color: #333;
-    padding: 15px;
-    border-radius: 12px;
-    width: 90px; /* Increased width */
-    z-index: 1000;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    animation: fadeIn 0.3s ease-in-out;
-    text-align: center;
-    border: 1px solid #ddd;
-}
-
-/* Arrow for tooltips pointing UP (for bottom banner buttons) */
-.tooltip[id$="-tooltip"]::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid rgba(255, 255, 255, 0.95);
-}
-
-/* Arrow for tooltips pointing DOWN (specifically for bottom banner buttons) */
-.tooltip[id="profile-tooltip"]::before,
-.tooltip[id="withdraw-tooltip"]::before,
-.tooltip[id="friends-tooltip"]::before {
-    top: auto;
-    bottom: -8px;
-    border-bottom: none;
-    border-top: 8px solid rgba(255, 255, 255, 0.95);
-}
-
-#intro-tooltips::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.3); /* Lighter overlay */
-    z-index: 999;
-}
-
-.tooltip-content {
-    font-size: 14px;
-    line-height: 1.4;
-    margin-bottom: 15px;
-    color: #333;
-}
-
-.next-tip {
-    background: #ec8f04;
-    color: white;
-    border: none;
-    padding: 8px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
-}
-
-.next-tip:hover {
-    background: #d07c03;
-}
-
-@keyframes fadeIn {
-    from { 
-        opacity: 0; 
-        transform: translate(-50%, 10px);
-    }
-    to { 
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-}
-
-.live-stream-button{
+/* Add these new styles */
+.right-side-buttons {
     position: absolute;
     right: 20px;
-    text-align: center;
-}
-
-.auction-button {
-    position: absolute;
-    right: 30px;
-    text-align: center;
-}
-
-.live-stream-button {
     top: 320px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-.auction-button {
-    top: 420px;
+.auction-button,
+.livestream-button {
+    text-align: center;
 }
 
-.lock-icon {
-    position: absolute;
-    bottom: -5px;
-    right: -5px;
-    font-size: 5px;
-    color: #ff0000; 
-    border-radius: 50%;
-    padding: 3px;
-    transition: all 0.3s ease;
+.glowing-button.auction {
+    background-color: #0ca1af;
+    color: #0bdddd;
 }
 
-.unlocked {
-    color: #28a745 !important;
-    transform: scale(1.1);
+.glowing-button.auction:hover {
+    box-shadow: 0 0 20px rgb(9, 225, 255), 0 0 30px rgba(4, 236, 225, 0.8);
 }
 
-.weekly-contest-button .glowing-button {
-    position: relative;  /* For lock icon positioning */
+.glowing-button.livestream {
+    background-color: #af0c7a;
+    color: #dd0b9e;
 }
-    </style>
+
+.glowing-button.livestream:hover {
+    box-shadow: 0 0 20px rgb(255, 9, 234), 0 0 30px rgba(236, 4, 221, 0.8);
+}
+</style>
     </head>
 
 <body>
@@ -536,84 +450,7 @@
             } catch (e) {}
         })('groleegni.net', 8579388, document.createElement('script'));
     </script> 
-    <div id="intro-tooltips" style="display: none;">
-        <div class="tooltip" id="tasks-tooltip">
-            <div class="tooltip-content">
-                Complete simple tasks to earn 2KCoins! Tasks refresh daily.
-                <button class="next-tip">Next</button>
-            </div>
-        </div>
-        
-        <div class="tooltip" id="contest-tooltip">
-            <div class="tooltip-content">
-                Join weekly contests to win big rewards and compete with others!
-                <button class="next-tip">Next</button>
-            </div>
-        </div>
-        
-        <div class="tooltip" id="ads-tooltip">
-            <div class="tooltip-content">
-                Watch ads to earn 2KCoins. Complete more for better rewards!
-                <button class="next-tip">Next</button>
-            </div>
-        </div>
-        
-        <div class="tooltip" id="direct-tooltip">
-            <div class="tooltip-content">
-                Visit direct links to quickly earn 2KCoins!
-                <button class="next-tip">Next</button>
-            </div>
-        </div>
-
-        <div class="tooltip" id="profile-tooltip">
-            <div class="tooltip-content">
-                View and edit your profile settings, track your achievements and stats!
-                <button class="next-tip">Next</button>
-            </div>
-        </div>
-
-        <div class="tooltip" id="withdraw-tooltip">
-            <div class="tooltip-content">
-                Convert your earned 2KCoins into real rewards! Check withdrawal options here.
-                <button class="next-tip">Next</button>
-            </div>
-        </div>
-
-        <div class="tooltip" id="friends-tooltip">
-            <div class="tooltip-content">
-                Connect with friends, share achievements, and earn bonus rewards together!
-                <button class="next-tip">Next</button>
-            </div>
-        </div>
-
-        <div class="tooltip" id="livestream-tooltip">
-            <div class="tooltip-content">
-                Watch live streams and interact with other users in real-time!
-                <button class="next-tip">Next</button>
-            </div>
-        </div>
-
-        <div class="tooltip" id="auction-tooltip">
-            <div class="tooltip-content">
-                Bid on exclusive items and win special rewards in our auction house!
-                <button class="next-tip">Next</button>
-            </div>
-        </div>
-
-        <div class="tooltip" id="mode-tooltip">
-            <div class="tooltip-content">
-                Switch between dark and light mode for your preferred viewing experience!
-                <button class="next-tip">Next</button>
-            </div>
-        </div>
-        
-        <div class="tooltip" id="advertise-tooltip">
-            <div class="tooltip-content">
-                Create and publish your own ads to promote your business or content!
-                <button class="next-tip">Got it!</button>
-            </div>
-        </div>
-    </div>
+ 
     <div class="profile-container">
         <img id="profile-pic" src="R.png" alt="Profile Picture" style="width: 50px; height: 50px; border-radius: 50%;">
         <span id="username" style="color: #fff; margin-left: 10px;">User Name</span>
@@ -654,9 +491,8 @@
             <span class="button-label" style="margin-bottom: 20px; right: 20px;">Tasks</span>
         </div>
         <div class="weekly-contest-button">
-            <button class="glowing-button" id="weeklyContestBtn" onclick="checkWeeklyContestAccess()">
+            <button class="glowing-button" onclick="window.location.href='weeklycontest.html'">
                 <i class="fas fa-trophy" alt="Trophy Icon"></i>
-                <i class="fas fa-lock lock-icon" id="weeklyContestLock"></i>
             </button>
             <span class="button-label">Weekly Contest</span>
         </div>
@@ -667,7 +503,7 @@
             <span class="button-label">Watch Ads</span>
             <button onclick="handleIncreaseWatchAdsLimit()" id="increaseWatchAdsButton" class="increase-limit-btn">
                 Increase Daily Limit
-            </button><script src='//niphaumeenses.net/vignette.min.js' data-zone='8522466' data-sdk='show_8522466'></script>
+            </button>
         </div>
         <div>
             <button class="button" onclick="window.loadAdsterraAd()">
@@ -677,22 +513,20 @@
             <button onclick="handleIncreaseDirectLinkLimit()" id="increaseDirectLinkButton" class="increase-limit-btn">
                 Increase Daily Limit
             </button>
-            <script src='//niphaumeenses.net/vignette.min.js' data-zone='8522466' data-sdk='show_8522466'></script>
         </div>
-        <div class="live-stream-button">
-            <button class="glowing-button" id="liveStreamBtn" onclick="checkLiveStreamAccess()">
-                <i class="fas fa-video" alt="Live Stream Icon"></i>
-                <i class="fas fa-lock lock-icon" id="liveStreamLock"></i>
-            </button>
-            <span class="button-label">Live Stream</span>
-        </div>
-
-        <div class="auction-button">
-            <button class="glowing-button" id="auctionBtn" onclick="checkAuctionAccess()">
-                <i class="fas fa-gavel" alt="Auction Icon"></i>
-                <i class="fas fa-lock lock-icon" id="auctionLock"></i>
-            </button>
-            <span class="button-label">Auction</span>
+        <div class="right-side-buttons">
+            <div class="auction-button">
+                <button class="glowing-button auction" onclick="window.location.href='auction.html'">
+                    <i class="fas fa-gavel" alt="Auction Icon"></i>
+                </button>
+                <span class="button-label">Auction</span>
+            </div>
+            <div class="livestream-button">
+                <button class="glowing-button livestream" onclick="window.location.href='livestream.html'">
+                    <i class="fas fa-video" alt="Livestream Icon"></i>
+                </button>
+                <span class="button-label">Live Stream</span>
+            </div>
         </div>
     </div>
 
@@ -717,12 +551,10 @@
         </div>
     </footer>
 
-    
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
         import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js"; 
 
         // Firebase configuration
@@ -741,234 +573,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
-
-        // Function to check feature access
-        async function checkFeatureAccess(feature) {
-            const accessRef = doc(db, "featureAccess", "controls");
-            try {
-                const docSnap = await getDoc(accessRef);
-                if (docSnap.exists()) {
-                    return docSnap.data()[feature] || false;
-                }
-                return false;
-            } catch (error) {
-                console.error(`Error checking ${feature} access:`, error);
-                return false;
-            }
-        }
-
-        // Expose functions to global scope
-        window.checkWeeklyContestAccess = async function() {
-            const isUnlocked = await checkFeatureAccess('weeklyContestUnlocked');
-            const lockIcon = document.getElementById('weeklyContestLock');
-            
-            if (isUnlocked) {
-                lockIcon.classList.add('unlocked');
-                window.location.href = 'weeklycontest.html';
-            } else {
-                alert('Weekly Contest is not available at the moment. Please try again later.');
-            }
-        };
-
-        window.checkLiveStreamAccess = async function() {
-            const isUnlocked = await checkFeatureAccess('liveStreamUnlocked');
-            const lockIcon = document.getElementById('liveStreamLock');
-            
-            if (isUnlocked) {
-                lockIcon.classList.add('unlocked');
-                window.location.href = 'livestream.html';
-            } else {
-                alert('Live Stream is currently locked. Please wait for it to be unlocked.');
-            }
-        };
-
-        window.checkAuctionAccess = async function() {
-            const isUnlocked = await checkFeatureAccess('auctionUnlocked');
-            const lockIcon = document.getElementById('auctionLock');
-            
-            if (isUnlocked) {
-                lockIcon.classList.add('unlocked');
-                window.location.href = 'auction.html';
-            } else {
-                alert('Auction is currently locked. Please wait for it to be unlocked.');
-            }
-        };
-
-        // Set up real-time listener for feature access changes
-        function setupFeatureAccessListener() {
-            const accessRef = doc(db, "featureAccess", "controls");
-            onSnapshot(accessRef, async (docSnapshot) => {
-                if (docSnapshot.exists()) {
-                    await updateLockStatus();
-                    console.log("Feature access updated:", docSnapshot.data());
-                }
-            });
-        }
-
-        async function updateLockStatus() {
-            const liveStreamLocked = await checkFeatureAccess('liveStreamUnlocked');
-            const auctionLocked = await checkFeatureAccess('auctionUnlocked');
-            const weeklyContestLocked = await checkFeatureAccess('weeklyContestUnlocked');
-            
-            const liveStreamLock = document.getElementById('liveStreamLock');
-            const auctionLock = document.getElementById('auctionLock');
-            const weeklyContestLock = document.getElementById('weeklyContestLock');
-            
-            // Update lock icons if they exist
-            if (liveStreamLock) {
-                if (liveStreamLocked) {
-                    liveStreamLock.classList.add('unlocked');
-                    liveStreamLock.classList.remove('fa-lock');
-                    liveStreamLock.classList.add('fa-lock-open');
-                } else {
-                    liveStreamLock.classList.remove('unlocked');
-                    liveStreamLock.classList.remove('fa-lock-open');
-                    liveStreamLock.classList.add('fa-lock');
-                }
-            }
-            
-            if (auctionLock) {
-                if (auctionLocked) {
-                    auctionLock.classList.add('unlocked');
-                    auctionLock.classList.remove('fa-lock');
-                    auctionLock.classList.add('fa-lock-open');
-                } else {
-                    auctionLock.classList.remove('unlocked');
-                    auctionLock.classList.remove('fa-lock-open');
-                    auctionLock.classList.add('fa-lock');
-                }
-            }
-            
-            if (weeklyContestLock) {
-                if (weeklyContestLocked) {
-                    weeklyContestLock.classList.add('unlocked');
-                    weeklyContestLock.classList.remove('fa-lock');
-                    weeklyContestLock.classList.add('fa-lock-open');
-                } else {
-                    weeklyContestLock.classList.remove('unlocked');
-                    weeklyContestLock.classList.remove('fa-lock-open');
-                    weeklyContestLock.classList.add('fa-lock');
-                }
-            }
-        }
-
-        // Fix 1: Improve ad usage tracking and limits
-        async function resetDailyLimits(userId) {
-            try {
-                const userDocRef = doc(db, "users", userId);
-                const userDoc = await getDoc(userDocRef);
-                
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    const lastResetDate = userData.lastLimitReset ? new Date(userData.lastLimitReset.toDate()) : null;
-                    const now = new Date();
-                    
-                    if (!lastResetDate || !isSameDay(lastResetDate, now)) {
-                        await updateDoc(userDocRef, {
-                            adUsage: {
-                                adsWatched: 0,
-                                directLinksUsed: 0,
-                                increaseLimitUsed: 0,
-                                adsWatchLimit: 20,
-                                directLinkLimit: 20
-                            },
-                            lastLimitReset: now
-                        });
-                        
-                        window.adUsage = {
-                            adsWatched: 0,
-                            directLinksUsed: 0,
-                            increaseLimitUsed: 0,
-                            adsWatchLimit: 20,
-                            directLinkLimit: 20
-                        };
-                    }
-                }
-            } catch (error) {
-                console.error("Error resetting daily limits:", error);
-            }
-        }
-
-        // Helper function to check if two dates are the same day
-        function isSameDay(date1, date2) {
-            return date1.getFullYear() === date2.getFullYear() &&
-                   date1.getMonth() === date2.getMonth() &&
-                   date1.getDate() === date2.getDate();
-        }
-
-        // Modify the onAuthStateChanged handler to include the reset check
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                await resetDailyLimits(user.uid); // Add this line
-                await loadUserData(user.uid);
-                setupFeatureAccessListener();
-                updateLockStatus();
-                showIntroTutorial();
-            } else {
-                window.location.href = 'login.html';
-            }
-        });
-
-        // Modify the handleWatchAdsClick function
-        window.handleWatchAdsClick = async function() {
-            const user = auth.currentUser;
-            if (!user) {
-                alert("Please log in to watch ads and earn coins.");
-                return;
-            }
-
-            // Check if limits need to be reset
-            await resetDailyLimits(user.uid);
-
-            if (window.adUsage.adsWatched >= (window.adUsage.adsWatchLimit || 20)) {
-                alert("You have reached the daily limit for watching ads. Use 'Increase Ads Limit' to watch more.");
-                return;
-            }
-
-            const button = document.getElementById('watchAdsButton');
-            button.classList.add('loading');
-            
-            try {
-                await loadAdCampaign();
-            } catch (error) {
-                console.error('Error loading ad:', error);
-                alert('Failed to load ad. Please try again.');
-            } finally {
-                button.classList.remove('loading');
-            }
-        }
-
-        // Modify the loadAdsterraAd function
-        window.loadAdsterraAd = async function() {
-            const user = auth.currentUser;
-            if (!user) {
-                alert("Please log in to use direct links.");
-                return;
-            }
-
-            // Check if limits need to be reset
-            await resetDailyLimits(user.uid);
-
-            if (window.adUsage.directLinksUsed >= (window.adUsage.directLinkLimit || 20)) {
-                alert("You have reached the daily limit for direct links. Use 'Increase Link Limit' to use more.");
-                return;
-            }
-
-            try {
-                localStorage.setItem('directLinkStartTime', Date.now().toString());
-                const link = document.createElement('a');
-                link.href = 'https://www.profitablecpmrate.com/e9ap8ata9?key=4899d6aafddc404944002ca071108e1c';
-                link.target = '_blank';
-                link.rel = 'noopener noreferrer';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                startRewardCheck();
-            } catch (error) {
-                console.error("Error processing direct link:", error);
-                alert("Error processing direct link. Please try again later.");
-            }
-        }
 
         function showLoading(show) {
             document.getElementById("loading").style.display = show ? "block" : "none";
@@ -1012,30 +616,31 @@
     return userData; // Return the user data
 }
 
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        await loadUserData(user.uid);
+        
+        // Log the user object to check its structure
+        console.log("User object:", user);
+ 
+    } else {
+        console.log("User not logged in. Redirecting to login page.");
+        window.location.href = 'login.html';
+    }
+});   
         async function loadAdCampaign() {
-            const loadingOverlay = document.createElement('div');
-            loadingOverlay.className = 'loading-overlay';
-            loadingOverlay.innerHTML = `
-                <div class="loading-spinner"></div>
-                <div class="loading-text">Loading Ad...</div>
-            `;
-            document.body.appendChild(loadingOverlay);
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Please log in to watch ads and earn coins.");
+                return;
+            }
+
+            if (window.adUsage.adsWatched >= (window.adUsage.adsWatchLimit || 20)) {
+                alert("You have reached the daily limit for watching ads. Use 'Increase Ads Limit' to watch more.");
+                return;
+            }
 
             try {
-                const user = auth.currentUser;
-                if (!user) {
-                    alert("Please log in to watch ads and earn coins.");
-                    return;
-                }
-
-                // Check if limits need to be reset
-                await resetDailyLimits(user.uid);
-
-                if (window.adUsage.adsWatched >= (window.adUsage.adsWatchLimit || 20)) {
-                    alert("You have reached the daily limit for watching ads. Use 'Increase Ads Limit' to watch more.");
-                    return;
-                }
-
                 const campaignsCollection = collection(db, 'campaigns');
                 const snapshot = await getDocs(campaignsCollection);
                 const campaigns = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -1213,21 +818,9 @@
                     videoWrapper.appendChild(claimButton); // Append to videoWrapper to overlay on video
                 });
 
-                // Add timeout for ad loading
-                const timeout = setTimeout(() => {
-                    throw new Error('Ad loading timeout');
-                }, 15000);
-
-                // Clear timeout when video loads
-                videoElement.addEventListener('loadeddata', () => {
-                    clearTimeout(timeout);
-                    loadingOverlay.remove();
-                });
-
             } catch (error) {
-                console.error("Error loading ad:", error);
-                loadingOverlay.remove();
-                alert("Failed to load ad. Please try again later.");
+                console.error("Error loading campaigns:", error);
+                alert("Error loading campaigns. Please try again later.");
             }
         }
 
@@ -1264,9 +857,6 @@
                 return;
             }
 
-            // Check if limits need to be reset
-            await resetDailyLimits(user.uid);
-
             if (window.adUsage.directLinksUsed >= (window.adUsage.directLinkLimit || 20)) {
                 alert("You have reached the daily limit for direct links. Use 'Increase Link Limit' to use more.");
                 return;
@@ -1278,7 +868,7 @@
                 
                 // Open in new tab
                 const link = document.createElement('a');
-                link.href = 'https://luglawhaulsano.net/4/7728924';
+                link.href = 'https://www.profitablecpmrate.com/e9ap8ata9?key=4899d6aafddc404944002ca071108e1c';
                 link.target = '_blank';
                 link.rel = 'noopener noreferrer';
                 document.body.appendChild(link);
@@ -1339,26 +929,25 @@
             }
         }
 
-        // Fix 4: Improve balance updates
         async function updateBalance(userId, amount) {
-            const userDocRef = doc(db, "users", userId);
-            
+            showLoading(true);
             try {
-                await db.runTransaction(async (transaction) => {
-                    const userDoc = await transaction.get(userDocRef);
-                    if (!userDoc.exists()) {
-                        throw new Error("User document not found");
-                    }
-                    
+                const userDocRef = doc(db, "users", userId);
+                const userDoc = await getDoc(userDocRef);
+
+                if (userDoc.exists()) {
                     const newBalance = (userDoc.data().balance || 0) + amount;
-                    transaction.update(userDocRef, { balance: newBalance });
-                    
-                    // Update UI after successful transaction
+                    await updateDoc(userDocRef, { balance: newBalance });
                     document.getElementById("balance").textContent = newBalance;
-                });
+                } else {
+                    console.error("User not found.");
+                    alert("Error: Unable to update balance. Please contact support.");
+                }
             } catch (error) {
-                console.error("Error updating balance:", error);
-                alert("Failed to update balance. Please try again.");
+                console.error("Error updating balance: ", error);
+                alert("Error updating balance. Please try again later.");
+            } finally {
+                showLoading(false);
             }
         }
 
@@ -1448,131 +1037,6 @@
         
         // Set initial button text based on the current mode
         modeToggle.textContent = currentMode === 'light' ? 'Light Mode' : 'Dark Mode';
-
-        function showIntroTutorial() {
-            console.log("Checking tutorial status...");
-            const isNewUser = !localStorage.getItem('tutorialShown');
-            console.log("Is new user:", isNewUser);
-            
-            if (isNewUser) {
-                const tooltips = document.getElementById('intro-tooltips');
-                if (!tooltips) {
-                    console.error("Tooltips container not found!");
-                    return;
-                }
-                
-                tooltips.style.display = 'block';
-                
-                let currentTip = 0;
-                const tips = [
-                    'tasks-tooltip', 
-                    'contest-tooltip', 
-                    'ads-tooltip', 
-                    'direct-tooltip',
-                    'livestream-tooltip',  // Add livestream tooltip
-                    'auction-tooltip',     // Add auction tooltip
-                    'profile-tooltip',
-                    'withdraw-tooltip',
-                    'friends-tooltip',
-                    'mode-tooltip',
-                    'advertise-tooltip'
-                ];
-                
-                function positionTooltip(tipId) {
-                    const tooltip = document.getElementById(tipId);
-                    const targetButton = {
-                        'tasks-tooltip': document.querySelector('.fas.fa-tasks')?.closest('.button'),
-                        'contest-tooltip': document.querySelector('.fas.fa-trophy')?.closest('.glowing-button'),
-                        'ads-tooltip': document.querySelector('.fas.fa-ad')?.closest('.button'),
-                        'direct-tooltip': document.querySelector('.fas.fa-paper-plane')?.closest('.button'),
-                        'livestream-tooltip': document.querySelector('.fas.fa-video')?.closest('.glowing-button'),
-                        'auction-tooltip': document.querySelector('.fas.fa-gavel')?.closest('.glowing-button'),
-                        'profile-tooltip': document.querySelector('.fas.fa-user')?.closest('.button'),
-                        'withdraw-tooltip': document.querySelector('.fas.fa-wallet')?.closest('.button'),
-                        'friends-tooltip': document.querySelector('.fas.fa-user-friends')?.closest('.button'),
-                        'mode-tooltip': document.getElementById('modeToggle'),
-                        'advertise-tooltip': document.querySelector('.switch a')
-                    }[tipId];
-                    
-                    if (!tooltip || !targetButton) {
-                        console.error(`Missing elements for tooltip: ${tipId}`);
-                        return;
-                    }
-                    
-                    const rect = targetButton.getBoundingClientRect();
-                    const viewportHeight = window.innerHeight;
-                    
-                    tooltip.style.display = 'block';
-                    
-                    // Adjust positioning based on viewport
-                    if (['mode-tooltip', 'advertise-tooltip'].includes(tipId)) {
-                        tooltip.style.top = Math.min(rect.bottom + 15, viewportHeight - 100) + 'px';
-                    } else if (['profile-tooltip', 'withdraw-tooltip', 'friends-tooltip'].includes(tipId)) {
-                        tooltip.style.bottom = Math.max(viewportHeight - rect.top + 15, 100) + 'px';
-                    } else {
-                        tooltip.style.top = Math.min(rect.bottom + 15, viewportHeight - 100) + 'px';
-                    }
-                    
-                    // Center horizontally
-                    tooltip.style.left = `${rect.left + (rect.width / 2)}px`;
-                    tooltip.style.transform = 'translateX(-50%)';
-                }
-                
-                function showNextTip() {
-                    console.log("Showing next tip, current index:", currentTip);
-                    tips.forEach(tip => {
-                        const element = document.getElementById(tip);
-                        if (element) element.style.display = 'none';
-                    });
-                    
-                    if (currentTip < tips.length) {
-                        const tipId = tips[currentTip];
-                        positionTooltip(tipId);
-                        currentTip++;
-                    } else {
-                        tooltips.style.display = 'none';
-                        localStorage.setItem('tutorialShown', 'true');
-                        console.log("Tutorial completed");
-                    }
-                }
-                
-                document.querySelectorAll('.next-tip').forEach(button => {
-                    button.addEventListener('click', showNextTip);
-                });
-                
-                setTimeout(showNextTip, 500);
-                
-                window.addEventListener('resize', () => {
-                    if (currentTip > 0 && currentTip <= tips.length) {
-                        positionTooltip(tips[currentTip - 1]);
-                    }
-                });
-            }
-        }
-
-        // Modify the initialization to ensure it runs at the right time
-        document.addEventListener('DOMContentLoaded', () => {
-            // If using Firebase Auth, we'll wait for auth state
-            if (typeof auth !== 'undefined') {
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        console.log("User authenticated, showing tutorial");
-                        showIntroTutorial();
-                    }
-                });
-            } else {
-                // If not using Firebase Auth, show tutorial directly
-                console.log("No auth detected, showing tutorial directly");
-                showIntroTutorial();
-            }
-        });
-
-        // Add this to force reset the tutorial (for testing)
-        // Comment out or remove in production
-        window.resetTutorial = function() {
-            localStorage.removeItem('tutorialShown');
-            location.reload();
-        };
     </script>
     <script type='text/javascript' src='https://pl25145596.profitablecpmrate.com/a1/91/a1/a191a1a71e1bfd8cf2b8b436068db02a.js'></script>
  </body> 
