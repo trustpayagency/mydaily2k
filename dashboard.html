@@ -1315,7 +1315,7 @@
 
         async function checkFeatureAccess() {
             try {
-                const controlDocRef = doc(db, "featureAccess", "control");
+                const controlDocRef = doc(db, "featureAccess", "controls");
                 const docSnap = await getDoc(controlDocRef);
 
                 if (docSnap.exists()) {
@@ -1326,8 +1326,11 @@
                     if (!controls.weeklyContestUnlocked) {
                         weeklyContestBtn.innerHTML = `<i class="fas fa-lock"></i>`;
                         weeklyContestBtn.onclick = () => alert('This feature is currently locked');
-                        weeklyContestBtn.style.backgroundColor = '#666';
-                        weeklyContestBtn.style.cursor = 'not-allowed';
+                        weeklyContestBtn.classList.add('locked');
+                    } else {
+                        weeklyContestBtn.innerHTML = `<i class="fas fa-trophy"></i>`; // Restore trophy icon
+                        weeklyContestBtn.onclick = () => window.location.href='weeklycontest.html';
+                        weeklyContestBtn.classList.remove('locked');
                     }
 
                     // Auction Lock
@@ -1335,8 +1338,11 @@
                     if (!controls.auctionUnlocked) {
                         auctionBtn.innerHTML = `<i class="fas fa-lock"></i>`;
                         auctionBtn.onclick = () => alert('This feature is currently locked');
-                        auctionBtn.style.backgroundColor = '#666';
-                        auctionBtn.style.cursor = 'not-allowed';
+                        auctionBtn.classList.add('locked');
+                    } else {
+                        auctionBtn.innerHTML = `<i class="fas fa-gavel"></i>`; // Restore gavel icon
+                        auctionBtn.onclick = () => window.location.href='auction.html';
+                        auctionBtn.classList.remove('locked');
                     }
 
                     // Livestream Lock
@@ -1344,8 +1350,11 @@
                     if (!controls.liveStreamUnlocked) {
                         livestreamBtn.innerHTML = `<i class="fas fa-lock"></i>`;
                         livestreamBtn.onclick = () => alert('This feature is currently locked');
-                        livestreamBtn.style.backgroundColor = '#666';
-                        livestreamBtn.style.cursor = 'not-allowed';
+                        livestreamBtn.classList.add('locked');
+                    } else {
+                        livestreamBtn.innerHTML = `<i class="fas fa-video"></i>`; // Restore video icon
+                        livestreamBtn.onclick = () => window.location.href='livestream.html';
+                        livestreamBtn.classList.remove('locked');
                     }
                 }
             } catch (error) {
