@@ -738,54 +738,6 @@
             }
         }
 
-        async function checkFeatureAccess() {
-            const user = auth.currentUser;
-            if (!user) return;
-
-            try {
-                const userDocRef = doc(db, "users", user.uid);
-                const userDoc = await getDoc(userDocRef);
-                const userData = userDoc.data();
-
-                // Get the auction and livestream buttons
-                const auctionButton = document.querySelector('.glowing-button.auction');
-                const livestreamButton = document.querySelector('.glowing-button.livestream');
-
-                // Check if user has required balance or permissions
-                const userBalance = userData.balance || 0;
-                const requiredBalance = 1000; // Set your required balance threshold
-
-                // Lock/unlock auction feature
-                if (auctionButton) {
-                    if (userBalance < requiredBalance) {
-                        auctionButton.classList.add('locked');
-                        auctionButton.innerHTML = '<i class="fas fa-lock"></i>';
-                        auctionButton.onclick = () => alert(`You need at least ${requiredBalance} 2KCoins to access the Auction feature.`);
-                    } else {
-                        auctionButton.classList.remove('locked');
-                        auctionButton.innerHTML = '<i class="fas fa-gavel"></i>';
-                        auctionButton.onclick = () => window.location.href = 'auction.html';
-                    }
-                }
-
-                // Lock/unlock livestream feature
-                if (livestreamButton) {
-                    if (userBalance < requiredBalance) {
-                        livestreamButton.classList.add('locked');
-                        livestreamButton.innerHTML = '<i class="fas fa-lock"></i>';
-                        livestreamButton.onclick = () => alert(`You need at least ${requiredBalance} 2KCoins to access the Live Stream feature.`);
-                    } else {
-                        livestreamButton.classList.remove('locked');
-                        livestreamButton.innerHTML = '<i class="fas fa-video"></i>';
-                        livestreamButton.onclick = () => window.location.href = 'livestream.html';
-                    }
-                }
-
-            } catch (error) {
-                console.error("Error checking feature access:", error);
-            }
-        }
-
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 await loadUserData(user.uid);
@@ -1210,47 +1162,47 @@
         // Add this after Firebase initialization
         const tourSteps = [
             {
-                element: '.fa-tasks',
+                element: '.middle-container .button .fa-tasks',
                 title: 'Tasks',
                 content: 'Complete various tasks to earn 2KCoins'
             },
             {
-                element: '.fa-trophy',
+                element: '.weekly-contest-button .glowing-button .fa-trophy',
                 title: 'Weekly Contest',
                 content: 'Participate in weekly contests for big rewards'
             },
             {
-                element: '.fa-ad',
+                element: '#watchAdsButton .fa-ad',
                 title: 'Watch Ads',
                 content: 'Watch advertisements to earn 2KCoins'
             },
             {
-                element: '.fa-paper-plane',
+                element: '.middle-container .button .fa-paper-plane',
                 title: 'Direct Link',
                 content: 'Visit links to earn more 2KCoins'
             },
             {
-                element: '.fa-gavel',
+                element: '.auction-button .glowing-button .fa-gavel',
                 title: 'Auction',
                 content: 'Bid on exclusive items using your 2KCoins'
             },
             {
-                element: '.fa-video',
+                element: '.livestream-button .glowing-button .fa-video',
                 title: 'Live Stream',
                 content: 'Watch and interact with live streams'
             },
             {
-                element: '.fa-user',
+                element: '.bottom-banner .button .fa-user',
                 title: 'Profile',
                 content: 'View and edit your profile settings'
             },
             {
-                element: '.fa-wallet',
+                element: '.bottom-banner .button .fa-wallet',
                 title: 'Withdraw',
                 content: 'Withdraw your earned 2KCoins'
             },
             {
-                element: '.fa-user-friends',
+                element: '.bottom-banner .button .fa-user-friends',
                 title: 'Friends',
                 content: 'Connect with other users'
             },
@@ -1260,7 +1212,7 @@
                 content: 'Toggle between light and dark mode for better viewing'
             },
             {
-                element: '.switch a',  // Targeting the advertise link
+                element: '.switch a',
                 title: 'Advertise',
                 content: 'Create your own advertising campaign and reach our users'
             }
@@ -1281,6 +1233,18 @@
                 const tourStep = tourSteps[step];
                 const element = document.querySelector(tourStep.element);
                 
+                // Check if element exists before proceeding
+                if (!element) {
+                    console.warn(`Element ${tourStep.element} not found, skipping step`);
+                    // Skip to next step or end tour if it's the last step
+                    if (step === tourSteps.length - 1) {
+                        endTour();
+                    } else {
+                        showStep(step + 1);
+                    }
+                    return;
+                }
+
                 // Remove previous highlight
                 document.querySelectorAll('.tour-highlight').forEach(el => {
                     el.classList.remove('tour-highlight');
@@ -1310,13 +1274,15 @@
                 const nextBtn = tooltip.querySelector('.next-btn');
                 const prevBtn = tooltip.querySelector('.prev-btn');
 
-                nextBtn.onclick = () => {
-                    if (step === tourSteps.length - 1) {
-                        endTour();
-                    } else {
-                        showStep(step + 1);
-                    }
-                };
+                if (nextBtn) {
+                    nextBtn.onclick = () => {
+                        if (step === tourSteps.length - 1) {
+                            endTour();
+                        } else {
+                            showStep(step + 1);
+                        }
+                    };
+                }
 
                 if (prevBtn) {
                     prevBtn.onclick = () => showStep(step - 1);
@@ -1333,6 +1299,77 @@
 
             showStep(0);
         }
+
+        async function checkFeatureAccess() {
+            try {
+                // Change from "control" to "controls" to match dashboardadmin.html
+                const controlDocRef = doc(db, "featureAccess", "controls");
+                const docSnap = await getDoc(controlDocRef);
+
+                if (docSnap.exists()) {
+                    const controls = docSnap.data();
+                    
+                    // Weekly Contest Lock
+                    const weeklyContestBtn = document.querySelector('.weekly-contest-button .glowing-button');
+                    if (!controls.weeklyContestUnlocked) {
+                        weeklyContestBtn.innerHTML = `<i class="fas fa-lock"></i>`;
+                        weeklyContestBtn.onclick = () => alert('This feature is currently locked');
+                        weeklyContestBtn.classList.add('locked');
+                    } else {
+                        weeklyContestBtn.innerHTML = `<i class="fas fa-trophy"></i>`; // Restore trophy icon
+                        weeklyContestBtn.onclick = () => window.location.href='weeklycontest.html';
+                        weeklyContestBtn.classList.remove('locked');
+                    }
+
+                    // Auction Lock
+                    const auctionBtn = document.querySelector('.auction-button .glowing-button');
+                    if (!controls.auctionUnlocked) {
+                        auctionBtn.innerHTML = `<i class="fas fa-lock"></i>`;
+                        auctionBtn.onclick = () => alert('This feature is currently locked');
+                        auctionBtn.classList.add('locked');
+                    } else {
+                        auctionBtn.innerHTML = `<i class="fas fa-gavel"></i>`; // Restore gavel icon
+                        auctionBtn.onclick = () => window.location.href='auction.html';
+                        auctionBtn.classList.remove('locked');
+                    }
+
+                    // Livestream Lock
+                    const livestreamBtn = document.querySelector('.livestream-button .glowing-button');
+                    if (!controls.liveStreamUnlocked) {
+                        livestreamBtn.innerHTML = `<i class="fas fa-lock"></i>`;
+                        livestreamBtn.onclick = () => alert('This feature is currently locked');
+                        livestreamBtn.classList.add('locked');
+                    } else {
+                        livestreamBtn.innerHTML = `<i class="fas fa-video"></i>`; // Restore video icon
+                        livestreamBtn.onclick = () => window.location.href='livestream.html';
+                        livestreamBtn.classList.remove('locked');
+                    }
+                }
+            } catch (error) {
+                console.error("Error checking feature access:", error);
+            }
+        }
+
+        // Add this after Firebase initialization
+        const controlsRef = doc(db, "featureAccess", "controls");
+        onSnapshot(controlsRef, (doc) => {
+            if (doc.exists()) {
+                checkFeatureAccess();
+            }
+        });
+
+        // Update the onAuthStateChanged listener to include feature check
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                await loadUserData(user.uid);
+                await checkFeatureAccess(); // Add this line
+                checkNewUser(user.uid);
+                console.log("User object:", user);
+            } else {
+                console.log("User not logged in. Redirecting to login page.");
+                window.location.href = 'login.html';
+            }
+        });
 
         // Add CSS for locked buttons
         const newStyles = document.createElement('style');
