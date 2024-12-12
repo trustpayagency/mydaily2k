@@ -17,7 +17,7 @@
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
-            position: relative;
+            box-sizing: border-box;
         }
 
         body.light-mode {
@@ -26,7 +26,6 @@
 
         .balance-container {
             margin-top: -100px;
-            margin-left: 50px;
             text-align: center;
             flex-grow: 1;
             display: flex;
@@ -91,7 +90,7 @@
         .switch {
             position: absolute;
             top: 20px;
-            right: -20px;
+            right: 20px;
             display: flex;
             align-items: center;
         }
@@ -411,8 +410,8 @@
 /* Add these new styles */
 .right-side-buttons {
     position: absolute;
-    right: -20px;
-    top: 320px;
+    right: 10px;
+    top: 420px;
     z-index: 10;
     display: flex;
     flex-direction: column;
@@ -560,6 +559,24 @@
         transform: scale(1);
         opacity: 1;
     }
+}
+
+/* Added styles for locked buttons */
+.glowing-button.locked {
+    background-color: #666 !important;
+    cursor: not-allowed !important;
+    animation: none !important;
+    box-shadow: none !important;
+}
+
+.glowing-button.locked:hover {
+    box-shadow: none !important;
+    background-color: #666 !important;
+}
+
+.fa-lock {
+    color: #fff;
+    font-size: 14px;
 }
 </style>
     </head>
@@ -750,6 +767,7 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 await loadUserData(user.uid);
+                await checkFeatureAccess(); // Add this line
                 checkNewUser(user.uid);
                 console.log("User object:", user);
             } else {
@@ -1251,7 +1269,7 @@
 
                 // Position and show tooltip
                 const rect = element.getBoundingClientRect();
-                tooltip.className = 'tour-tooltip';
+                tooltip.className = `tour-tooltip ${tourStep.position}`;
                 tooltip.innerHTML = `
                     <h3 style="margin: 0 0 10px 0">${tourStep.title}</h3>
                     <p style="margin: 0">${tourStep.content}</p>
@@ -1261,32 +1279,10 @@
                     </div>
                 `;
 
-                // Calculate tooltip position
-                let tooltipX = rect.left + rect.width/2;
-                let tooltipY = rect.top - 20;
-
-                // Show tooltip first to get its dimensions
+                // Position tooltip
                 tooltip.style.display = 'block';
-                
-                // Adjust position to keep tooltip on screen
-                const tooltipRect = tooltip.getBoundingClientRect();
-                
-                // Adjust horizontal position
-                if (tooltipX - tooltipRect.width/2 < 10) {
-                    tooltipX = tooltipRect.width/2 + 10;
-                } else if (tooltipX + tooltipRect.width/2 > window.innerWidth - 10) {
-                    tooltipX = window.innerWidth - tooltipRect.width/2 - 10;
-                }
-                
-                // Adjust vertical position
-                if (tooltipY - tooltipRect.height < 10) {
-                    // Place tooltip below the element if it would go off the top
-                    tooltipY = rect.bottom + tooltipRect.height + 20;
-                }
-
-                // Apply final position
-                tooltip.style.left = `${tooltipX - tooltipRect.width/2}px`;
-                tooltip.style.top = `${tooltipY - tooltipRect.height}px`;
+                tooltip.style.left = `${rect.left + rect.width/2 - tooltip.offsetWidth/2}px`;
+                tooltip.style.top = `${rect.top - tooltip.offsetHeight - 20}px`;
 
                 // Add button listeners
                 const nextBtn = tooltip.querySelector('.next-btn');
@@ -1315,6 +1311,81 @@
 
             showStep(0);
         }
+
+        async function checkFeatureAccess() {
+            try {
+                const controlDocRef = doc(db, "featureAccess", "control");
+                const docSnap = await getDoc(controlDocRef);
+
+                if (docSnap.exists()) {
+                    const controls = docSnap.data();
+                    
+                    // Weekly Contest Lock
+                    const weeklyContestBtn = document.querySelector('.weekly-contest-button .glowing-button');
+                    if (!controls.weeklyContestUnlocked) {
+                        weeklyContestBtn.innerHTML = `<i class="fas fa-lock"></i>`;
+                        weeklyContestBtn.onclick = () => alert('This feature is currently locked');
+                        weeklyContestBtn.style.backgroundColor = '#666';
+                        weeklyContestBtn.style.cursor = 'not-allowed';
+                    }
+
+                    // Auction Lock
+                    const auctionBtn = document.querySelector('.auction-button .glowing-button');
+                    if (!controls.auctionUnlocked) {
+                        auctionBtn.innerHTML = `<i class="fas fa-lock"></i>`;
+                        auctionBtn.onclick = () => alert('This feature is currently locked');
+                        auctionBtn.style.backgroundColor = '#666';
+                        auctionBtn.style.cursor = 'not-allowed';
+                    }
+
+                    // Livestream Lock
+                    const livestreamBtn = document.querySelector('.livestream-button .glowing-button');
+                    if (!controls.liveStreamUnlocked) {
+                        livestreamBtn.innerHTML = `<i class="fas fa-lock"></i>`;
+                        livestreamBtn.onclick = () => alert('This feature is currently locked');
+                        livestreamBtn.style.backgroundColor = '#666';
+                        livestreamBtn.style.cursor = 'not-allowed';
+                    }
+                }
+            } catch (error) {
+                console.error("Error checking feature access:", error);
+            }
+        }
+
+        // Update the onAuthStateChanged listener to include feature check
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                await loadUserData(user.uid);
+                await checkFeatureAccess(); // Add this line
+                checkNewUser(user.uid);
+                console.log("User object:", user);
+            } else {
+                console.log("User not logged in. Redirecting to login page.");
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Add CSS for locked buttons
+        const newStyles = document.createElement('style');
+        newStyles.textContent = `
+            .glowing-button.locked {
+                background-color: #666 !important;
+                cursor: not-allowed !important;
+                animation: none !important;
+                box-shadow: none !important;
+            }
+
+            .glowing-button.locked:hover {
+                box-shadow: none !important;
+                background-color: #666 !important;
+            }
+
+            .fa-lock {
+                color: #fff;
+                font-size: 14px;
+            }
+        `;
+        document.head.appendChild(newStyles);
     </script>
     <script type='text/javascript' src='https://pl25145596.profitablecpmrate.com/a1/91/a1/a191a1a71e1bfd8cf2b8b436068db02a.js'></script>
  </body> 
