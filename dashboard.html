@@ -6,14 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        (function(d, z, s) {
-            s.src = 'https://' + d + '/401/' + z;
-            try {
-                (document.body || document.documentElement).appendChild(s);
-            } catch (e) {}
-        })('groleegni.net', 8579388, document.createElement('script'));
-    </script> 
     <style>
         body {
             font-family: 'Roboto', Arial, sans-serif;
@@ -450,33 +442,6 @@
     box-shadow: 0 0 20px rgb(255, 9, 234), 0 0 30px rgba(236, 4, 221, 0.8);
 }
  
-[data-tooltip] {
-    position: relative;
-}
-
-[data-tooltip]:before {
-    content: attr(data-tooltip);
-    position: absolute;
-    opacity: 0;
-    visibility: hidden;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 12px;
-    white-space: nowrap;
-    z-index: 1000;
-    transition: opacity 0.3s ease;
-    bottom: 120%;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-[data-tooltip]:hover:before {
-    opacity: 1;
-    visibility: visible;
-}
-
 /* Tour tooltip styles */
 .tour-tooltip {
     position: fixed;
@@ -605,7 +570,7 @@
         <span id="username" style="color: #fff; margin-left: 10px;">User Name</span>
     </div>
     <div class="switch1" style="top: 20px; left: 20px;">
-        <button id="modeToggle" data-tooltip="Switch between light and dark mode">switch mode</button>
+        <button id="modeToggle">switch mode</button>
     </div> 
     <div class="balance-container">
         <div class="balance">
@@ -629,49 +594,49 @@
     </div>
  
     <div class="switch">
-        <a href="advertise.html" data-tooltip="Create your own advertising campaign">Advertise</a> 
+        <a href="advertise.html">Advertise</a> 
     </div>
      
     <div class="middle-container">
         <div>
-            <button class="button" onclick="window.location.href='task.html'" data-tooltip="Complete tasks to earn 2KCoins">
+            <button class="button" onclick="window.location.href='task.html'">
                 <i class="fas fa-tasks" alt="Tasks Icon"></i>
             </button>
             <span class="button-label" style="margin-bottom: 20px; right: 20px;">Tasks</span>
         </div>
         <div class="weekly-contest-button">
-            <button class="glowing-button" onclick="window.location.href='weeklycontest.html'" data-tooltip="Join weekly contests for big rewards">
+            <button class="glowing-button" onclick="window.location.href='weeklycontest.html'">
                 <i class="fas fa-trophy" alt="Trophy Icon"></i>
             </button>
             <span class="button-label">Weekly Contest</span>
         </div>
         <div>
-            <button class="button" onclick="handleWatchAdsClick()" id="watchAdsButton" data-tooltip="Watch ads to earn 2KCoins">
+            <button class="button" onclick="handleWatchAdsClick()" id="watchAdsButton">
                 <i class="fas fa-ad" alt="Ads Icon"></i>
             </button>
             <span class="button-label">Watch Ads</span>
-            <button onclick="handleIncreaseWatchAdsLimit()" id="increaseWatchAdsButton" class="increase-limit-btn" data-tooltip="Increase your daily ad watch limit">
+            <button onclick="handleIncreaseWatchAdsLimit()" id="increaseWatchAdsButton" class="increase-limit-btn">
                 Increase Daily Limit
             </button>
         </div>
         <div>
-            <button class="button" onclick="window.loadAdsterraAd()" data-tooltip="Visit links to earn 2KCoins">
+            <button class="button" onclick="window.loadAdsterraAd()">
                 <i class="fas fa-paper-plane" alt="Direct Link Icon"></i>
             </button>
             <span class="button-label">Direct Link</span>
-            <button onclick="handleIncreaseDirectLinkLimit()" id="increaseDirectLinkButton" class="increase-limit-btn" data-tooltip="Increase your daily direct link limit">
+            <button onclick="handleIncreaseDirectLinkLimit()" id="increaseDirectLinkButton" class="increase-limit-btn">
                 Increase Daily Limit
             </button>
         </div>
         <div class="right-side-buttons">
             <div class="auction-button">
-                <button class="glowing-button auction" onclick="window.location.href='auction.html'" data-tooltip="Bid on exclusive items">
+                <button class="glowing-button auction" onclick="window.location.href='auction.html'">
                     <i class="fas fa-gavel" alt="Auction Icon"></i>
                 </button>
                 <span class="button-label">Auction</span>
             </div>
             <div class="livestream-button">
-                <button class="glowing-button livestream" onclick="window.location.href='livestream.html'" data-tooltip="Watch and interact with live streams">
+                <button class="glowing-button livestream" onclick="window.location.href='livestream.html'">
                     <i class="fas fa-video" alt="Livestream Icon"></i>
                 </button>
                 <span class="button-label">Live Stream</span>
@@ -681,19 +646,19 @@
 
     <div class="bottom-banner">
         <div>
-            <button class="button" onclick="window.location.href='profile.html'" data-tooltip="View and edit your profile">
+            <button class="button" onclick="window.location.href='profile.html'">
                 <i class="fas fa-user" alt="Profile Icon"></i>
             </button>
             <span class="button-label">Profile</span>
         </div>
         <div>
-            <button class="button" onclick="window.location.href='withdraw.html'" data-tooltip="Withdraw your earned 2KCoins">
+            <button class="button" onclick="window.location.href='withdraw.html'">
                 <i class="fas fa-wallet" alt="Wallet Icon"></i>
             </button>
             <span class="button-label">Withdraw</span>
         </div>
         <div>
-            <button class="button" onclick="window.location.href='friends.html'" data-tooltip="Connect with other users">
+            <button class="button" onclick="window.location.href='friends.html'">
                 <i class="fas fa-user-friends" alt="Friends Icon"></i>
             </button>
             <span class="button-label">Friends</span>
@@ -703,7 +668,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
         import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js"; 
 
         // Firebase configuration
@@ -770,6 +735,54 @@
             if (!hasVisited) {
                 // Start the tour after a short delay to ensure all elements are loaded
                 setTimeout(startTour, 1000);
+            }
+        }
+
+        async function checkFeatureAccess() {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            try {
+                const userDocRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userDocRef);
+                const userData = userDoc.data();
+
+                // Get the auction and livestream buttons
+                const auctionButton = document.querySelector('.glowing-button.auction');
+                const livestreamButton = document.querySelector('.glowing-button.livestream');
+
+                // Check if user has required balance or permissions
+                const userBalance = userData.balance || 0;
+                const requiredBalance = 1000; // Set your required balance threshold
+
+                // Lock/unlock auction feature
+                if (auctionButton) {
+                    if (userBalance < requiredBalance) {
+                        auctionButton.classList.add('locked');
+                        auctionButton.innerHTML = '<i class="fas fa-lock"></i>';
+                        auctionButton.onclick = () => alert(`You need at least ${requiredBalance} 2KCoins to access the Auction feature.`);
+                    } else {
+                        auctionButton.classList.remove('locked');
+                        auctionButton.innerHTML = '<i class="fas fa-gavel"></i>';
+                        auctionButton.onclick = () => window.location.href = 'auction.html';
+                    }
+                }
+
+                // Lock/unlock livestream feature
+                if (livestreamButton) {
+                    if (userBalance < requiredBalance) {
+                        livestreamButton.classList.add('locked');
+                        livestreamButton.innerHTML = '<i class="fas fa-lock"></i>';
+                        livestreamButton.onclick = () => alert(`You need at least ${requiredBalance} 2KCoins to access the Live Stream feature.`);
+                    } else {
+                        livestreamButton.classList.remove('locked');
+                        livestreamButton.innerHTML = '<i class="fas fa-video"></i>';
+                        livestreamButton.onclick = () => window.location.href = 'livestream.html';
+                    }
+                }
+
+            } catch (error) {
+                console.error("Error checking feature access:", error);
             }
         }
 
@@ -1320,59 +1333,6 @@
 
             showStep(0);
         }
-
-        async function checkFeatureAccess() {
-            try {
-                const controlDocRef = doc(db, "featureAccess", "control");
-                const docSnap = await getDoc(controlDocRef);
-
-                if (docSnap.exists()) {
-                    const controls = docSnap.data();
-                    
-                    // Weekly Contest Lock
-                    const weeklyContestBtn = document.querySelector('.weekly-contest-button .glowing-button');
-                    if (!controls.weeklyContestUnlocked) {
-                        weeklyContestBtn.innerHTML = `<i class="fas fa-lock"></i>`;
-                        weeklyContestBtn.onclick = () => alert('This feature is currently locked');
-                        weeklyContestBtn.style.backgroundColor = '#666';
-                        weeklyContestBtn.style.cursor = 'not-allowed';
-                    }
-
-                    // Auction Lock
-                    const auctionBtn = document.querySelector('.auction-button .glowing-button');
-                    if (!controls.auctionUnlocked) {
-                        auctionBtn.innerHTML = `<i class="fas fa-lock"></i>`;
-                        auctionBtn.onclick = () => alert('This feature is currently locked');
-                        auctionBtn.style.backgroundColor = '#666';
-                        auctionBtn.style.cursor = 'not-allowed';
-                    }
-
-                    // Livestream Lock
-                    const livestreamBtn = document.querySelector('.livestream-button .glowing-button');
-                    if (!controls.liveStreamUnlocked) {
-                        livestreamBtn.innerHTML = `<i class="fas fa-lock"></i>`;
-                        livestreamBtn.onclick = () => alert('This feature is currently locked');
-                        livestreamBtn.style.backgroundColor = '#666';
-                        livestreamBtn.style.cursor = 'not-allowed';
-                    }
-                }
-            } catch (error) {
-                console.error("Error checking feature access:", error);
-            }
-        }
-
-        // Update the onAuthStateChanged listener to include feature check
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                await loadUserData(user.uid);
-                await checkFeatureAccess(); // Add this line
-                checkNewUser(user.uid);
-                console.log("User object:", user);
-            } else {
-                console.log("User not logged in. Redirecting to login page.");
-                window.location.href = 'login.html';
-            }
-        });
 
         // Add CSS for locked buttons
         const newStyles = document.createElement('style');
