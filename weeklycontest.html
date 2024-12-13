@@ -765,6 +765,63 @@
                 margin: 10px auto;
     }
        }
+
+        .weekly-theme {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            color: #ffffff;
+        }
+
+        .theme-container {
+            padding: 15px;
+        }
+
+        .theme-container h2 {
+            color: #ec8f04;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .theme-content {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .theme-details h3 {
+            color: #ec8f04;
+            margin-bottom: 10px;
+        }
+
+        .theme-requirements {
+            margin-top: 20px;
+        }
+
+        .theme-requirements h4 {
+            color: #ec8f04;
+            margin-bottom: 10px;
+        }
+
+        .theme-requirements ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .theme-requirements li {
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .theme-requirements li:before {
+            content: '•';
+            color: #ec8f04;
+            position: absolute;
+            left: 0;
+        }
     </style>
 </head>
 <body>
@@ -775,6 +832,23 @@
     </div>
     <div class="switch">
         <a href="dashboard.html" style="background-color: #ec8f04; ">Dashboard</a> 
+    </div>
+    <div class="weekly-theme">
+        <div class="theme-container">
+            <h2><i class="fas fa-star"></i> This Week's Challenge</h2>
+            <div class="theme-content" id="weeklyTheme">
+                <div class="theme-details">
+                    <h3 id="themeTitle">Loading theme...</h3>
+                    <p id="themeDescription">Loading description...</p>
+                </div>
+                <div class="theme-requirements">
+                    <h4>Requirements:</h4>
+                    <ul id="themeRequirements">
+                        <li>Loading requirements...</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="contest-info">
         <div class="prize-cards">
@@ -1056,30 +1130,72 @@
             return div;
         }
 
-        // Update loadContestEntries to use the new createEntryElement
+        // Update loadContestEntries function
         async function loadContestEntries() {
             const entriesContainer = document.getElementById('contestEntries');
             entriesContainer.innerHTML = '<div style="text-align: center; padding: 20px;">Loading entries...</div>';
 
             try {
-                const q = query(
+                // Create query for approved entries and current user's pending entries
+                const currentUser = auth.currentUser;
+                const approvedQuery = query(
                     collection(db, 'contestEntries'),
                     where('weekNumber', '==', getCurrentWeekNumber()),
+                    where('approved', '==', true),
                     orderBy('votes', 'desc')
                 );
-                const querySnapshot = await getDocs(q);
 
-                if (querySnapshot.empty) {
-                    entriesContainer.innerHTML = '<div style="text-align: center; padding: 20px;">No entries yet for this week!</div>';
-                    return;
-                }
+                const userPendingQuery = query(
+                    collection(db, 'contestEntries'),
+                    where('weekNumber', '==', getCurrentWeekNumber()),
+                    where('userId', '==', currentUser.uid),
+                    where('approved', '==', false)
+                );
+
+                // Get both approved and user's pending entries
+                const [approvedSnapshot, pendingSnapshot] = await Promise.all([
+                    getDocs(approvedQuery),
+                    getDocs(userPendingQuery)
+                ]);
 
                 entriesContainer.innerHTML = '';
-                querySnapshot.forEach((doc) => {
+
+                // Show pending notice for user's own entries
+                pendingSnapshot.forEach((doc) => {
+                    const entry = doc.data();
+                    const entryElement = createEntryElement(entry, doc.id);
+                    entryElement.querySelector('.entry-details').innerHTML += `
+                        <div class="pending-notice" style="
+                            background: rgba(255, 165, 0, 0.2);
+                            color: #ffa500;
+                            padding: 10px;
+                            border-radius: 5px;
+                            margin-top: 10px;
+                        ">
+                            <i class="fas fa-clock"></i> Your entry is pending admin approval
+                        </div>
+                    `;
+                    // Disable voting on pending entries
+                    const voteBtn = entryElement.querySelector('.vote-btn');
+                    if (voteBtn) {
+                        voteBtn.disabled = true;
+                        voteBtn.style.opacity = '0.5';
+                        voteBtn.title = 'Voting available after approval';
+                    }
+                    entriesContainer.appendChild(entryElement);
+                });
+
+                // Show approved entries
+                approvedSnapshot.forEach((doc) => {
                     const entry = doc.data();
                     const entryElement = createEntryElement(entry, doc.id);
                     entriesContainer.appendChild(entryElement);
                 });
+
+                if (entriesContainer.children.length === 0) {
+                    entriesContainer.innerHTML = '<div style="text-align: center; padding: 20px;">No entries available yet!</div>';
+                }
+
             } catch (error) {
                 console.error('Error loading entries:', error);
                 entriesContainer.innerHTML = '<div style="text-align: center; padding: 20px;">Error loading entries. Please try again later.</div>';
@@ -1323,23 +1439,23 @@
                 await uploadBytes(videoRef, file);
                 const videoUrl = await getDownloadURL(videoRef);
 
-                // Save entry to Firestore
+                // Save entry to Firestore with pending status
                 const contestEntry = {
                     userId: auth.currentUser.uid,
-                    username: username, // Use the username from users collection
+                    username: username,
                     videoUrl: videoUrl,
                     votes: 0,
                     timestamp: Date.now(),
-                    weekNumber: getCurrentWeekNumber()
+                    weekNumber: getCurrentWeekNumber(),
+                    approved: false, // Explicitly set to false
+                    status: 'pending'
                 };
 
                 await addDoc(collection(db, 'contestEntries'), contestEntry);
-                showSuccess('Video uploaded successfully!');
-                updateProgressBar();
-                updateLeaderboard();
+                showSuccess('Your video has been uploaded and is pending admin approval!');
             } catch (error) {
-                console.error('Error uploading:', error);
-                alert(`Upload failed: ${error.message}`);
+                console.error('Error uploading video:', error);
+                showError(error.message);
             } finally {
                 loadingIndicator.style.display = 'none';
             }
@@ -1439,6 +1555,13 @@
                 const user = auth.currentUser;
                 if (!user) {
                     alert('Please login to vote');
+                    return;
+                }
+
+                // Check if entry is approved
+                const entryDoc = await getDoc(doc(db, 'contestEntries', entryId));
+                if (!entryDoc.exists() || !entryDoc.data().approved) {
+                    alert('This entry is not available for voting yet.');
                     return;
                 }
 
@@ -1720,6 +1843,42 @@
             const username = getUrlParameter('user');
             if (username) {
                 document.getElementById('searchInput').value = decodeURIComponent(username); // Set the username in the search input
+            }
+        });
+
+        // Function to fetch and display weekly theme
+        async function loadWeeklyTheme() {
+            try {
+                const weekNumber = getCurrentWeekNumber();
+                const themeDoc = await getDoc(doc(db, 'weeklyThemes', weekNumber.toString()));
+                
+                if (themeDoc.exists()) {
+                    const theme = themeDoc.data();
+                    document.getElementById('themeTitle').textContent = theme.title;
+                    document.getElementById('themeDescription').textContent = theme.description;
+                    
+                    // Update requirements list
+                    const requirementsList = document.getElementById('themeRequirements');
+                    requirementsList.innerHTML = theme.requirements
+                        .map(req => `<li>${req}</li>`)
+                        .join('');
+                } else {
+                    document.getElementById('themeTitle').textContent = 'Theme not yet announced';
+                    document.getElementById('themeDescription').textContent = 'Please check back later for this week\'s challenge details.';
+                    document.getElementById('themeRequirements').innerHTML = '<li>Requirements will be posted soon</li>';
+                }
+            } catch (error) {
+                console.error('Error loading weekly theme:', error);
+                document.getElementById('themeTitle').textContent = 'Error loading theme';
+                document.getElementById('themeDescription').textContent = 'Please refresh the page to try again.';
+            }
+        }
+
+        // Add this to your initialization code (where you have other onAuthStateChanged listeners)
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                await checkExistingVerification();
+                loadWeeklyTheme(); // Add this line
             }
         });
     </script>
