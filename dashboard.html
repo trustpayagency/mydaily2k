@@ -461,11 +461,8 @@
     content: '';
     position: absolute;
     border: 8px solid transparent;
-}
-
-.tour-tooltip.top::before {
-    border-top-color: rgba(0, 0, 0, 0.9);
-    bottom: -16px;
+    border-bottom-color: rgba(0, 0, 0, 0.9);
+    top: -16px;
     left: 50%;
     transform: translateX(-50%);
 }
@@ -615,18 +612,12 @@
                 <i class="fas fa-ad" alt="Ads Icon"></i>
             </button>
             <span class="button-label">Watch Ads</span>
-            <button onclick="handleIncreaseWatchAdsLimit()" id="increaseWatchAdsButton" class="increase-limit-btn">
-                Increase Daily Limit
-            </button>
         </div>
         <div>
             <button class="button" onclick="window.loadAdsterraAd()">
                 <i class="fas fa-paper-plane" alt="Direct Link Icon"></i>
             </button>
             <span class="button-label">Direct Link</span>
-            <button onclick="handleIncreaseDirectLinkLimit()" id="increaseDirectLinkButton" class="increase-limit-btn">
-                Increase Daily Limit
-            </button>
         </div>
         <div class="right-side-buttons">
             <div class="auction-button">
@@ -1162,47 +1153,47 @@
         // Add this after Firebase initialization
         const tourSteps = [
             {
-                element: '.middle-container .button .fa-tasks',
+                element: '.fa-tasks',
                 title: 'Tasks',
                 content: 'Complete various tasks to earn 2KCoins'
             },
             {
-                element: '.weekly-contest-button .glowing-button .fa-trophy',
+                element: '.fa-trophy',
                 title: 'Weekly Contest',
                 content: 'Participate in weekly contests for big rewards'
             },
             {
-                element: '#watchAdsButton .fa-ad',
+                element: '.fa-ad',
                 title: 'Watch Ads',
                 content: 'Watch advertisements to earn 2KCoins'
             },
             {
-                element: '.middle-container .button .fa-paper-plane',
+                element: '.fa-paper-plane',
                 title: 'Direct Link',
                 content: 'Visit links to earn more 2KCoins'
             },
             {
-                element: '.auction-button .glowing-button .fa-gavel',
+                element: '.fa-gavel',
                 title: 'Auction',
                 content: 'Bid on exclusive items using your 2KCoins'
             },
             {
-                element: '.livestream-button .glowing-button .fa-video',
+                element: '.fa-video',
                 title: 'Live Stream',
                 content: 'Watch and interact with live streams'
             },
             {
-                element: '.bottom-banner .button .fa-user',
+                element: '.fa-user',
                 title: 'Profile',
                 content: 'View and edit your profile settings'
             },
             {
-                element: '.bottom-banner .button .fa-wallet',
+                element: '.fa-wallet',
                 title: 'Withdraw',
                 content: 'Withdraw your earned 2KCoins'
             },
             {
-                element: '.bottom-banner .button .fa-user-friends',
+                element: '.fa-user-friends',
                 title: 'Friends',
                 content: 'Connect with other users'
             },
@@ -1212,7 +1203,7 @@
                 content: 'Toggle between light and dark mode for better viewing'
             },
             {
-                element: '.switch a',
+                element: '.switch a',  // Targeting the advertise link
                 title: 'Advertise',
                 content: 'Create your own advertising campaign and reach our users'
             }
@@ -1233,10 +1224,8 @@
                 const tourStep = tourSteps[step];
                 const element = document.querySelector(tourStep.element);
                 
-                // Check if element exists before proceeding
                 if (!element) {
-                    console.warn(`Element ${tourStep.element} not found, skipping step`);
-                    // Skip to next step or end tour if it's the last step
+                    console.warn(`Tour element not found: ${tourStep.element}`);
                     if (step === tourSteps.length - 1) {
                         endTour();
                     } else {
@@ -1255,7 +1244,7 @@
 
                 // Position and show tooltip
                 const rect = element.getBoundingClientRect();
-                tooltip.className = `tour-tooltip ${tourStep.position}`;
+                tooltip.className = 'tour-tooltip bottom';
                 tooltip.innerHTML = `
                     <h3 style="margin: 0 0 10px 0">${tourStep.title}</h3>
                     <p style="margin: 0">${tourStep.content}</p>
@@ -1265,10 +1254,19 @@
                     </div>
                 `;
 
-                // Position tooltip
+                // Position tooltip with bounds checking
                 tooltip.style.display = 'block';
-                tooltip.style.left = `${rect.left + rect.width/2 - tooltip.offsetWidth/2}px`;
-                tooltip.style.top = `${rect.top - tooltip.offsetHeight - 20}px`;
+                
+                // Calculate positions - now positioning BELOW the element
+                let left = rect.left + rect.width/2 - tooltip.offsetWidth/2;
+                let top = rect.bottom + 20; // Changed from above to below
+
+                // Ensure tooltip stays within viewport
+                left = Math.max(10, Math.min(left, window.innerWidth - tooltip.offsetWidth - 10));
+                top = Math.min(top, window.innerHeight - tooltip.offsetHeight - 10);
+
+                tooltip.style.left = `${left}px`;
+                tooltip.style.top = `${top}px`;
 
                 // Add button listeners
                 const nextBtn = tooltip.querySelector('.next-btn');
@@ -1290,14 +1288,24 @@
             }
 
             function endTour() {
-                tooltip.remove();
+                if (tooltip) {
+                    tooltip.remove();
+                }
                 document.querySelectorAll('.tour-highlight').forEach(el => {
                     el.classList.remove('tour-highlight');
                 });
-                localStorage.setItem(`hasVisited_${auth.currentUser.uid}`, 'true');
+                if (auth.currentUser) {
+                    localStorage.setItem(`hasVisited_${auth.currentUser.uid}`, 'true');
+                }
             }
 
-            showStep(0);
+            // Add error handling for starting the tour
+            try {
+                showStep(0);
+            } catch (error) {
+                console.error('Error starting tour:', error);
+                endTour();
+            }
         }
 
         async function checkFeatureAccess() {
