@@ -457,14 +457,23 @@
     animation: tooltipPop 0.3s ease-out;
 }
 
-.tour-tooltip::before {
-    content: '';
+.tooltip-arrow {
     position: absolute;
-    border: 8px solid transparent;
-    border-bottom-color: rgba(0, 0, 0, 0.9);
-    top: -16px;
-    left: 50%;
-    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+.tour-tooltip.bottom .tooltip-arrow {
+    border-width: 0 10px 10px 10px;
+    border-color: transparent transparent rgba(0, 0, 0, 0.9) transparent;
+    top: -10px;
+}
+
+.tour-tooltip.top .tooltip-arrow {
+    border-width: 10px 10px 0 10px;
+    border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
+    bottom: -10px;
 }
 
 .tour-controls {
@@ -1244,8 +1253,9 @@
 
                 // Position and show tooltip
                 const rect = element.getBoundingClientRect();
-                tooltip.className = 'tour-tooltip bottom';
+                tooltip.className = 'tour-tooltip';
                 tooltip.innerHTML = `
+                    <div class="tooltip-arrow"></div>
                     <h3 style="margin: 0 0 10px 0">${tourStep.title}</h3>
                     <p style="margin: 0">${tourStep.content}</p>
                     <div class="tour-controls">
@@ -1257,16 +1267,30 @@
                 // Position tooltip with bounds checking
                 tooltip.style.display = 'block';
                 
-                // Calculate positions - now positioning BELOW the element
-                let left = rect.left + rect.width/2 - tooltip.offsetWidth/2;
-                let top = rect.bottom + 20; // Changed from above to below
+                // Calculate positions
+                const tooltipRect = tooltip.getBoundingClientRect();
+                let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                let top = rect.bottom + 15; // Reduced gap between element and tooltip
 
                 // Ensure tooltip stays within viewport
-                left = Math.max(10, Math.min(left, window.innerWidth - tooltip.offsetWidth - 10));
-                top = Math.min(top, window.innerHeight - tooltip.offsetHeight - 10);
+                left = Math.max(10, Math.min(left, window.innerWidth - tooltipRect.width - 10));
+                
+                // If tooltip would go below viewport, show it above the element instead
+                if (top + tooltipRect.height > window.innerHeight - 10) {
+                    top = rect.top - tooltipRect.height - 15;
+                    tooltip.classList.add('top');
+                } else {
+                    tooltip.classList.add('bottom');
+                }
 
                 tooltip.style.left = `${left}px`;
                 tooltip.style.top = `${top}px`;
+
+                // Position the arrow
+                const arrow = tooltip.querySelector('.tooltip-arrow');
+                let arrowLeft = rect.left + (rect.width / 2) - left - 10; // 10 is half the arrow width
+                arrowLeft = Math.max(20, Math.min(arrowLeft, tooltipRect.width - 20));
+                arrow.style.left = `${arrowLeft}px`;
 
                 // Add button listeners
                 const nextBtn = tooltip.querySelector('.next-btn');
