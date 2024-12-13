@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2K Auctions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(to top, #ec8f04, #f58c79);
+            color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .auctions-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .auctions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .auction-card {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .auction-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            position: relative;
+        }
+
+        .auction-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sponsor-logo {
+            max-width: 150px;
+            max-height: 100px;
+            object-fit: contain;
+        }
+
+        .auction-details {
+            padding: 15px;
+        }
+
+        .bid-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .bid-input {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .bid-btn {
+            background: #ec8f04;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .bid-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        .timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .message.success { background: rgba(76, 175, 80, 0.3); }
+        .message.error { background: rgba(244, 67, 54, 0.3); }
+
+        .bid-history {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #ccc;
+        }
+
+        @media (max-width: 600px) {
+            .auctions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .user-balance {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: #ec8f04;
+        }
+        
+        .user-balance i {
+            margin-right: 8px;
+            color: #ec8f04;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏆 2K Auctions</h1>
+        <p>Bid on exclusive items with your 2KCoins!</p>
+        <div class="user-balance">
+            <i class="fas fa-coins"></i>
+            Balance: <span id="userBalanceDisplay">0</span> 2KCoins
+        </div>
+    </div>
+
+    <div class="auctions-container">
+        <div id="auctionsGrid" class="auctions-grid">
+            <!-- Auctions will be loaded here -->
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, orderBy, getDocs, doc, updateDoc, arrayUnion, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+
+        // Initialize Firebase with your config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
+            authDomain: "mydaily2kbot.firebaseapp.com",
+            projectId: "mydaily2kbot",
+            storageBucket: "mydaily2kbot.appspot.com",
+            messagingSenderId: "967002689133",
+            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
+            measurementId: "G-2VNDPK8V4J"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore();
+
+        let userBalance = 0;
+        let balanceDisplay = null;
+
+        // Initialize DOM elements after page load
+        document.addEventListener('DOMContentLoaded', () => {
+            balanceDisplay = document.getElementById('userBalanceDisplay');
+        });
+
+        // Check authentication
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            await loadUserBalance();
+            loadAuctions();
+            startRealTimeUpdates();
+        });
+
+        // Load user's balance
+        async function loadUserBalance() {
+            try {
+                const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+                if (userDoc.exists()) {
+                    userBalance = userDoc.data().balance || 0;
+                    if (balanceDisplay) {
+                        balanceDisplay.textContent = userBalance;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading balance:', error);
+            }
+        }
+
+        // Load auctions
+        async function loadAuctions() {
+            const auctionsGrid = document.getElementById('auctionsGrid');
+            auctionsGrid.innerHTML = '';
+
+            try {
+                const q = query(
+                    collection(db, 'auctions'),
+                    where('endTime', '>', Date.now()),
+                    orderBy('endTime', 'asc')
+                );
+                const snapshot = await getDocs(q);
+
+                snapshot.forEach(doc => {
+                    const auction = doc.data();
+                    const card = createAuctionCard(auction, doc.id);
+                    auctionsGrid.appendChild(card);
+                });
+            } catch (error) {
+                showMessage('Error loading auctions: ' + error.message, 'error');
+            }
+        }
+
+        // Create auction card
+        function createAuctionCard(auction, auctionId) {
+            const card = document.createElement('div');
+            card.className = 'auction-card';
+            card.setAttribute('data-id', auctionId);
+            
+            card.innerHTML = `
+                <div class="timer" id="timer-${auctionId}">Loading...</div>
+                <div class="auction-image-container">
+                    <img src="${auction.imageUrl}" alt="${auction.itemName}" class="auction-image">
+                    <div class="auction-overlay">
+                        ${auction.sponsorLogo ? `<img src="${auction.sponsorLogo}" alt="Sponsor" class="sponsor-logo">` : ''}
+                    </div>
+                </div>
+                <div class="auction-details">
+                    <h3>${auction.itemName}</h3>
+                    <p>${auction.description}</p>
+                    <p>Current Bid: ${auction.currentBid} 2KCoins</p>
+                    <p>Minimum Increment: ${auction.bidIncrement} 2KCoins</p>
+                    ${auction.sponsorName ? `<p>Sponsored by: ${auction.sponsorName}</p>` : ''}
+                    <div class="bid-form">
+                        <input type="number" 
+                               class="bid-input" 
+                               id="bid-${auctionId}" 
+                               min="${auction.currentBid + auction.bidIncrement}"
+                               step="${auction.bidIncrement}">
+                        <button class="bid-btn" onclick="placeBid('${auctionId}')">
+                            Place Bid
+                        </button>
+                    </div>
+                    <div class="bid-history">
+                        ${auction.bids ? auction.bids.slice(-3).reverse().map(bid => 
+                            `<div>${bid.username}: ${bid.amount} 2KCoins</div>`
+                        ).join('') : ''}
+                    </div>
+                </div>
+            `;
+
+            updateTimer(auction, auctionId);
+            setInterval(() => updateTimer(auction, auctionId), 1000);
+
+            return card;
+        }
+
+        // Update timer
+        function updateTimer(auction, auctionId) {
+            const now = Date.now();
+            const timeLeft = auction.endTime - now;
+            
+            if (timeLeft <= 0) {
+                document.getElementById(`timer-${auctionId}`).textContent = 'Auction Ended';
+                return;
+            }
+
+            const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            document.getElementById(`timer-${auctionId}`).textContent = 
+                `${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        // Place bid
+        window.placeBid = async (auctionId) => {
+            try {
+                const bidInput = document.getElementById(`bid-${auctionId}`);
+                const bidAmount = parseInt(bidInput.value);
+                
+                const auctionDoc = await getDoc(doc(db, 'auctions', auctionId));
+                const auction = auctionDoc.data();
+
+                if (auction.endTime < Date.now()) {
+                    showMessage('This auction has ended', 'error');
+                    return;
+                }
+
+                if (bidAmount <= auction.currentBid) {
+                    showMessage('Bid must be higher than current bid', 'error');
+                    return;
+                }
+
+                if (bidAmount > userBalance) {
+                    showMessage('Insufficient balance', 'error');
+                    return;
+                }
+
+                if ((bidAmount - auction.currentBid) < auction.bidIncrement) {
+                    showMessage(`Minimum bid increment is ${auction.bidIncrement} 2KCoins`, 'error');
+                    return;
+                }
+
+                const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+                const username = userDoc.data().username;
+
+                await updateDoc(doc(db, 'auctions', auctionId), {
+                    currentBid: bidAmount,
+                    highestBidder: auth.currentUser.uid,
+                    bids: arrayUnion({
+                        userId: auth.currentUser.uid,
+                        username: username,
+                        amount: bidAmount,
+                        timestamp: Date.now()
+                    })
+                });
+
+                showMessage('Bid placed successfully!', 'success');
+                loadAuctions();
+            } catch (error) {
+                showMessage('Error placing bid: ' + error.message, 'error');
+            }
+        };
+
+        // Real-time updates
+        function startRealTimeUpdates() {
+            // Listen for user balance changes
+            const userRef = doc(db, 'users', auth.currentUser.uid);
+            onSnapshot(userRef, (doc) => {
+                if (doc.exists()) {
+                    userBalance = doc.data().balance || 0;
+                    if (balanceDisplay) {
+                        balanceDisplay.textContent = userBalance;
+                    }
+                }
+            });
+
+            // Listen for auction changes
+            const q = query(collection(db, 'auctions'), where('endTime', '>', Date.now()));
+            onSnapshot(q, (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "modified") {
+                        const auction = change.doc.data();
+                        const existingCard = document.querySelector(`.auction-card[data-id="${change.doc.id}"]`);
+                        if (existingCard) {
+                            const newCard = createAuctionCard(auction, change.doc.id);
+                            existingCard.replaceWith(newCard);
+                        }
+                    }
+                });
+            });
+        }
+
+        // Helper function for showing messages
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            document.querySelector('.auctions-container').insertBefore(
+                messageDiv,
+                document.querySelector('.auctions-grid')
+            );
+            setTimeout(() => messageDiv.remove(), 3000);
+        }
+    </script>
+</body>
+</html> 
