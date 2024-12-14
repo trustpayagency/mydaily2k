@@ -40,11 +40,16 @@
             position: relative;
         }
 
+        .auction-image-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+        }
+
         .auction-image {
             width: 100%;
             height: 200px;
             object-fit: cover;
-            position: relative;
         }
 
         .auction-overlay {
@@ -52,17 +57,38 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 200px;
-            background: rgba(0, 0, 0, 0.5);
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            transition: opacity 0.3s ease;
         }
 
         .sponsor-logo {
-            max-width: 150px;
-            max-height: 100px;
+            width: 100%;
+            height: 200px;
             object-fit: contain;
+            background: #000;
+        }
+
+        .mystery-text {
+            position: relative;
+            margin-top: -40px;
+            color: #ec8f04;
+            font-size: 1.5em;
+            text-align: center;
+            width: 100%;
+            padding: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .revealed .auction-overlay {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
         }
 
         .auction-details {
@@ -144,16 +170,27 @@
             margin-right: 8px;
             color: #ec8f04;
         }
+
+        .no-auctions {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #666;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
+    <div class="user-balance" style="position: fixed; top: 10px; right: 10px; z-index: 1000;">
+        <i class="fas fa-coins"></i>
+        Balance: <span id="userBalanceDisplay">0</span> 2KCoins
+    </div>
+
     <div class="header">
         <h1>🏆 2K Auctions</h1>
         <p>Bid on exclusive items with your 2KCoins!</p>
-        <div class="user-balance">
-            <i class="fas fa-coins"></i>
-            Balance: <span id="userBalanceDisplay">0</span> 2KCoins
-        </div>
     </div>
 
     <div class="auctions-container">
@@ -165,7 +202,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, orderBy, getDocs, doc, updateDoc, arrayUnion, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, orderBy, getDocs, doc, updateDoc, arrayUnion, getDoc, onSnapshot, writeBatch, increment } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
 
         // Initialize Firebase with your config
         const firebaseConfig = {
@@ -183,12 +220,6 @@
         const db = getFirestore();
 
         let userBalance = 0;
-        let balanceDisplay = null;
-
-        // Initialize DOM elements after page load
-        document.addEventListener('DOMContentLoaded', () => {
-            balanceDisplay = document.getElementById('userBalanceDisplay');
-        });
 
         // Check authentication
         onAuthStateChanged(auth, async (user) => {
@@ -196,20 +227,28 @@
                 window.location.href = 'login.html';
                 return;
             }
+            // Initialize balance display
+            updateBalanceDisplay(0);
             await loadUserBalance();
             loadAuctions();
             startRealTimeUpdates();
         });
+
+        // Helper function to update balance display
+        function updateBalanceDisplay(balance) {
+            const balanceDisplay = document.getElementById('userBalanceDisplay');
+            if (balanceDisplay) {
+                balanceDisplay.textContent = balance;
+                userBalance = balance;
+            }
+        }
 
         // Load user's balance
         async function loadUserBalance() {
             try {
                 const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
                 if (userDoc.exists()) {
-                    userBalance = userDoc.data().balance || 0;
-                    if (balanceDisplay) {
-                        balanceDisplay.textContent = userBalance;
-                    }
+                    updateBalanceDisplay(userDoc.data().balance || 0);
                 }
             } catch (error) {
                 console.error('Error loading balance:', error);
@@ -218,10 +257,14 @@
 
         // Load auctions
         async function loadAuctions() {
-            const auctionsGrid = document.getElementById('auctionsGrid');
-            auctionsGrid.innerHTML = '';
-
             try {
+                const auctionsGrid = document.getElementById('auctionsGrid');
+                if (!auctionsGrid) {
+                    console.error('Auctions grid element not found');
+                    return;
+                }
+                auctionsGrid.innerHTML = '';
+
                 const q = query(
                     collection(db, 'auctions'),
                     where('endTime', '>', Date.now()),
@@ -234,8 +277,20 @@
                     const card = createAuctionCard(auction, doc.id);
                     auctionsGrid.appendChild(card);
                 });
+
+                if (snapshot.empty) {
+                    auctionsGrid.innerHTML = '<div class="no-auctions">No active auctions at the moment</div>';
+                }
             } catch (error) {
-                showMessage('Error loading auctions: ' + error.message, 'error');
+                console.error('Error loading auctions:', error);
+                const container = document.querySelector('.auctions-container');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="message error">
+                            Error loading auctions. Please try refreshing the page.
+                        </div>
+                    `;
+                }
             }
         }
 
@@ -245,17 +300,24 @@
             card.className = 'auction-card';
             card.setAttribute('data-id', auctionId);
             
-            card.innerHTML = `
-                <div class="timer" id="timer-${auctionId}">Loading...</div>
+            const isEnded = auction.endTime < Date.now();
+            const shouldReveal = isEnded;
+            
+            const content = `
+                <div class="timer" id="timer-${auctionId}">Calculating time...</div>
                 <div class="auction-image-container">
-                    <img src="${auction.imageUrl}" alt="${auction.itemName}" class="auction-image">
-                    <div class="auction-overlay">
+                    <img src="${shouldReveal ? auction.imageUrl : ''}" alt="${auction.itemName}" class="auction-image">
+                    <div class="auction-overlay ${shouldReveal ? 'revealed' : ''}">
                         ${auction.sponsorLogo ? `<img src="${auction.sponsorLogo}" alt="Sponsor" class="sponsor-logo">` : ''}
+                        <div class="mystery-text">
+                            <i class="fas fa-gift"></i><br>
+                            Mystery Prize from ${auction.sponsorName}
+                        </div>
                     </div>
                 </div>
                 <div class="auction-details">
-                    <h3>${auction.itemName}</h3>
-                    <p>${auction.description}</p>
+                    <h3>${shouldReveal ? auction.itemName : 'Mystery Item'}</h3>
+                    <p>${shouldReveal ? auction.description : 'Bid to win this exclusive mystery item!'}</p>
                     <p>Current Bid: ${auction.currentBid} 2KCoins</p>
                     <p>Minimum Increment: ${auction.bidIncrement} 2KCoins</p>
                     ${auction.sponsorName ? `<p>Sponsored by: ${auction.sponsorName}</p>` : ''}
@@ -264,8 +326,10 @@
                                class="bid-input" 
                                id="bid-${auctionId}" 
                                min="${auction.currentBid + auction.bidIncrement}"
-                               step="${auction.bidIncrement}">
-                        <button class="bid-btn" onclick="placeBid('${auctionId}')">
+                               step="${auction.bidIncrement}"
+                               ${isEnded ? 'disabled' : ''}>
+                        <button class="bid-btn" onclick="placeBid('${auctionId}')"
+                               ${isEnded ? 'disabled' : ''}>
                             Place Bid
                         </button>
                     </div>
@@ -274,22 +338,49 @@
                             `<div>${bid.username}: ${bid.amount} 2KCoins</div>`
                         ).join('') : ''}
                     </div>
+                    ${shouldReveal && auction.highestBidder === auth.currentUser.uid ? `
+                        <div class="winner-message" style="color: #4CAF50; margin-top: 10px; text-align: center;">
+                            🎉 Congratulations! You won this auction! 🎉
+                        </div>
+                    ` : ''}
                 </div>
             `;
+            card.innerHTML = content;
 
-            updateTimer(auction, auctionId);
-            setInterval(() => updateTimer(auction, auctionId), 1000);
+            // Set up timer after the content is added to DOM
+            const timerElement = card.querySelector(`#timer-${auctionId}`);
+            if (timerElement) {
+                updateTimer(auction, auctionId);
+                const intervalId = setInterval(() => {
+                    if (document.getElementById(`timer-${auctionId}`)) {
+                        updateTimer(auction, auctionId);
+                        // Check if auction just ended
+                        if (auction.endTime < Date.now()) {
+                            const card = document.querySelector(`.auction-card[data-id="${auctionId}"]`);
+                            if (card) {
+                                loadAuctions(); // Reload to show revealed content
+                            }
+                            clearInterval(intervalId);
+                        }
+                    } else {
+                        clearInterval(intervalId);
+                    }
+                }, 1000);
+            }
 
             return card;
         }
 
         // Update timer
         function updateTimer(auction, auctionId) {
+            const timerElement = document.getElementById(`timer-${auctionId}`);
+            if (!timerElement) return;
+            
             const now = Date.now();
             const timeLeft = auction.endTime - now;
             
             if (timeLeft <= 0) {
-                document.getElementById(`timer-${auctionId}`).textContent = 'Auction Ended';
+                timerElement.textContent = 'Auction Ended';
                 return;
             }
 
@@ -297,17 +388,30 @@
             const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-            document.getElementById(`timer-${auctionId}`).textContent = 
-                `${hours}h ${minutes}m ${seconds}s`;
+            timerElement.textContent = `${hours}h ${minutes}m ${seconds}s`;
         }
 
         // Place bid
         window.placeBid = async (auctionId) => {
             try {
+                if (!auth.currentUser) {
+                    showMessage('Please login to place a bid', 'error');
+                    return;
+                }
+
                 const bidInput = document.getElementById(`bid-${auctionId}`);
                 const bidAmount = parseInt(bidInput.value);
                 
+                if (!bidAmount || isNaN(bidAmount)) {
+                    showMessage('Please enter a valid bid amount', 'error');
+                    return;
+                }
+
                 const auctionDoc = await getDoc(doc(db, 'auctions', auctionId));
+                if (!auctionDoc.exists()) {
+                    showMessage('Auction not found', 'error');
+                    return;
+                }
                 const auction = auctionDoc.data();
 
                 if (auction.endTime < Date.now()) {
@@ -331,9 +435,18 @@
                 }
 
                 const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+                if (!userDoc.exists()) {
+                    showMessage('User profile not found', 'error');
+                    return;
+                }
                 const username = userDoc.data().username;
 
-                await updateDoc(doc(db, 'auctions', auctionId), {
+                // Start a batch write
+                const batch = writeBatch(db);
+
+                // Update auction
+                const auctionRef = doc(db, 'auctions', auctionId);
+                batch.update(auctionRef, {
                     currentBid: bidAmount,
                     highestBidder: auth.currentUser.uid,
                     bids: arrayUnion({
@@ -344,10 +457,22 @@
                     })
                 });
 
+                // Update user balance
+                const userRef = doc(db, 'users', auth.currentUser.uid);
+                batch.update(userRef, {
+                    balance: increment(-bidAmount)
+                });
+
+                // Commit the batch
+                await batch.commit();
+
                 showMessage('Bid placed successfully!', 'success');
                 loadAuctions();
+                bidInput.value = ''; // Clear the input after successful bid
             } catch (error) {
+                console.error('Bid error:', error);
                 showMessage('Error placing bid: ' + error.message, 'error');
+                loadAuctions(); // Reload auctions to ensure consistent state
             }
         };
 
@@ -357,10 +482,7 @@
             const userRef = doc(db, 'users', auth.currentUser.uid);
             onSnapshot(userRef, (doc) => {
                 if (doc.exists()) {
-                    userBalance = doc.data().balance || 0;
-                    if (balanceDisplay) {
-                        balanceDisplay.textContent = userBalance;
-                    }
+                    updateBalanceDisplay(doc.data().balance || 0);
                 }
             });
 
