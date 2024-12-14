@@ -441,6 +441,10 @@
                 }
                 const username = userDoc.data().username;
 
+                // Get the previous highest bidder and their bid amount
+                const previousBidder = auction.highestBidder;
+                const previousBidAmount = auction.currentBid;
+
                 // Start a batch write
                 const batch = writeBatch(db);
 
@@ -457,22 +461,31 @@
                     })
                 });
 
-                // Update user balance
+                // Deduct bid amount from current bidder
                 const userRef = doc(db, 'users', auth.currentUser.uid);
                 batch.update(userRef, {
                     balance: increment(-bidAmount)
                 });
+
+                // Refund previous bidder if exists
+                if (previousBidder && previousBidAmount > 0) {
+                    const previousBidderRef = doc(db, 'users', previousBidder);
+                    batch.update(previousBidderRef, {
+                        balance: increment(previousBidAmount),
+                        refundAmount: previousBidAmount // Used for security rules validation
+                    });
+                }
 
                 // Commit the batch
                 await batch.commit();
 
                 showMessage('Bid placed successfully!', 'success');
                 loadAuctions();
-                bidInput.value = ''; // Clear the input after successful bid
+                bidInput.value = '';
             } catch (error) {
                 console.error('Bid error:', error);
                 showMessage('Error placing bid: ' + error.message, 'error');
-                loadAuctions(); // Reload auctions to ensure consistent state
+                loadAuctions();
             }
         };
 
