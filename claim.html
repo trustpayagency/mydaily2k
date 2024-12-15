@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Your Prize</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(to top, #ec8f04, #f58c79);
+            color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .claim-card {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .prize-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #ec8f04;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            background: rgba(255, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="auction.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Auctions
+        </a>
+        <div id="claimContent">
+            <!-- Content will be loaded dynamically -->
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
+            authDomain: "mydaily2kbot.firebaseapp.com",
+            projectId: "mydaily2kbot",
+            storageBucket: "mydaily2kbot.appspot.com",
+            messagingSenderId: "967002689133",
+            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
+            measurementId: "G-2VNDPK8V4J"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore();
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            loadClaimDetails();
+        });
+
+        async function loadClaimDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const auctionId = urlParams.get('auctionId');
+            const contentDiv = document.getElementById('claimContent');
+
+            if (!auctionId) {
+                contentDiv.innerHTML = `
+                    <div class="error-message">
+                        Invalid auction ID. Please go back and try again.
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const auctionDoc = await getDoc(doc(db, 'auctions', auctionId));
+                if (!auctionDoc.exists()) {
+                    contentDiv.innerHTML = `
+                        <div class="error-message">
+                            Auction not found. Please go back and try again.
+                        </div>
+                    `;
+                    return;
+                }
+
+                const auction = auctionDoc.data();
+                if (auction.highestBidder !== auth.currentUser.uid) {
+                    contentDiv.innerHTML = `
+                        <div class="error-message">
+                            You are not the winner of this auction.
+                        </div>
+                    `;
+                    return;
+                }
+
+                contentDiv.innerHTML = `
+                    <div class="claim-card">
+                        <h2>🎉 Congratulations on Winning!</h2>
+                        <img src="${auction.imageUrl}" alt="${auction.itemName}" class="prize-image">
+                        <h3>${auction.itemName}</h3>
+                        <div class="instructions">
+                            <h4>How to Claim Your Prize:</h4>
+                            ${auction.claimInstructions || 'Please contact an administrator for claim instructions.'}
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading claim details:', error);
+                contentDiv.innerHTML = `
+                    <div class="error-message">
+                        Error loading claim details. Please try again later.
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html> 
