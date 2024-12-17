@@ -815,13 +815,23 @@
                 // Start countdown
                 let countdown = 30;
                 const countdownElement = document.getElementById('countdown');
-                const countdownInterval = setInterval(() => {
+                const countdownInterval = setInterval(async () => {
                     countdown -= 1;
                     countdownElement.textContent = countdown;
                     if (countdown <= 0) {
                         clearInterval(countdownInterval);
-                        countdownElement.textContent = "Time's up!";
-                        enableClaimReward();
+                        countdownElement.textContent = "Completed!";
+                        
+                        // Automatically reward user
+                        window.adUsage.adsWatched++;
+                        await updateAdUsage(user.uid, window.adUsage);
+                        await updateBalance(user.uid, 20);
+                        
+                        // Remove the ad container after a short delay
+                        setTimeout(() => {
+                            adContainer.remove();
+                            alert("You've earned 20 2KCoins!");
+                        }, 1000);
                     }
                 }, 1000);
 
@@ -832,34 +842,6 @@
                         videoElement.play(); // Restart video if countdown is not complete
                     }
                 });
-
-                // Function to enable claim reward after countdown
-                function enableClaimReward() {
-                    const claimButton = document.createElement('button');
-                    claimButton.textContent = 'Claim 20 2KCoins';
-                    claimButton.style.position = 'absolute';
-                    claimButton.style.bottom = '150px'; // Position above the banner
-                    claimButton.style.left = '50%';
-                    claimButton.style.transform = 'translateX(-50%)';
-                    claimButton.style.backgroundColor = '#28a745';
-                    claimButton.style.color = '#fff';
-                    claimButton.style.padding = '10px 20px';
-                    claimButton.style.border = 'none';
-                    claimButton.style.borderRadius = '5px';
-                    claimButton.style.cursor = 'pointer';
-                    claimButton.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
-                    claimButton.style.transition = 'background-color 0.3s, transform 0.3s';
-                    claimButton.onmouseover = () => claimButton.style.backgroundColor = '#218838';
-                    claimButton.onmouseout = () => claimButton.style.backgroundColor = '#28a745';
-                    claimButton.onclick = async () => {
-                        window.adUsage.adsWatched++;
-                        await updateAdUsage(user.uid, window.adUsage);
-                        await updateBalance(user.uid, 20);
-                        adContainer.remove();
-                        alert("You've earned 20 2KCoins!");
-                    };
-                    adContainer.querySelector('.video-wrapper').appendChild(claimButton);
-                }
 
                 // Style the overlay
                 adContainer.style.display = 'flex';
@@ -962,30 +944,10 @@
                         views: (selectedCampaign.views || 0) + 1
                     });
 
-                    const claimButton = document.createElement('button');
-                    claimButton.textContent = 'Claim 20 2KCoins';
-                    claimButton.style.position = 'absolute';
-                    claimButton.style.bottom = '150px'; // Position above the banner
-                    claimButton.style.left = '50%';
-                    claimButton.style.transform = 'translateX(-50%)';
-                    claimButton.style.backgroundColor = '#28a745';
-                    claimButton.style.color = '#fff';
-                    claimButton.style.padding = '10px 20px';
-                    claimButton.style.border = 'none';
-                    claimButton.style.borderRadius = '5px';
-                    claimButton.style.cursor = 'pointer';
-                    claimButton.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
-                    claimButton.style.transition = 'background-color 0.3s, transform 0.3s';
-                    claimButton.onmouseover = () => claimButton.style.backgroundColor = '#218838';
-                    claimButton.onmouseout = () => claimButton.style.backgroundColor = '#28a745';
-                    claimButton.onclick = async () => {
-                        window.adUsage.adsWatched++;
-                        await updateAdUsage(user.uid, window.adUsage);
-                        await updateBalance(user.uid, 20);
-                        adContainer.remove();
-                        alert("You've earned 20 2KCoins!");
-                    };
-                    videoWrapper.appendChild(claimButton); // Append to videoWrapper to overlay on video
+                    // Restart video if countdown is not complete
+                    if (countdown > 0) {
+                        videoElement.play();
+                    }
                 });
 
             } catch (error) {
