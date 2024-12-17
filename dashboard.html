@@ -1355,7 +1355,7 @@
                         livestreamBtn.classList.add('locked');
                     } else {
                         livestreamBtn.innerHTML = `<i class="fas fa-video"></i>`; // Restore video icon
-                        livestreamBtn.onclick = () => window.location.href='livestream.html';
+                        livestreamBtn.onclick = showLivestreamOverlay;
                         livestreamBtn.classList.remove('locked');
                     }
                 }
@@ -1406,6 +1406,134 @@
             }
         `;
         document.head.appendChild(newStyles);
+
+        async function showLivestreamOverlay() {
+            // Create overlay container
+            const overlayContainer = document.createElement('div');
+            overlayContainer.style.cssText = `
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 70%;
+                background: rgba(0, 0, 0, 0.95);
+                border-top-left-radius: 20px;
+                border-top-right-radius: 20px;
+                transform: translateY(100%);
+                transition: transform 0.3s ease-out;
+                z-index: 1000;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 20px;
+            `;
+
+            // Get livestream data from Firestore
+            const livestreamRef = doc(db, "livestream", "current");
+            const livestreamDoc = await getDoc(livestreamRef);
+            const livestreamData = livestreamDoc.data() || {
+                description: "No active livestream",
+                link: "#",
+                reward: 0,
+                isActive: false
+            };
+
+            // Create content
+            overlayContainer.innerHTML = `
+                <div style="width: 100%; text-align: right;">
+                    <button id="close-livestream" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">×</button>
+                </div>
+                <h2 style="color: #ec8f04; margin: 10px 0;">Live Stream Event</h2>
+                <p style="color: white; margin: 20px 0; text-align: center; padding: 0 20px;">
+                    ${livestreamData.description}
+                </p>
+                <div style="display: flex; gap: 20px; margin-top: 20px;">
+                    <button id="join-livestream" style="
+                        background: #ec8f04;
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-weight: bold;
+                    ">Join Livestream</button>
+                </div>
+                <div style="margin-top: 20px; width: 80%; max-width: 300px;">
+                    <input type="text" id="livestream-code" placeholder="Enter verification code" style="
+                        width: 100%;
+                        padding: 10px;
+                        border: 1px solid #ec8f04;
+                        border-radius: 5px;
+                        background: rgba(255, 255, 255, 0.1);
+                        color: white;
+                        margin-bottom: 10px;
+                    ">
+                    <button id="verify-code" style="
+                        width: 100%;
+                        background: #19e2b0;
+                        color: white;
+                        border: none;
+                        padding: 10px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-weight: bold;
+                    ">Verify Code</button>
+                </div>
+                <p id="verification-message" style="color: white; margin-top: 10px;"></p>
+            `;
+
+            document.body.appendChild(overlayContainer);
+
+            // Show overlay with animation
+            setTimeout(() => {
+                overlayContainer.style.transform = 'translateY(0)';
+            }, 100);
+
+            // Add event listeners
+            document.getElementById('close-livestream').onclick = () => {
+                overlayContainer.style.transform = 'translateY(100%)';
+                setTimeout(() => overlayContainer.remove(), 300);
+            };
+
+            document.getElementById('join-livestream').onclick = () => {
+                if (livestreamData.isActive && livestreamData.link) {
+                    window.open(livestreamData.link, '_blank');
+                } else {
+                    alert('No active livestream available at the moment.');
+                }
+            };
+
+            document.getElementById('verify-code').onclick = async () => {
+                const code = document.getElementById('livestream-code').value;
+                const messageElement = document.getElementById('verification-message');
+                
+                if (code === livestreamData.code) {
+                    try {
+                        const user = auth.currentUser;
+                        if (user) {
+                            await updateBalance(user.uid, livestreamData.reward);
+                            messageElement.style.color = '#19e2b0';
+                            messageElement.textContent = `Congratulations! You've earned ${livestreamData.reward} 2KCoins!`;
+                            
+                            // Update verification status in Firestore
+                            const userVerificationRef = doc(db, "livestreamVerifications", user.uid);
+                            await setDoc(userVerificationRef, {
+                                verified: true,
+                                timestamp: new Date(),
+                                streamId: livestreamData.streamId
+                            });
+                        }
+                    } catch (error) {
+                        console.error("Error processing verification:", error);
+                        messageElement.style.color = 'red';
+                        messageElement.textContent = 'Error processing verification. Please try again.';
+                    }
+                } else {
+                    messageElement.style.color = 'red';
+                    messageElement.textContent = 'Invalid code. Please try again.';
+                }
+            };
+        }
     </script>
     <script type='text/javascript' src='https://pl25145596.profitablecpmrate.com/a1/91/a1/a191a1a71e1bfd8cf2b8b436068db02a.js'></script>
  </body> 
