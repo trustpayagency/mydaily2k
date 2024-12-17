@@ -787,7 +787,7 @@
 
                 if (!selectedCampaign.videoURL) {
                     console.error("No video URL found in the selected campaign.");
-                    alert("Oops!You trying to watch ads too often.try again");
+                    alert("Oops! You are trying to watch ads too often. Try again.");
                     return;
                 }
 
@@ -797,7 +797,7 @@
                 adContainer.innerHTML = `
                     <div class="video-wrapper">
                         <a href="createcampaign.html" class="publish-ads-button">Post Ads</a>
-                        <video src="${selectedCampaign.videoURL}" autoplay muted playsinline></video>
+                        <video id="ad-video" src="${selectedCampaign.videoURL}" autoplay muted playsinline></video>
                         <div class="banner">
                             <div class="logo-name">
                                 <img src="${selectedCampaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
@@ -807,9 +807,60 @@
                                 ${selectedCampaign.type === 'application' ? 'Install App' : 'Visit Web'}
                             </a>
                         </div>
+                        <div id="countdown" style="position: absolute; top: 10px; left: 10px; background: rgba(0, 0, 0, 0.7); color: white; padding: 5px 10px; border-radius: 5px;">30</div>
                     </div>
                 `;
                 document.body.appendChild(adContainer);
+
+                // Start countdown
+                let countdown = 30;
+                const countdownElement = document.getElementById('countdown');
+                const countdownInterval = setInterval(() => {
+                    countdown -= 1;
+                    countdownElement.textContent = countdown;
+                    if (countdown <= 0) {
+                        clearInterval(countdownInterval);
+                        countdownElement.textContent = "Time's up!";
+                        // Allow user to claim reward after countdown
+                        enableClaimReward();
+                    }
+                }, 1000);
+
+                // Ensure video keeps playing
+                const videoElement = document.getElementById('ad-video');
+                videoElement.addEventListener('ended', () => {
+                    if (countdown > 0) {
+                        videoElement.play(); // Restart video if countdown is not complete
+                    }
+                });
+
+                // Function to enable claim reward after countdown
+                function enableClaimReward() {
+                    const claimButton = document.createElement('button');
+                    claimButton.textContent = 'Claim 20 2KCoins';
+                    claimButton.style.position = 'absolute';
+                    claimButton.style.bottom = '150px'; // Position above the banner
+                    claimButton.style.left = '50%';
+                    claimButton.style.transform = 'translateX(-50%)';
+                    claimButton.style.backgroundColor = '#28a745';
+                    claimButton.style.color = '#fff';
+                    claimButton.style.padding = '10px 20px';
+                    claimButton.style.border = 'none';
+                    claimButton.style.borderRadius = '5px';
+                    claimButton.style.cursor = 'pointer';
+                    claimButton.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
+                    claimButton.style.transition = 'background-color 0.3s, transform 0.3s';
+                    claimButton.onmouseover = () => claimButton.style.backgroundColor = '#218838';
+                    claimButton.onmouseout = () => claimButton.style.backgroundColor = '#28a745';
+                    claimButton.onclick = async () => {
+                        window.adUsage.adsWatched++;
+                        await updateAdUsage(user.uid, window.adUsage);
+                        await updateBalance(user.uid, 20);
+                        adContainer.remove();
+                        alert("You've earned 20 2KCoins!");
+                    };
+                    adContainer.querySelector('.video-wrapper').appendChild(claimButton);
+                }
 
                 // Style the overlay
                 adContainer.style.display = 'flex';
@@ -835,7 +886,6 @@
                 videoWrapper.style.overflow = 'hidden'; // Ensure content doesn't overflow
 
                 // Style the video
-                const videoElement = adContainer.querySelector('video');
                 videoElement.style.width = '100%';
                 videoElement.style.height = 'auto'; // Maintain aspect ratio
                 videoElement.style.borderRadius = '10px';
