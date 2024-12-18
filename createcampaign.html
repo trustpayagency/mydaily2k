@@ -3,82 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Campaign</title>
+    <title>MyDaily2k Advertise Hub - Create Campaign</title>
+    <meta name="description" content="Create and manage your advertising campaigns with MyDaily2k's professional campaign management system.">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* General Styling */
+        :root {
+            --primary-color: #19e2b0;
+            --secondary-color: #f58c79;
+            --dark-bg: #1c1c1e;
+            --text-light: #ffffff;
+            --text-muted: #cccccc;
+        }
+
         body {
             font-family: 'Roboto', Arial, sans-serif;
-            background: linear-gradient(to top, #19e2b0, #f58c79);
-            color: #f0f0f0;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            background: linear-gradient(135deg, var(--dark-bg), #2a2a2d, #333335);
+            color: var(--text-light);
+            min-height: 100vh;
         }
-        body.light-mode {
-            background: linear-gradient(to top, #ec8f04, black); /* Change to black in light mode */
-        }
-        h1 {
-            text-align: center;
-            color: rgb(255, 255, 255);
-        }
-        form {
-            max-width: 600px;
-            margin: auto;
-            background: #222;
-            padding: 20px;
-            border-radius: 5px;
-        }
-        label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-        input, select, button {
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #555;
-            border-radius: 5px;
-            background: #333;
-            color: #fff;
+            background: rgba(28, 28, 30, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
-        .btn {
-            background-color: #19e2b0;
-            width: 100%;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 10px 20px;
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
             text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
         }
-        .NOTE {
-            background: #b81212;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
+
+        .nav-links a:hover {
+            color: var(--primary-color);
         }
+
+        /* Main Content */
+        main {
+            padding: 100px 2rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        /* Balance Container */
         .balance-container {
-            max-width: 600px;
-            margin: 0 auto 20px;
-            background: #222;
-            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(5px);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .balance-container .btn {
-            margin: 5px; /* Add some margin for spacing */
-            border-radius: 20px;
-            padding: 8px 10px; /* Reduce padding for smaller buttons */
-            font-size: 12px; /* Reduce font size */
-            min-width: 80px; /* Ensure buttons have a minimum width */
-        }
+
         .balance-text {
-            font-size: 14px;
+            font-size: 1.2rem;
             font-weight: bold;
-            color: #fff;
+            color: var(--text-light);
         }
+
+        /* Form Styling */
+        form {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        label {
+            display: block;
+            margin: 1rem 0 0.5rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(25, 226, 176, 0.2);
+        }
+
+        .NOTE {
+            background: rgba(184, 18, 18, 0.1);
+            border-left: 4px solid #b81212;
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+            color: var(--text-muted);
+        }
+
+        .btn {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: var(--dark-bg);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(25, 226, 176, 0.3);
+        }
+
+        /* Loading Overlay */
+        .loading-container {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
         .overlay {
             position: fixed;
             top: 0;
@@ -86,144 +181,137 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
         }
+
         .overlay-content {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
             text-align: center;
-            color: #000;
+            color: var(--text-light);
+            max-width: 400px;
+            width: 90%;
         }
-        .loading-spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid #fff;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            display: none;
-            margin: 0 auto;
-        }
-        .loading-container {
-            display: none; /* Initially hidden */
-            text-align: center;
-            margin-top: 20px;
-        }
-        .loading-message {
-            color: #fff;
-            margin-top: 10px;
-        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .back-button {
-            position: fixed;
-            top: 100px;
-            left: 20px;
-            background: #e2b319;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .switch {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            display: flex;
-            align-items: center;
-        }
 
-        .switch a {
-            margin-right: 10px;
-            color: white;
-            text-decoration: none;
-            padding: 5px 10px;
-            background-color: #19e2b0;
-            border-radius: 5px;
-        } 
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            main {
+                padding: 80px 1rem 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .balance-container {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
     </style>
 </head>
-<body> 
-    <div class="switch">
-        <a href="advertise.html" >Back</a> 
-    </div> 
-      <h1>Create Campaign</h1>
-      
-      <div class="balance-container">
-        <div class="balance-text-container">
-            <span class="balance-text">Balance ₦:<span id="balance">0</span></span>
+<body>
+    <nav class="navbar">
+        <div class="logo">MyDaily2k</div>
+        <div class="nav-links">
+            <a href="advertisedashboard.html">Dashboard</a>
+            <a href="advertise.html">Buy Traffic</a>
+            <a href="contact.html">Contact</a>
+            <a href="advertiseprofile.html" id="userProfile">My Account</a>
         </div>
-        <div>
-            <a href="addcash.html" class="btn">Add Cash</a>
-            <a href="Campaigns.html" class="btn">View my campaigns</a>
+    </nav>
+
+    <main>
+        <h1>Create Campaign</h1>
+
+        <div class="balance-container">
+            <div class="balance-text-container">
+                <span class="balance-text">Balance ₦:<span id="balance">0</span></span>
+            </div>
+            <div>
+                <a href="addcash.html" class="btn">Add Cash</a>
+                <a href="Campaigns.html" class="btn">View my campaigns</a>
+            </div>
         </div>
-    </div>
-    <form id="campaignForm" enctype="multipart/form-data"> 
+        <form id="campaignForm" enctype="multipart/form-data"> 
  
-        
-        <label for="campaign-name">Your Campaign name:</label>
-        <input type="text" id="campaign-name" name="campaign-name" required>
+            
+            <label for="campaign-name">Your Campaign name:</label>
+            <input type="text" id="campaign-name" name="campaign-name" required>
 
-        <label for="video">Upload Campaign Video (max 30 seconds):</label>
-        <input type="file" id="video" name="video" accept="video/*" required>
-        <p class="NOTE">Video should not be longer than 30 seconds.</p>
+            <label for="video">Upload Campaign Video (max 30 seconds):</label>
+            <input type="file" id="video" name="video" accept="video/*" required>
+            <p class="NOTE">Video should not be longer than 30 seconds.</p>
 
-        <label for="link">Link to Your Website/App:</label>
-        <input type="text" id="link" name="link" required>
-        
-        <label for="logo">Upload Website/App Logo:</label>
-        <input type="file" id="logo" name="logo" accept="image/*" required>
+            <label for="link">Link to Your Website/App:</label>
+            <input type="text" id="link" name="link" required>
+            
+            <label for="logo">Upload Website/App Logo:</label>
+            <input type="file" id="logo" name="logo" accept="image/*" required>
 
-        <div class="loading-container" id="loadingContainer">
-            <div class="loading-spinner" id="loadingSpinner"></div>
-            <p class="loading-message" id="loadingMessage">Uploading...</p>
+            <div class="loading-container" id="loadingContainer">
+                <div class="loading-spinner" id="loadingSpinner"></div>
+                <p class="loading-message" id="loadingMessage">Uploading...</p>
+            </div>
+            
+            <label for="type">Campaign Type:</label>
+            <select id="type" name="type" required>
+                <option value="">Select Type</option>
+                <option value="app">App</option>
+                <option value="website">Website</option>
+            </select>
+
+            <label for="duration">How long do you want the post to last?</label>
+            <select id="duration" name="duration" required>
+                <option value="">Select Duration</option>
+                <option value="14 days">14 days</option>
+                <option value="1 month">1 month</option>
+                <option value="2 months">2 months</option>
+                <option value="3 months">3 months</option>
+                <option value="6 months">6 months</option>
+                <option value="1 year">1 year</option>
+            </select>
+
+            <label for="view-preference">View Preference:</label>
+            <select id="view-preference" name="view-preference" required>
+                <option value="">Select View Preference</option>
+                <option value="high">High Views</option> 
+                <option value="low">Low Views</option>
+            </select>
+
+            <label for="amount">Total Amount (₦):</label>
+            <input type="text" id="amount" name="amount" required readonly>
+
+            <button type="submit" class="btn">Publish Campaign</button> 
+        </form>
+
+        <div class="overlay" id="successOverlay">
+            <div class="overlay-content">
+                <p>Your campaign was published successfully!</p>
+                <button class="btn" id="overlayOkButton">OK</button>
+            </div>
         </div>
-        
-        <label for="type">Campaign Type:</label>
-        <select id="type" name="type" required>
-            <option value="">Select Type</option>
-            <option value="app">App</option>
-            <option value="website">Website</option>
-        </select>
-
-        <label for="duration">How long do you want the post to last?</label>
-        <select id="duration" name="duration" required>
-            <option value="">Select Duration</option>
-            <option value="14 days">14 days</option>
-            <option value="1 month">1 month</option>
-            <option value="2 months">2 months</option>
-            <option value="3 months">3 months</option>
-            <option value="6 months">6 months</option>
-            <option value="1 year">1 year</option>
-        </select>
-
-        <label for="view-preference">View Preference:</label>
-        <select id="view-preference" name="view-preference" required>
-            <option value="">Select View Preference</option>
-            <option value="high">High Views</option> 
-            <option value="low">Low Views</option>
-        </select>
-
-        <label for="amount">Total Amount (₦):</label>
-        <input type="text" id="amount" name="amount" required readonly>
-
-        <button type="submit" class="btn">Publish Campaign</button> 
-    </form>
-
-    <div class="overlay" id="successOverlay">
-        <div class="overlay-content">
-            <p>Your campaign was published successfully!</p>
-            <button class="btn" id="overlayOkButton">OK</button>
-        </div>
-    </div>
+    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
