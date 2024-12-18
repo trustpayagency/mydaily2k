@@ -48,24 +48,20 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
         .nav-links {
+            position: absolute;  
+            top: 20px;
+            right:50px;
             display: flex;
-            position:absolute;
-            right: 20px;
-            gap: 1rem;
+            align-items: center;
         }
 
         .nav-links a {
-            color: var(--text-light);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
+            margin-left: 10px; 
+            color: white;
+            text-decoration: none; 
         }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
-        }
+        
 
         /* Main Content */
         main {
