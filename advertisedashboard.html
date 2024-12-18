@@ -54,17 +54,48 @@
         .nav-links {
             display: flex;
             gap: 2rem;
+            align-items: center;
         }
 
         .nav-links a {
-            color: var(--text-light);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
         }
 
-        .nav-links a:hover {
+        .nav-links a:not(.switch-user):hover {
+            background: rgba(25, 226, 176, 0.1);
             color: var(--primary-color);
+        }
+
+        .nav-links a:not(.switch-user)::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background: var(--primary-color);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-links a:not(.switch-user):hover::after {
+            width: 80%;
+        }
+
+        .switch-user {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            margin-left: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .switch-user:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(25, 226, 176, 0.3);
         }
 
         /* Hero Section */
@@ -256,11 +287,11 @@
             <i class="fas fa-bars"></i>
         </button>
         <div class="nav-links">
-            <a href="advertise.html">Buy Traffic</a>
-            <a href="createcampaign.html">Campaigns</a>
-            <a href="contact.html">Contact</a>
-            <a href="dashboard.html"> switch to User</a>
+            <a href="advertise.html"><i class="fas fa-shopping-cart"></i> Buy Traffic</a>
+            <a href="createcampaign.html"><i class="fas fa-bullhorn"></i> Campaigns</a>
+            <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
         </div>
+        <a href="dashboard.html" class="switch-user"><i class="fas fa-exchange-alt"></i> Switch to User</a>
     </nav>
 
     <div class="background-circles">
