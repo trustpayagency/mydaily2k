@@ -639,7 +639,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
         import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js"; 
 
         // Firebase configuration
@@ -1438,7 +1438,32 @@
                 isActive: false
             };
 
-            // Create content
+            // Check cooldown status before showing the overlay
+            const user = auth.currentUser;
+            let initialButtonState = '';
+            let isInCooldown = false;
+            let remainingTime = 0;
+
+            if (user) {
+                const cooldownRef = doc(db, "livestreamCooldowns", user.uid);
+                const cooldownDoc = await getDoc(cooldownRef);
+                
+                if (cooldownDoc.exists()) {
+                    const cooldownData = cooldownDoc.data();
+                    const cooldownEnd = cooldownData.cooldownEnd?.toDate();
+                    const now = new Date();
+                    
+                    if (cooldownEnd && now < cooldownEnd) {
+                        isInCooldown = true;
+                        remainingTime = Math.ceil((cooldownEnd - now) / 1000);
+                        const minutes = Math.floor(remainingTime / 60);
+                        const seconds = remainingTime % 60;
+                        initialButtonState = `next code in ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    }
+                }
+            }
+
+            // Create content with conditional button state
             overlayContainer.innerHTML = `
                 <div style="width: 100%; text-align: right;">
                     <button id="close-livestream" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">×</button>
@@ -1470,14 +1495,14 @@
                     ">
                     <button id="verify-code" style="
                         width: 100%;
-                        background: #19e2b0;
+                        background: ${isInCooldown ? '#666' : '#19e2b0'};
                         color: white;
                         border: none;
                         padding: 10px;
                         border-radius: 5px;
-                        cursor: pointer;
+                        cursor: ${isInCooldown ? 'not-allowed' : 'pointer'};
                         font-weight: bold;
-                    ">Verify Code</button>
+                    " ${isInCooldown ? 'disabled' : ''}>${isInCooldown ? initialButtonState : 'Verify Code'}</button>
                 </div>
                 <p id="verification-message" style="color: white; margin-top: 10px;"></p>
             `;
@@ -1506,33 +1531,106 @@
             document.getElementById('verify-code').onclick = async () => {
                 const code = document.getElementById('livestream-code').value;
                 const messageElement = document.getElementById('verification-message');
+                const verifyButton = document.getElementById('verify-code');
                 
-                if (code === livestreamData.code) {
-                    try {
-                        const user = auth.currentUser;
-                        if (user) {
+                try {
+                    const user = auth.currentUser;
+                    if (!user) {
+                        messageElement.style.color = 'red';
+                        messageElement.textContent = 'Please log in to verify.';
+                        return;
+                    }
+
+                    // Check if user is in cooldown period
+                    const cooldownRef = doc(db, "livestreamCooldowns", user.uid);
+                    const cooldownDoc = await getDoc(cooldownRef);
+                    
+                    if (cooldownDoc.exists()) {
+                        const cooldownData = cooldownDoc.data();
+                        const cooldownEnd = cooldownData.cooldownEnd?.toDate();
+                        const now = new Date();
+                        
+                        if (cooldownEnd && now < cooldownEnd) {
+                            const remainingTime = Math.ceil((cooldownEnd - now) / 1000 / 60); // remaining minutes
+                            messageElement.style.color = 'red';
+                            messageElement.textContent = `Please wait ${remainingTime} minute(s) before trying again.`;
+                            
+                            // Update button to show remaining time
+                            verifyButton.disabled = true;
+                            verifyButton.style.backgroundColor = '#666';
+                            
+                            const remainingSeconds = Math.ceil((cooldownEnd - now) / 1000);
+                            startCountdown(verifyButton, remainingSeconds);
+                            return;
+                        }
+                    }
+                    
+                    if (code === livestreamData.code) {
+                        try {
+                            // First update the user's balance
                             await updateBalance(user.uid, livestreamData.reward);
                             messageElement.style.color = '#19e2b0';
                             messageElement.textContent = `Congratulations! You've earned ${livestreamData.reward} 2KCoins!`;
                             
-                            // Update verification status in Firestore
+                            // Record the verification
                             const userVerificationRef = doc(db, "livestreamVerifications", user.uid);
                             await setDoc(userVerificationRef, {
                                 verified: true,
-                                timestamp: new Date(),
-                                streamId: livestreamData.streamId
+                                timestamp: serverTimestamp(),
+                                streamId: livestreamData.streamId,
+                                rewardAmount: livestreamData.reward
                             });
+
+                            // Set cooldown period using server timestamp
+                            await setDoc(cooldownRef, {
+                                cooldownEnd: serverTimestamp(5 * 60 * 1000), // 5 minutes from server time
+                                lastVerification: serverTimestamp()
+                            });
+
+                            // Start countdown
+                            verifyButton.disabled = true;
+                            verifyButton.style.backgroundColor = '#666';
+                            startCountdown(verifyButton, 300); // 5 minutes in seconds
+
+                        } catch (error) {
+                            console.error("Error processing verification:", error);
+                            messageElement.style.color = 'red';
+                            messageElement.textContent = 'Error processing verification. Please try again.';
                         }
-                    } catch (error) {
-                        console.error("Error processing verification:", error);
+                    } else {
                         messageElement.style.color = 'red';
-                        messageElement.textContent = 'Error processing verification. Please try again.';
+                        messageElement.textContent = 'Invalid code. Please try again.';
                     }
-                } else {
+                } catch (error) {
+                    console.error("Error checking cooldown:", error);
                     messageElement.style.color = 'red';
-                    messageElement.textContent = 'Invalid code. Please try again.';
+                    messageElement.textContent = 'Error checking verification status. Please try again.';
                 }
             };
+
+            // If in cooldown, start the countdown immediately
+            if (isInCooldown) {
+                const verifyButton = document.getElementById('verify-code');
+                startCountdown(verifyButton, remainingTime);
+            }
+        }
+
+        // Add this helper function for the countdown
+        function startCountdown(button, seconds) {
+            let remainingSeconds = seconds;
+            const countdownInterval = setInterval(() => {
+                remainingSeconds--;
+                const minutes = Math.floor(remainingSeconds / 60);
+                const secs = remainingSeconds % 60;
+                button.textContent = `next code in ${minutes}:${secs.toString().padStart(2, '0')}`;
+                
+                if (remainingSeconds <= 0) {
+                    clearInterval(countdownInterval);
+                    button.disabled = false;
+                    button.style.backgroundColor = '#19e2b0';
+                    button.textContent = 'Verify Code';
+                }
+            }, 1000);
         }
     </script>
     <script type='text/javascript' src='https://pl25145596.profitablecpmrate.com/a1/91/a1/a191a1a71e1bfd8cf2b8b436068db02a.js'></script>
