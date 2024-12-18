@@ -47,23 +47,7 @@
             background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .nav-links a {
-            color: var(--text-light);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
-        }
+        } 
 
         /* Main Content */
         main {
@@ -185,6 +169,19 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(25, 226, 176, 0.3);
         }
+        .nav-links {
+            position: absolute;  
+            top: 20px;
+            right:50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            margin-left: 10px; 
+            color: white;
+            text-decoration: none; 
+        }
 
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -211,9 +208,7 @@
         <div class="logo">MyDaily2k</div>
         <div class="nav-links">
             <a href="advertisedashboard.html">Dashboard</a>
-            <a href="createcampaign.html">Create Campaign</a>
-            <a href="contact.html">Contact</a>
-            <a href="advertiseprofile.html" id="userProfile">My Account</a>
+            <a href="createcampaign.html">Create Campaign</a> 
         </div>
     </nav>
 
