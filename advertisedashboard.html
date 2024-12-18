@@ -54,48 +54,24 @@
         .nav-links {
             display: flex;
             gap: 2rem;
-            align-items: center;
         }
 
         .nav-links a {
-            position: relative;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            transition: all 0.3s ease;
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
         }
 
-        .nav-links a:not(.switch-user):hover {
-            background: rgba(25, 226, 176, 0.1);
+        .nav-links a:hover {
             color: var(--primary-color);
         }
 
-        .nav-links a:not(.switch-user)::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 50%;
-            background: var(--primary-color);
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
-        }
-
-        .nav-links a:not(.switch-user):hover::after {
-            width: 80%;
-        }
-
-        .switch-user {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            padding: 0.5rem 1.5rem;
-            border-radius: 20px;
-            margin-left: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .switch-user:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(25, 226, 176, 0.3);
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
         }
 
         /* Hero Section */
@@ -221,112 +197,18 @@
             }
 
             .navbar {
+                padding: 1rem;
                 flex-wrap: wrap;
-                padding: 1rem;
             }
 
-            .mobile-menu-btn {
+            .menu-toggle {
                 display: block;
-                order: 2;
             }
 
             .nav-links {
                 display: none;
-                width: 50%;
-                order: 3;
-                margin-left: 1rem;
-                margin-top: 1rem;
-                background: rgba(28, 28, 30, 0.95);
-                border-radius: 8px;
-                padding: 1rem;
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .nav-links.active {
-                display: flex;
-                animation: slideDown 0.3s ease-out;
-            }
-
-            .nav-links a {
                 width: 100%;
-                padding: 0.8rem;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 0.5rem;
-            }
-
-            .nav-links a i {
-                width: 20px;
-            }
-
-            .nav-links a:not(.switch-user):hover {
-                background: rgba(25, 226, 176, 0.1);
-                transform: translateY(-2px);
-            }
-
-            .switch-user {
-                order: 4;
-                width: 20%;
-                margin: 0.5rem 0;
-                text-align: center;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 0.5rem;
-            }
-
-            /* Add a subtle divider between menu items */
-            .nav-links a:not(:last-child) {
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            }
-
-            /* Enhance the mobile menu button */
-            .mobile-menu-btn {
-                background: rgba(25, 226, 176, 0.1);
-                border-radius: 4px;
-                padding: 0.5rem 1rem;
-                transition: all 0.3s ease;
-            }
-
-            .mobile-menu-btn:hover {
-                background: rgba(25, 226, 176, 0.2);
-            }
-
-            /* Adjust the hero section padding for mobile */
-            .hero {
-                padding-top: 6rem;
-            }
-        }
-
-        /* Mobile Menu Button */
-        .mobile-menu-btn {
-            display: none;
-            margin-left: 1rem;
-            background: none;
-            border: none;
-            color: var(--text-light);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-        }
-
-        /* Update the media query section */
-        @media (max-width: 768px) {
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: rgba(28, 28, 30, 0.95);
-                backdrop-filter: blur(10px);
-                padding: 1rem;
+                padding: 1rem 0;
                 flex-direction: column;
                 gap: 1rem;
                 text-align: center;
@@ -336,18 +218,6 @@
                 display: flex;
             }
         }
-
-        /* Add animation for smooth transition */
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
     </style>
     <!-- Add Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -355,15 +225,15 @@
 <body>
     <nav class="navbar">
         <div class="logo">MyDaily2k</div>
-        <button class="mobile-menu-btn">
+        <div class="menu-toggle" id="menuToggle">
             <i class="fas fa-bars"></i>
-        </button>
-        <div class="nav-links">
-            <a href="advertise.html"><i class="fas fa-shopping-cart"></i> Buy Traffic</a>
-            <a href="createcampaign.html"><i class="fas fa-bullhorn"></i> Campaigns</a>
-            <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
         </div>
-        <a href="dashboard.html" class="switch-user"><i class="fas fa-exchange-alt"></i> Switch to User</a>
+        <div class="nav-links">
+            <a href="advertise.html">Buy Traffic</a>
+            <a href="createcampaign.html">Campaigns</a>
+            <a href="contact.html">Contact</a>
+            <a href="dashboard.html"> switch to User</a>
+        </div>
     </nav>
 
     <div class="background-circles">
@@ -432,10 +302,12 @@
             &copy; 2024 MyDaily2k Advertise Hub. All rights reserved.
         </div>
     </footer>
-
     <script>
-        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
-            document.querySelector('.nav-links').classList.toggle('active');
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
         });
     </script>
 </body>
