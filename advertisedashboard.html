@@ -51,6 +51,26 @@
             -webkit-text-fill-color: transparent;
         }
 
+        .nav-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .switch-user-btn {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border-radius: 5px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .switch-user-btn:hover {
+            opacity: 0.9;
+        }
+
         .nav-links {
             display: flex;
             gap: 2rem;
@@ -198,24 +218,27 @@
 
             .navbar {
                 padding: 1rem;
-                flex-wrap: wrap;
-            }
-
-            .menu-toggle {
-                display: block;
             }
 
             .nav-links {
-                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
                 width: 100%;
+                background: rgba(28, 28, 30, 0.95);
                 padding: 1rem 0;
                 flex-direction: column;
                 gap: 1rem;
                 text-align: center;
+                display: none;
             }
 
             .nav-links.active {
                 display: flex;
+            }
+
+            .nav-group {
+                gap: 0.5rem;
             }
         }
     </style>
@@ -225,14 +248,18 @@
 <body>
     <nav class="navbar">
         <div class="logo">MyDaily2k</div>
-        <div class="menu-toggle" id="menuToggle">
-            <i class="fas fa-bars"></i>
+        <div class="nav-group">
+            <a href="dashboard.html" class="switch-user-btn">
+                <i class="fas fa-exchange-alt"></i> Switch to User
+            </a>
+            <div class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </div>
         </div>
         <div class="nav-links">
             <a href="advertise.html">Buy Traffic</a>
             <a href="createcampaign.html">Campaigns</a>
             <a href="contact.html">Contact</a>
-            <a href="dashboard.html"> switch to User</a>
         </div>
     </nav>
 
