@@ -14,71 +14,112 @@
             margin: 0;
             padding: 0;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        body.light-mode {
-            background: linear-gradient(to top, #ec8f04, black); /* Change to black in light mode */
         }
 
-        .content {
-            margin-top: 20px;
-            padding: 20px;
+        body.light-mode {
+            background: linear-gradient(to top, #ec8f04, black);
+        }
+
+        main {
+            padding: 20px 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
             text-align: center;
-            width: 90%;
-            max-width: 400px; 
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .profile-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 80px;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
         }
 
         .profile-pic {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
-            border: 3px solid #ec8f04;
-            margin-bottom: 20px;
+            margin: 0 auto 1rem;
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
+            border: 3px solid #ec8f04;
             position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .edit-pic {
             position: absolute;
             bottom: 0;
             right: 0;
-            background-color: #ec8f04;
+            background: rgba(0, 0, 0, 0.5);
             border: none;
             border-radius: 50%;
-            cursor: pointer;
             width: 30px;
             height: 30px;
+            cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
         .info-container {
-            margin-bottom: 20px;
-            text-align: left;
+            margin-top: 2rem;
         }
 
-        .info-container p {
-            margin: 10px 0;
+        .info-group {
+            background: rgba(5, 0, 0, 0.315);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .info-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            color: #f0f0f0;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .balance-info {
+            background: rgba(36, 22, 2, 0.438);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            text-align: center;
         }
 
         .button {
             background-color: #ec8f04;
-            color: #000;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 15px;
-            cursor: pointer;
-            transition: background-color 0.3s;
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .button:hover {
-            background-color: #d58b00;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(236, 143, 4, 0.3);
         }
 
         .switch {
@@ -88,31 +129,31 @@
         }
 
         .bottom-banner {
-            border-radius: 20px; /* Curved edges */
-            overflow: hidden; /* Ensure content fits within the border */
-            background-color: #222; /* Change background color */
-            padding: 13px; /* Adjust padding */
-            width: 75%; /* Set width */
-            margin: 0px auto; /* Center the banner */
-            position: fixed; /* Keep it fixed at the bottom */
+            border-radius: 20px;
+            overflow: hidden;
+            background-color: #222;
+            padding: 13px;
+            width: 75%;
+            margin: 0px auto;
+            position: fixed;
             bottom: 20px;
-            left: 50%; /* Center horizontally */
-            transform: translateX(-50%); /* Adjust position to perfectly center */
+            left: 50%;
+            transform: translateX(-50%);
             z-index: 1;
             display: flex;
             justify-content: space-around;
         }
 
         .bottom-banner .button {
-            width: 50px; /* Adjusted size for consistency */
+            width: 50px;
             height: 50px;
             background-color: #ec8f04;
             color: #000;
             border: none;
             border-radius: 50%;
             cursor: pointer;
-            padding: 10px; /* Adjusted padding */
-            font-size: 24px; /* Adjusted icon size */
+            padding: 10px;
+            font-size: 24px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -135,26 +176,46 @@
 </head>
 
 <body>
+    <main>
+        <h1>My Profile</h1>
+        
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-pic" id="profilePic" style="background-image: url('R.png');">
+                    <button class="edit-pic" onclick="editProfilePic()" style="color: #ec8f04; margin-top: 100px;">
+                        <i class="fas fa-camera" > </i>
+                    </button>
+                </div>
+            </div>
 
-    <div class="content">
-        <div class="profile-pic" id="profilePic" style="background-image: url('R.png');">
-            <button class="edit-pic" onclick="editProfilePic()">
-                <i class="fas fa-camera"></i>
-            </button>
+            <div class="balance-info">
+                <strong>Balance:</strong>
+                <span id="balance">0</span> 2K Coins
+            </div>
+
+            <div class="info-container">
+                <div class="info-group">
+                    <div class="info-label">Full Name</div>
+                    <div class="info-value" id="fullname">Loading...</div>
+                </div>
+
+                <div class="info-group">
+                    <div class="info-label">Username</div>
+                    <div class="info-value" id="username">Loading...</div>
+                </div>
+
+                <div class="info-group">
+                    <div class="info-label">Email</div>
+                    <div class="info-value" id="email">Loading...</div>
+                </div>
+            </div>
+
+            <div class="switch">
+                <button class="button" onclick="window.location.href='forgetpassword.html'">Change Password</button>
+                <button class="button" onclick="window.location.href='contact.html'">Contact Support</button>
+            </div>
         </div>
-        <div id="uploadStatus" style="display: none; margin-top: 10px;"></div>
-        <div class="info-container">
-            <h2>Profile Information</h2>
-            <p><strong>Full Name:</strong> <span id="fullname">Loading...</span></p>
-            <p><strong>Username:</strong> <span id="username">Loading...</span></p>
-            <p><strong>Balance:</strong> <span id="balance">0</span> 2K Coins</p>
-            <p><strong>Email:</strong> <span id="email">Loading...</span></p>
-        </div>
-        <div class="switch">
-            <button class="button" onclick="window.location.href='forgetpassword.html'">Change Password</button>
-            <button class="button" onclick="window.location.href='contact.html'">Contact Support</button>
-        </div>
-    </div>
+    </main>
 
     <div class="bottom-banner">
         <div>
@@ -180,10 +241,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js"; // Ensure updateDoc is imported
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
         import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
     
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
             authDomain: "mydaily2kbot.firebaseapp.com",
@@ -194,7 +254,6 @@
             measurementId: "G-2VNDPK8V4J"
         };
     
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -210,7 +269,6 @@
                 document.getElementById("fullname").textContent = data['fullname'] || 'N/A';
                 document.getElementById("balance").textContent = data.balance || '0';
                 document.getElementById("email").textContent = data.email || 'N/A';
-                // Update profile picture if available
                 if (data.profilePic) {
                     document.getElementById("profilePic").style.backgroundImage = `url('${data.profilePic}')`;
                 }
@@ -222,7 +280,6 @@
             }
         }
     
-        // Attach the function to the window object
         window.editProfilePic = function() {
             const input = document.createElement('input');
             input.type = 'file';
@@ -230,14 +287,12 @@
             input.onchange = async (event) => {
                 const file = event.target.files[0];
                 if (file) {
-                    // Validate file is an image
                     if (!file.type.startsWith('image/')) {
                         alert('Please select an image file');
                         return;
                     }
 
-                    // Validate file size (e.g., 5MB limit)
-                    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+                    const maxSize = 5 * 1024 * 1024;
                     if (file.size > maxSize) {
                         alert('Image size should be less than 5MB');
                         return;
@@ -255,7 +310,6 @@
                             document.getElementById("profilePic").style.backgroundImage = `url('${imageData}')`;
 
                             const userId = auth.currentUser.uid;
-                            // Simplified storage reference without timestamp
                             const storageRef = ref(storage, `profilePics/${userId}`);
 
                             await uploadString(storageRef, imageData, 'data_url');
@@ -292,14 +346,13 @@
                 if (user) {
                     await loadUserProfile(user.uid);
                 } else {
-                    window.location.href = 'login.html'; // Redirect to login page if not authenticated
+                    window.location.href = 'login.html';
                 }
             });
         });
-                // Check localStorage for the user's mode preference
                 const currentMode = localStorage.getItem('mode') || 'dark';
         if (currentMode === 'light') {
-            document.body.classList.add('light-mode'); // Apply light mode if set
+            document.body.classList.add('light-mode');
         }
     </script>
 
