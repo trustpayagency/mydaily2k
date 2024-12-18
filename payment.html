@@ -3,85 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment - Social Media Services</title>
+    <title>MyDaily2k Advertise Hub - Payment</title>
+    <meta name="description" content="Secure payment processing for MyDaily2k's social media services.">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* General Styling */
+        :root {
+            --primary-color: #19e2b0;
+            --secondary-color: #f58c79;
+            --dark-bg: #1c1c1e;
+            --text-light: #ffffff;
+            --text-muted: #cccccc;
+        }
+
         body {
             font-family: 'Roboto', Arial, sans-serif;
-            background: linear-gradient(to top, #19e2b0, #f58c79);
-            color: #f0f0f0;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            background: linear-gradient(135deg, var(--dark-bg), #2a2a2d, #333335);
+            color: var(--text-light);
+            min-height: 100vh;
         }
-        body.light-mode {
-            background: linear-gradient(to top, #ec8f04, black); /* Change to black in light mode */
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(28, 28, 30, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Main Content */
+        main {
+            padding: 100px 2rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
         h1 {
+            font-size: 2.5rem;
             text-align: center;
-            color: rgb(255, 255, 255);
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
         }
+
+        /* Balance Container */
+        .balance-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .balance-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-light);
+        }
+
+        /* Form Styling */
         form {
-            max-width: 600px;
-            margin: auto;
-            background: #222;
-            padding: 20px;
-            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
         }
+
         label {
             display: block;
-            margin: 10px 0 5px;
+            margin: 1rem 0 0.5rem;
+            color: var(--text-light);
+            font-weight: 500;
         }
-        input, select {
+
+        input, select, textarea {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #555;
-            border-radius: 5px;
-            background: #333;
-            color: #fff;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-light);
+            font-size: 1rem;
         }
-        .btn {
-            background-color: #19e2b0;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 10px 20px;
-            text-decoration: none;
-            width: 100%;
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(25, 226, 176, 0.2);
         }
-        .bank-info {
-            background: #444;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-        }
+
         .NOTE {
-            background: #b81212;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
+            background: rgba(184, 18, 18, 0.1);
+            border-left: 4px solid #b81212;
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+            color: var(--text-muted);
         }
+
+        .btn {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: var(--dark-bg);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn.full-width {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(25, 226, 176, 0.3);
+        }
+
+        /* Loading Overlay */
         .loading-overlay {
-            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
-            z-index: 9999;
+            backdrop-filter: blur(5px);
+            display: none;
             justify-content: center;
             align-items: center;
+            z-index: 1000;
         }
 
         .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #19e2b0;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--primary-color);
             border-radius: 50%;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
         }
 
@@ -89,75 +192,116 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            main {
+                padding: 80px 1rem 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .balance-container {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .btn {
+                width: 100%;
+                margin: 0.5rem 0;
+            }
+        }
     </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="logo">MyDaily2k</div>
+        <div class="nav-links">
+            <a href="advertisedashboard.html">Dashboard</a>
+            <a href="advertise.html">Buy Traffic</a>
+            <a href="contact.html">Contact</a>
+            <a href="advertiseprofile.html" id="userProfile">My Account</a>
+        </div>
+    </nav>
+
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
     </div>
 
-    <h1>Payment for Social Media Services</h1>
-    
-    <!-- Add new container for balance and buttons -->
-    <div style="max-width: 600px; margin: 0 auto 20px; background: #222; padding: 20px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            <span>Balance: </span>
-            <span id="userBalance">₦0.00</span>
-        </div>
-        <div>
-            <a href="advertise.html" class="btn" style="width: auto; margin-right: 10px;">Back</a>
-            <a href="addcash.html" class="btn" style="width: auto;">Add Cash</a>
-        </div>
-    </div>
-
-    <form id="paymentForm">
-        <label for="service">Service Selected:</label>
-        <select id="service" name="service" required>
-            <option value="Instagram Followers">Instagram Followers</option>
-            <option value="Instagram Likes">Instagram Likes</option>
-            <option value="TikTok Followers">TikTok Followers</option>
-            <option value="TikTok Likes">TikTok Likes</option>
-            <option value="Twitter Followers">Twitter Followers</option>
-            <option value="Twitter Post Likes">Twitter Post Likes</option>
-            <option value="Facebook Page Likes">Facebook Page Likes</option>
-            <option value="Facebook Post Likes">Facebook Post Likes</option>
-            <option value="YouTube Subscribers">YouTube Subscribers</option>
-            <option value="YouTube Views">YouTube Views</option>
-            <option value="Telegram Group/Channels">Telegram Group Members/Channels</option>
-            <option value="WhatsApp Groups/Contact">WhatsApp Group Members/Contact</option>
-            <option value="Spotify Streams">Spotify Streams</option>
-            <option value="apple Music Streams">Apple Music Streams</option>
-            <option value="youtube music Streams">YouTube Music Streams</option>
-            <option value="audiomack Streams">Audiomack Streams</option>
-        </select>
-
-        <label for="days">Number of Days:</label>
-        <select id="days" name="days" required>
-            <option value="1">1 day</option>
-            <option value="3">3 days</option>
-            <option value="5">5 days</option>
-            <option value="7">7 days</option>
-        </select>
-
-        <label for="amount">Total Amount (₦):</label>
-        <input type="text" id="amount" name="amount" required readonly>
-
-        <label for="description">Description:</label>
-        <textarea id="description" name="description" required 
-            style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #555; border-radius: 5px; background: #333; color: #fff;"
-            rows="4"></textarea>
-
-        <div class="NOTE"> 
-            <h3>We do not promise a certain amount of traffic</h3>
-            <p> But we promise your service will be up Till the days you baught run out </p>
-            <p> So we advice you to buy more than one days to get more traffic on your post </p> 
+    <main>
+        <h1>Payment for Social Media Services</h1>
+        
+        <div class="balance-container">
+            <div>
+                <span class="balance-text">Balance: </span>
+                <span id="userBalance" class="balance-text">₦0.00</span>
+            </div>
+            <div>
+                <a href="advertise.html" class="btn">Back</a>
+                <a href="addcash.html" class="btn">Add Cash</a>
+            </div>
         </div>
 
-        <label for="post-link">Upload The Page or Post Link:</label>
-        <input type="text" id="post-link" name="post-link" required>
+        <form id="paymentForm">
+            <label for="service">Service Selected:</label>
+            <select id="service" name="service" required>
+                <option value="Instagram Followers">Instagram Followers</option>
+                <option value="Instagram Likes">Instagram Likes</option>
+                <option value="TikTok Followers">TikTok Followers</option>
+                <option value="TikTok Likes">TikTok Likes</option>
+                <option value="Twitter Followers">Twitter Followers</option>
+                <option value="Twitter Post Likes">Twitter Post Likes</option>
+                <option value="Facebook Page Likes">Facebook Page Likes</option>
+                <option value="Facebook Post Likes">Facebook Post Likes</option>
+                <option value="YouTube Subscribers">YouTube Subscribers</option>
+                <option value="YouTube Views">YouTube Views</option>
+                <option value="Telegram Group/Channels">Telegram Group Members/Channels</option>
+                <option value="WhatsApp Groups/Contact">WhatsApp Group Members/Contact</option>
+                <option value="Spotify Streams">Spotify Streams</option>
+                <option value="apple Music Streams">Apple Music Streams</option>
+                <option value="youtube music Streams">YouTube Music Streams</option>
+                <option value="audiomack Streams">Audiomack Streams</option>
+            </select>
 
-        <button type="submit" class="btn">Submit Payment</button>
-    </form>
+            <label for="days">Number of Days:</label>
+            <select id="days" name="days" required>
+                <option value="1">1 day</option>
+                <option value="3">3 days</option>
+                <option value="5">5 days</option>
+                <option value="7">7 days</option>
+            </select>
+
+            <label for="amount">Total Amount (₦):</label>
+            <input type="text" id="amount" name="amount" required readonly>
+
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" required 
+                style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #555; border-radius: 5px; background: #333; color: #fff;"
+                rows="4"></textarea>
+
+            <div class="NOTE"> 
+                <h3>We do not promise a certain amount of traffic</h3>
+                <p> But we promise your service will be up Till the days you baught run out </p>
+                <p> So we advice you to buy more than one days to get more traffic on your post </p> 
+            </div>
+
+            <label for="post-link">Upload The Page or Post Link:</label>
+            <input type="text" id="post-link" name="post-link" required>
+
+            <button type="submit" class="btn">Submit Payment</button>
+        </form>
+    </main>
 
     <script type="module">
         // Update Firebase imports with correct version number
