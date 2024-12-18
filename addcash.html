@@ -3,112 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Cash</title>
+    <title>MyDaily2k Advertise Hub - Add Cash</title>
+    <meta name="description" content="Securely add funds to your MyDaily2k advertising account.">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* General Styling */
+        :root {
+            --primary-color: #19e2b0;
+            --secondary-color: #f58c79;
+            --dark-bg: #1c1c1e;
+            --text-light: #ffffff;
+            --text-muted: #cccccc;
+        }
+
         body {
             font-family: 'Roboto', Arial, sans-serif;
-            background: #f4f4f4;
-            color: #333;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            background: linear-gradient(135deg, var(--dark-bg), #2a2a2d, #333335);
+            color: var(--text-light);
+            min-height: 100vh;
         }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(28, 28, 30, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Main Content */
+        main {
+            padding: 100px 2rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
         h1 {
+            font-size: 2.5rem;
             text-align: center;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
         }
+
+        /* Form Styling */
         form {
-            max-width: 600px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         label {
             display: block;
-            margin: 10px 0 5px;
+            margin: 1rem 0 0.5rem;
+            color: var(--text-light);
+            font-weight: 500;
         }
+
         input, textarea {
-            width: 90%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #000000;
-            border-radius: 5px;
-        }
-        .bank-info { 
-            color: #000;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-        }
-        .btn {
-            background-color: #19e2b0;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 10px 20px;
             width: 100%;
-            opacity: 0.5; /* Initially disabled */
-            pointer-events: none; /* Prevent clicks */
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-light);
+            font-size: 1rem;
+            box-sizing: border-box;
         }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(25, 226, 176, 0.2);
+        }
+
+        /* Bank Info Styling */
+        .bank-info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            backdrop-filter: blur(5px);
+        }
+
+        .bank-info h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .bank-info p {
+            margin: 0.5rem 0;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 1rem;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Button Styling */
+        .btn {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: var(--dark-bg);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 100%;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
         .btn.enabled {
-            opacity: 1; /* Enabled state */
-            pointer-events: auto; /* Allow clicks */
+            opacity: 1;
+            pointer-events: auto;
         }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(25, 226, 176, 0.3);
+        }
+
+        /* Overlay Styling */
         .overlay {
-            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: none;
             justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
 
         .overlay-content {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            max-width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
             text-align: center;
-            color: #333;
-            position: relative;
-            z-index: 1001;
+            max-width: 400px;
+            width: 90%;
         }
 
         .overlay-content h2 {
+            color: var(--primary-color);
             margin-top: 0;
-            color: #19e2b0;
-        }
-
-        .overlay-content p {
-            margin: 20px 0;
-        }
-
-        .ok-button {
-            background-color: #19e2b0;
-            color: white;
-            border: none;
-            padding: 10px 30px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
         }
 
         .loading-spinner {
-            display: none;
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #19e2b0;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--primary-color);
             border-radius: 50%;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
-            margin: 20px auto;
+            margin: 1rem auto;
         }
 
         @keyframes spin {
@@ -116,17 +218,50 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Back Button */
         .back-button {
             position: fixed;
             top: 20px;
             left: 20px;
-            background: #19e2b0;
-            color: white;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: var(--dark-bg);
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
             cursor: pointer;
             text-decoration: none;
+            font-weight: 500;
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 1001;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(25, 226, 176, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            main {
+                padding: 80px 1rem 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .back-button {
+                top: 10px;
+                left: 10px;
+            }
         }
     </style>
     <!-- Include Firebase SDK -->
@@ -257,35 +392,52 @@
     </script>
 </head>
 <body>
-    <a href="createcampaign.html" class="back-button">
-        <i class="fas fa-arrow-left"></i> Back
-    </a>
-    
+    <nav class="navbar">
+        <div class="logo">MyDaily2k</div>
+        <div class="nav-links">
+            <a href="advertisedashboard.html">Dashboard</a>
+            <a href="advertise.html">Buy Traffic</a>
+            <a href="createcampaign.html">Create Campaign</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+    <main>
+        <h1>Add Cash to Your Account</h1>
+        
+        <form id="addCashForm">
+            <label for="amount">Amount to Add (₦):</label>
+            <input type="text" id="amount" name="amount" required oninput="checkFormCompletion()">
+            
+            <div class="bank-info">
+                <h3>Bank Information</h3>
+                <p><strong>Bank Name:</strong> Opay</p>
+                <p>
+                    <strong>Account Number:</strong> 
+                    <span id="accountNumber">8146129606</span>
+                    <button type="button" class="copy-btn" onclick="copyToClipboard()">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </p>
+                <p><strong>Account Name:</strong> Faruq Olasunkunmi Muritala</p>
+            </div>
+
+            <label for="receipt">Upload Payment Receipt:</label>
+            <input type="file" id="receipt" name="receipt" accept="image/*,application/pdf" required onchange="checkFormCompletion()">
+
+            <button type="button" id="submitButton" class="btn" onclick="addCash()">I Have Paid</button>
+        </form>
+    </main>
+
     <div class="overlay" id="overlay">
         <div class="loading-spinner" id="loading-spinner"></div>
         <div class="overlay-content" id="overlay-message" style="display: none;">
             <h2>Thank You!</h2>
             <p>Your cash will be added to your balance shortly. If your balance is not updated in 30 minutes, contact support at adeledeveloper7@gmail.com.</p>
-            <button class="ok-button" onclick="hideOverlay()">OK</button>
+            <button class="btn enabled" onclick="hideOverlay()">OK</button>
         </div>
     </div>
 
-    <h1>Add Cash</h1>
-    <form id="addCashForm" action="#" method="POST" enctype="multipart/form-data">
-        <label for="amount">Amount to Add (₦):</label>
-        <input type="text" id="amount" name="amount" required oninput="checkFormCompletion()">
-        
-        <div class="bank-info">
-            <h3>Bank Information</h3>
-            <p><strong>Bank Name:</strong> opay</p>
-            <p><strong>Account Number:</strong> <span id="accountNumber">8146129606</span> <button onclick="copyToClipboard()">Copy</button></p>
-            <p><strong>Account Name:</strong> faruq olasunkunmi muritala</p>
-        </div>
-
-        <label for="receipt">Upload Payment Receipt:</label>
-        <input type="file" id="receipt" name="receipt" accept="image/*,application/pdf" required onchange="checkFormCompletion()">
-
-        <button type="button" id="submitButton" class="btn" onclick="addCash()">I Have Paid</button>
-    </form>
+    <!-- Keep existing scripts -->
 </body>
 </html>
