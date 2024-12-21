@@ -161,6 +161,7 @@
 
         /* Loading Overlay */
         .loading-container {
+            display: none;
             text-align: center;
             margin-top: 1rem;
         }
@@ -249,43 +250,77 @@
             </div>
         </div>
         <form id="campaignForm" enctype="multipart/form-data"> 
- 
-            
-            <label for="campaign-name">Your Campaign name:</label>
+            <h2>Campaign Details</h2>
+            <label for="campaign-name">Campaign Name:</label>
             <input type="text" id="campaign-name" name="campaign-name" required>
 
-            <label for="video">Upload Campaign Video (max 30 seconds):</label>
-            <input type="file" id="video" name="video" accept="video/*" required>
-            <p class="NOTE">Video should not be longer than 30 seconds.</p>
+            <label for="content-type">Content Type:</label>
+            <select id="content-type" name="content-type" required>
+                <option value="">Select Content Type</option>
+                <option value="video">Video</option>
+                <option value="pic">Picture</option>
+            </select>
 
-            <label for="link">Link to Your Website/App:</label>
-            <input type="text" id="link" name="link" required>
-            
-            <label for="logo">Upload Website/App Logo:</label>
-            <input type="file" id="logo" name="logo" accept="image/*" required>
-
-            <div class="loading-container" id="loadingContainer">
-                <div class="loading-spinner" id="loadingSpinner"></div>
-                <p class="loading-message" id="loadingMessage">Uploading...</p>
+            <div id="video-upload" style="display: none;">
+                <label for="video">Upload Video (max 30 seconds):</label>
+                <input type="file" id="video" name="video" accept="video/*">
+                <p class="NOTE">Video should not be longer than 30 seconds.</p>
             </div>
-            
+
+            <div id="pic-upload" style="display: none;">
+                <label for="pic">Upload Picture:</label>
+                <input type="file" id="pic" name="pic" accept="image/*">
+            </div>
+
             <label for="type">Campaign Type:</label>
             <select id="type" name="type" required>
                 <option value="">Select Type</option>
                 <option value="app">App</option>
                 <option value="website">Website</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="telegram">Telegram</option>
             </select>
 
-            <label for="duration">How long do you want the post to last?</label>
-            <select id="duration" name="duration" required>
-                <option value="">Select Duration</option>
-                <option value="14 days">14 days</option>
-                <option value="1 month">1 month</option>
-                <option value="2 months">2 months</option>
-                <option value="3 months">3 months</option>
-                <option value="6 months">6 months</option>
-                <option value="1 year">1 year</option>
-            </select>
+            <div id="website-link" style="display: none;">
+                <label for="link">Website Link:</label>
+                <input type="url" id="link" name="link">
+            </div>
+
+            <div id="app-platform" style="display: none;">
+                <label for="platform">App Platform:</label>
+                <select id="platform" name="platform" required>
+                    <option value="">Select Platform</option>
+                    <option value="android">Android</option>
+                    <option value="ios">iOS</option>
+                    <option value="both">Both</option>
+                </select>
+
+                <div id="android-link" style="display: none;">
+                    <label for="android-link-input">Android App Link:</label>
+                    <input type="url" id="android-link-input" name="android-link">
+                </div>
+
+                <div id="ios-link" style="display: none;">
+                    <label for="ios-link-input">iOS App Link:</label>
+                    <input type="url" id="ios-link-input" name="ios-link">
+                </div>
+            </div>
+
+            <div id="whatsapp-link" style="display: none;">
+                <label for="whatsapp-link-input">WhatsApp Link:</label>
+                <input type="url" id="whatsapp-link-input" name="whatsapp-link">
+            </div>
+
+            <div id="telegram-link" style="display: none;">
+                <label for="telegram-link-input">Telegram Link:</label>
+                <input type="url" id="telegram-link-input" name="telegram-link">
+            </div>
+
+            <label for="logo">Upload Logo:</label>
+            <input type="file" id="logo" name="logo" accept="image/*" required>
+
+            <label for="views">Number of Views:</label>
+            <input type="number" id="views" name="views" min="500" step="500" required>
 
             <label for="view-preference">View Preference:</label>
             <select id="view-preference" name="view-preference" required>
@@ -297,6 +332,11 @@
             <label for="amount">Total Amount (₦):</label>
             <input type="text" id="amount" name="amount" required readonly>
 
+            <div class="loading-container" id="loadingContainer">
+                <div class="loading-spinner" id="loadingSpinner"></div>
+                <p class="loading-message" id="loadingMessage">Uploading...</p>
+            </div>
+            
             <button type="submit" class="btn">Publish Campaign</button> 
         </form>
 
@@ -335,18 +375,23 @@
             const viewPreferenceSelect = document.getElementById('view-preference');
             const amountInput = document.getElementById('amount');
             const form = document.getElementById('campaignForm');
-            const loadingSpinner = document.getElementById('loadingSpinner');
+            const loadingContainer = document.getElementById('loadingContainer');
+            const loadingMessage = document.getElementById('loadingMessage');
             const successOverlay = document.getElementById('successOverlay');
             const overlayOkButton = document.getElementById('overlayOkButton');
-
-            const basePrices = {
-                "14 days": 14000,
-                "1 month": 25000,
-                "2 months": 45000,
-                "3 months": 60000,
-                "6 months": 100000,
-                "1 year": 180000,
-            };
+            const contentTypeSelect = document.getElementById('content-type');
+            const videoUploadDiv = document.getElementById('video-upload');
+            const picUploadDiv = document.getElementById('pic-upload');
+            const typeSelect = document.getElementById('type');
+            const platformSelect = document.getElementById('platform');
+            const appPlatformDiv = document.getElementById('app-platform');
+            const androidLinkDiv = document.getElementById('android-link');
+            const iosLinkDiv = document.getElementById('ios-link');
+            const viewsInput = document.getElementById('views');
+            const basePricePerThousandViews = 14000;
+            const websiteLinkDiv = document.getElementById('website-link');
+            const whatsappLinkDiv = document.getElementById('whatsapp-link');
+            const telegramLinkDiv = document.getElementById('telegram-link');
 
             async function initializeCampaign() {
                 onAuthStateChanged(auth, async (user) => {
@@ -368,27 +413,97 @@
             }
 
             function updateAmount() {
-                const duration = durationSelect.value;
+                const views = parseInt(viewsInput.value, 10) || 0;
                 const viewPreference = viewPreferenceSelect.value;
-                let price = basePrices[duration];
+                let price = (views / 1000) * basePricePerThousandViews;
 
                 if (viewPreference === "low") {
                     price *= 0.8;
                 }
 
-                amountInput.value = price;
+                amountInput.value = price.toFixed(2);
             }
 
-            durationSelect.addEventListener('change', updateAmount);
+            viewsInput.addEventListener('input', updateAmount);
             viewPreferenceSelect.addEventListener('change', updateAmount);
+
+            contentTypeSelect.addEventListener('change', function() {
+                const selectedType = contentTypeSelect.value;
+                if (selectedType === 'video') {
+                    videoUploadDiv.style.display = 'block';
+                    picUploadDiv.style.display = 'none';
+                } else if (selectedType === 'pic') {
+                    videoUploadDiv.style.display = 'none';
+                    picUploadDiv.style.display = 'block';
+                } else {
+                    videoUploadDiv.style.display = 'none';
+                    picUploadDiv.style.display = 'none';
+                }
+            });
+
+            if (typeSelect) {
+                typeSelect.addEventListener('change', function() {
+                    if (typeSelect.value === 'app') {
+                        if (appPlatformDiv) appPlatformDiv.style.display = 'block';
+                        if (websiteLinkDiv) websiteLinkDiv.style.display = 'none';
+                        if (whatsappLinkDiv) whatsappLinkDiv.style.display = 'none';
+                        if (telegramLinkDiv) telegramLinkDiv.style.display = 'none';
+                    } else if (typeSelect.value === 'website') {
+                        if (appPlatformDiv) appPlatformDiv.style.display = 'none';
+                        if (websiteLinkDiv) websiteLinkDiv.style.display = 'block';
+                        if (whatsappLinkDiv) whatsappLinkDiv.style.display = 'none';
+                        if (telegramLinkDiv) telegramLinkDiv.style.display = 'none';
+                    } else if (typeSelect.value === 'whatsapp') {
+                        if (appPlatformDiv) appPlatformDiv.style.display = 'none';
+                        if (websiteLinkDiv) websiteLinkDiv.style.display = 'none';
+                        if (whatsappLinkDiv) whatsappLinkDiv.style.display = 'block';
+                        if (telegramLinkDiv) telegramLinkDiv.style.display = 'none';
+                    } else if (typeSelect.value === 'telegram') {
+                        if (appPlatformDiv) appPlatformDiv.style.display = 'none';
+                        if (websiteLinkDiv) websiteLinkDiv.style.display = 'none';
+                        if (whatsappLinkDiv) whatsappLinkDiv.style.display = 'none';
+                        if (telegramLinkDiv) telegramLinkDiv.style.display = 'block';
+                    } else {
+                        if (appPlatformDiv) appPlatformDiv.style.display = 'none';
+                        if (websiteLinkDiv) websiteLinkDiv.style.display = 'none';
+                        if (whatsappLinkDiv) whatsappLinkDiv.style.display = 'none';
+                        if (telegramLinkDiv) telegramLinkDiv.style.display = 'none';
+                    }
+                });
+            }
+
+            if (platformSelect) {
+                platformSelect.addEventListener('change', function() {
+                    const selectedPlatform = platformSelect.value;
+                    if (selectedPlatform === 'android') {
+                        if (androidLinkDiv) androidLinkDiv.style.display = 'block';
+                        if (iosLinkDiv) iosLinkDiv.style.display = 'none';
+                    } else if (selectedPlatform === 'ios') {
+                        if (androidLinkDiv) androidLinkDiv.style.display = 'none';
+                        if (iosLinkDiv) iosLinkDiv.style.display = 'block';
+                    } else if (selectedPlatform === 'both') {
+                        if (androidLinkDiv) androidLinkDiv.style.display = 'block';
+                        if (iosLinkDiv) iosLinkDiv.style.display = 'block';
+                    } else {
+                        if (androidLinkDiv) androidLinkDiv.style.display = 'none';
+                        if (iosLinkDiv) iosLinkDiv.style.display = 'none';
+                    }
+                });
+            }
 
             form.addEventListener('submit', function(event) {
                 event.preventDefault();
-                const loadingContainer = document.getElementById('loadingContainer');
-                const loadingMessage = document.getElementById('loadingMessage');
 
+                // Show the loading spinner when the form is submitted
                 loadingContainer.style.display = 'block';
                 loadingMessage.textContent = 'Uploading...';
+
+                const currentUser = auth.currentUser;
+                if (!currentUser) {
+                    alert("Please sign in to upload files.");
+                    loadingContainer.style.display = 'none';
+                    return;
+                }
 
                 const balance = parseFloat(document.getElementById('balance').textContent);
                 const amountNeeded = parseFloat(amountInput.value);
@@ -400,60 +515,62 @@
                     const newBalance = balance - amountNeeded;
                     document.getElementById('balance').textContent = newBalance;
 
-                    const videoFile = document.getElementById('video').files[0];
-                    const logoFile = document.getElementById('logo').files[0];
+                    const selectedType = contentTypeSelect.value;
+                    let fileToUpload;
+                    if (selectedType === 'video') {
+                        fileToUpload = document.getElementById('video').files[0];
+                    } else if (selectedType === 'pic') {
+                        fileToUpload = document.getElementById('pic').files[0];
+                    }
 
-                    if (videoFile && logoFile) {
-                        const videoStorageRef = ref(storage, 'videos/' + videoFile.name);
-                        const logoStorageRef = ref(storage, 'logos/' + logoFile.name);
+                    if (fileToUpload) {
+                        const storageRef = ref(storage, `${selectedType}s/` + fileToUpload.name);
+                        uploadBytes(storageRef, fileToUpload).then((snapshot) => {
+                            loadingMessage.textContent = `Getting ${selectedType} URL...`;
+                            return getDownloadURL(snapshot.ref);
+                        }).then((downloadURL) => {
+                            loadingMessage.textContent = 'Saving campaign details...';
 
-                        uploadBytes(videoStorageRef, videoFile).then((videoSnapshot) => {
-                            loadingMessage.textContent = 'Getting video URL...';
-                            return getDownloadURL(videoSnapshot.ref);
-                        }).then((videoDownloadURL) => {
-                            loadingMessage.textContent = 'Uploading logo...';
-                            return uploadBytes(logoStorageRef, logoFile).then((logoSnapshot) => {
-                                return getDownloadURL(logoSnapshot.ref);
-                            }).then((logoDownloadURL) => {
-                                loadingMessage.textContent = 'Saving campaign details...';
+                            const startDate = new Date().toISOString();
 
-                                const startDate = new Date().toISOString();
+                            const currentUser = auth.currentUser;
+                            if (currentUser) {
+                                const campaignData = {
+                                    userId: currentUser.uid,
+                                    name: document.getElementById('campaign-name').value,
+                                    type: typeSelect.value,
+                                    viewPreference: viewPreferenceSelect.value,
+                                    amount: amountInput.value,
+                                    contentURL: downloadURL,
+                                    contentType: selectedType,
+                                    startDate: startDate
+                                };
 
-                                const durationText = durationSelect.value;
-                                const durationDays = {
-                                    "14 days": 14,
-                                    "1 month": 30,
-                                    "2 months": 60,
-                                    "3 months": 90,
-                                    "6 months": 180,
-                                    "1 year": 365
-                                }[durationText];
-
-                                // Use the current user from auth
-                                const currentUser = auth.currentUser;
-                                if (currentUser) {
-                                    return addDoc(collection(db, "campaigns"), {
-                                        userId: currentUser.uid,
-                                        name: document.getElementById('campaign-name').value,
-                                        link: document.getElementById('link').value,
-                                        type: document.getElementById('type').value,
-                                        duration: durationDays,
-                                        viewPreference: viewPreferenceSelect.value,
-                                        amount: amountInput.value,
-                                        videoURL: videoDownloadURL,
-                                        logoURL: logoDownloadURL,
-                                        startDate: startDate
-                                    });
-                                } else {
-                                    throw new Error("User is not authenticated.");
+                                if (typeSelect.value === 'app') {
+                                    campaignData.platform = platformSelect.value;
+                                    if (platformSelect.value === 'android' || platformSelect.value === 'both') {
+                                        campaignData.androidLink = document.getElementById('android-link-input').value;
+                                    }
+                                    if (platformSelect.value === 'ios' || platformSelect.value === 'both') {
+                                        campaignData.iosLink = document.getElementById('ios-link-input').value;
+                                    }
+                                } else if (typeSelect.value === 'website') {
+                                    campaignData.link = document.getElementById('link').value;
+                                } else if (typeSelect.value === 'whatsapp') {
+                                    campaignData.whatsappLink = document.getElementById('whatsapp-link-input').value;
+                                } else if (typeSelect.value === 'telegram') {
+                                    campaignData.telegramLink = document.getElementById('telegram-link-input').value;
                                 }
-                            });
+
+                                return addDoc(collection(db, "campaigns"), campaignData);
+                            } else {
+                                throw new Error("User is not authenticated.");
+                            }
                         }).then((docRef) => {
                             console.log("Document written with ID: ", docRef.id);
                             loadingContainer.style.display = 'none';
                             successOverlay.style.display = 'flex';
 
-                            // Update the balance in Firestore
                             const currentUser = auth.currentUser;
                             if (currentUser) {
                                 const campaignsDocRef = doc(db, "campaigns", currentUser.uid);
@@ -464,7 +581,7 @@
                             loadingContainer.style.display = 'none';
                         });
                     } else {
-                        alert("Please select both video and logo files.");
+                        alert("Please select a file to upload.");
                         loadingContainer.style.display = 'none';
                     }
                 }
