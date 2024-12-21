@@ -529,6 +529,94 @@
     color: #fff;
     font-size: 14px;
 }
+
+/* Full-screen overlay styling */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.campaign-content {
+    max-width: 90%;
+    max-height: 90%;
+    overflow: auto;
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.campaign-image, .video-wrapper video {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+    margin: 0 auto;
+}
+
+.banner {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.logo-name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.logo {
+    max-width: 50px;
+    max-height: 50px;
+}
+
+.action-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: #19e2b0;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.countdown-timer {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.reward-message {
+    font-size: 18px;
+    font-weight: bold;
+    color: #19e2b0;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #fff;
+    cursor: pointer;
+    display: none; /* Initially hidden */
+}
 </style>
     </head>
 
@@ -737,26 +825,42 @@
                 const snapshot = await getDocs(campaignsCollection);
                 const campaigns = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
+                console.log("Fetched campaigns:", campaigns); // Debugging: Log fetched campaigns
+
                 if (campaigns.length === 0) {
                     alert("No campaigns available.");
                     return;
                 }
 
-                // Filter campaigns based on type and platform
-                const filteredCampaigns = campaigns.filter(campaign => {
-                    if (campaign.type === 'app') {
-                        return isMobileDevice();
-                    }
-                    return true; // Include all other types (website, WhatsApp, Telegram)
+                const userDevice = getUserDevice();
+                const validCampaigns = campaigns.filter(campaign => {
+                    return campaign.contentURL && campaign.name && campaign.contentType && 
+                           (campaign.type !== 'balance') && 
+                           (campaign.type === 'app' ? (campaign.platform === userDevice || campaign.platform === 'both') : true);
                 });
 
-                if (filteredCampaigns.length === 0) {
+                if (validCampaigns.length === 0) {
                     alert("No campaigns available for your platform.");
                     return;
                 }
 
-                // Display the first available campaign
-                const selectedCampaign = filteredCampaigns[0];
+                // Separate campaigns by view preference
+                const highPreferenceCampaigns = validCampaigns.filter(campaign => campaign.viewPreference === 'high');
+                const lowPreferenceCampaigns = validCampaigns.filter(campaign => campaign.viewPreference !== 'high');
+
+                // Weighted random selection
+                let selectedCampaign;
+                if (Math.random() < 0.7 && highPreferenceCampaigns.length > 0) {
+                    selectedCampaign = highPreferenceCampaigns[Math.floor(Math.random() * highPreferenceCampaigns.length)];
+                } else if (lowPreferenceCampaigns.length > 0) {
+                    selectedCampaign = lowPreferenceCampaigns[Math.floor(Math.random() * lowPreferenceCampaigns.length)];
+                } else {
+                    // Fallback if no campaigns match the preference
+                    selectedCampaign = validCampaigns[Math.floor(Math.random() * validCampaigns.length)];
+                }
+
+                console.log("Selected campaign:", selectedCampaign); // Debugging: Log selected campaign
+
                 displayCampaign(selectedCampaign);
 
             } catch (error) {
@@ -1478,23 +1582,105 @@
 
         // Function to display a campaign
         function displayCampaign(campaign) {
-            const adContainer = document.createElement('div');
-            adContainer.id = 'campaign-container';
-            adContainer.innerHTML = `
-                <div class="video-wrapper">
-                    <video id="ad-video" src="${campaign.contentURL}" autoplay muted playsinline></video>
-                    <div class="banner">
-                        <div class="logo-name">
-                            <img src="${campaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
-                            <span>${campaign.name || 'App Name'}</span>
-                        </div>
-                        <a href="${getCampaignLink(campaign)}" target="_blank" class="action-link">
-                            ${campaign.type === 'app' ? 'Install App' : 'Visit Web'}
-                        </a>
-                    </div>
-                </div>
+            const overlay = document.createElement('div');
+            overlay.className = 'overlay';
+
+            const campaignContent = document.createElement('div');
+            campaignContent.className = 'campaign-content';
+
+            const countdownDuration = campaign.contentType === 'video' ? 30 : 15; // 30 seconds for video, 15 for pic
+            let countdown = countdownDuration;
+
+            const countdownTimer = document.createElement('div');
+            countdownTimer.className = 'countdown-timer';
+            countdownTimer.textContent = countdown;
+            countdownTimer.style.cssText = `
+                color: #fff;
+                font-size: 24px;
+                font-weight: bold;
+            `; // Ensure the countdown is visible
+
+            const closeButton = document.createElement('button');
+            closeButton.className = 'close-button';
+            closeButton.innerHTML = '&times;';
+            closeButton.onclick = () => document.body.removeChild(overlay);
+
+            // Position countdown and close button on the same side (upper left)
+            const controlContainer = document.createElement('div');
+            controlContainer.style.cssText = `
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
             `;
-            document.body.appendChild(adContainer);
+            controlContainer.appendChild(countdownTimer);
+            controlContainer.appendChild(closeButton);
+
+            campaignContent.appendChild(controlContainer);
+
+            if (campaign.contentType === 'video') {
+                campaignContent.innerHTML += `
+                    <div class="video-wrapper">
+                        <video id="ad-video" src="${campaign.contentURL}" autoplay muted playsinline></video>
+                        <div class="banner">
+                            <div class="logo-name">
+                                <img src="${campaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
+                                <span>${campaign.name || 'App Name'}</span>
+                            </div>
+                            <a href="${getCampaignLink(campaign)}" target="_blank" class="action-link">
+                                ${campaign.type === 'app' ? 'Install App' : 'Visit Web'}
+                            </a>
+                        </div>
+                    </div>
+                `;
+            } else if (campaign.contentType === 'pic') {
+                campaignContent.innerHTML += `
+                    <div class="image-wrapper">
+                        <img src="${campaign.contentURL}" alt="${campaign.name || 'Campaign Image'}" class="campaign-image">
+                        <div class="banner">
+                            <div class="logo-name">
+                                <img src="${campaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
+                                <span>${campaign.name || 'App Name'}</span>
+                            </div>
+                            <a href="${getCampaignLink(campaign)}" target="_blank" class="action-link">
+                                ${campaign.type === 'app' ? 'Install App' : 'Visit Web'}
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+
+            overlay.appendChild(campaignContent);
+            document.body.appendChild(overlay);
+
+            // Countdown logic
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                countdownTimer.textContent = countdown; // Update the countdown display
+
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    rewardUser(campaign.userId);
+                    countdownTimer.style.display = 'none';
+                    const rewardMessage = document.createElement('div');
+                    rewardMessage.className = 'reward-message';
+                    rewardMessage.textContent = 'Reward granted!';
+                    controlContainer.appendChild(rewardMessage); // Append reward message to the control container
+                    closeButton.style.display = 'block'; // Show close button after countdown
+                }
+            }, 1000);
+        }
+
+        // Function to reward the user
+        async function rewardUser(userId) {
+            try {
+                await updateBalance(userId, 20); // Assuming updateBalance is a function that updates the user's balance
+                console.log('User rewarded with 20 2KCoins');
+            } catch (error) {
+                console.error('Error rewarding user:', error);
+            }
         }
 
         // Function to get the appropriate campaign link
