@@ -288,7 +288,7 @@
 
             <div id="app-platform" style="display: none;">
                 <label for="platform">App Platform:</label>
-                <select id="platform" name="platform" required>
+                <select id="platform" name="platform">
                     <option value="">Select Platform</option>
                     <option value="android">Android</option>
                     <option value="ios">iOS</option>
@@ -517,12 +517,17 @@
 
                     const selectedType = contentTypeSelect.value;
                     let fileToUpload;
+                    let logoFile;
+
                     if (selectedType === 'video') {
                         fileToUpload = document.getElementById('video').files[0];
                     } else if (selectedType === 'pic') {
                         fileToUpload = document.getElementById('pic').files[0];
                     }
 
+                    logoFile = document.getElementById('logo').files[0]; // Get the logo file
+
+                    // Upload the content file if it exists
                     if (fileToUpload) {
                         const storageRef = ref(storage, `${selectedType}s/` + fileToUpload.name);
                         uploadBytes(storageRef, fileToUpload).then((snapshot) => {
@@ -531,40 +536,47 @@
                         }).then((downloadURL) => {
                             loadingMessage.textContent = 'Saving campaign details...';
 
-                            const startDate = new Date().toISOString();
+                            // Now upload the logo file if it exists
+                            if (logoFile) {
+                                const logoStorageRef = ref(storage, `logos/` + logoFile.name);
+                                return uploadBytes(logoStorageRef, logoFile).then((logoSnapshot) => {
+                                    return getDownloadURL(logoSnapshot.ref);
+                                }).then((logoDownloadURL) => {
+                                    // Prepare campaign data
+                                    const startDate = new Date().toISOString();
+                                    const campaignData = {
+                                        userId: currentUser.uid,
+                                        name: document.getElementById('campaign-name').value,
+                                        type: typeSelect.value,
+                                        viewPreference: viewPreferenceSelect.value,
+                                        amount: amountInput.value,
+                                        contentURL: downloadURL,
+                                        contentType: selectedType,
+                                        logoURL: logoDownloadURL, // Include logo URL
+                                        startDate: startDate
+                                    };
 
-                            const currentUser = auth.currentUser;
-                            if (currentUser) {
-                                const campaignData = {
-                                    userId: currentUser.uid,
-                                    name: document.getElementById('campaign-name').value,
-                                    type: typeSelect.value,
-                                    viewPreference: viewPreferenceSelect.value,
-                                    amount: amountInput.value,
-                                    contentURL: downloadURL,
-                                    contentType: selectedType,
-                                    startDate: startDate
-                                };
-
-                                if (typeSelect.value === 'app') {
-                                    campaignData.platform = platformSelect.value;
-                                    if (platformSelect.value === 'android' || platformSelect.value === 'both') {
-                                        campaignData.androidLink = document.getElementById('android-link-input').value;
+                                    // Handle additional fields based on type
+                                    if (typeSelect.value === 'app') {
+                                        campaignData.platform = platformSelect.value;
+                                        if (platformSelect.value === 'android' || platformSelect.value === 'both') {
+                                            campaignData.androidLink = document.getElementById('android-link-input').value;
+                                        }
+                                        if (platformSelect.value === 'ios' || platformSelect.value === 'both') {
+                                            campaignData.iosLink = document.getElementById('ios-link-input').value;
+                                        }
+                                    } else if (typeSelect.value === 'website') {
+                                        campaignData.link = document.getElementById('link').value;
+                                    } else if (typeSelect.value === 'whatsapp') {
+                                        campaignData.whatsappLink = document.getElementById('whatsapp-link-input').value;
+                                    } else if (typeSelect.value === 'telegram') {
+                                        campaignData.telegramLink = document.getElementById('telegram-link-input').value;
                                     }
-                                    if (platformSelect.value === 'ios' || platformSelect.value === 'both') {
-                                        campaignData.iosLink = document.getElementById('ios-link-input').value;
-                                    }
-                                } else if (typeSelect.value === 'website') {
-                                    campaignData.link = document.getElementById('link').value;
-                                } else if (typeSelect.value === 'whatsapp') {
-                                    campaignData.whatsappLink = document.getElementById('whatsapp-link-input').value;
-                                } else if (typeSelect.value === 'telegram') {
-                                    campaignData.telegramLink = document.getElementById('telegram-link-input').value;
-                                }
 
-                                return addDoc(collection(db, "campaigns"), campaignData);
+                                    return addDoc(collection(db, "campaigns"), campaignData);
+                                });
                             } else {
-                                throw new Error("User is not authenticated.");
+                                throw new Error("Logo file is required.");
                             }
                         }).then((docRef) => {
                             console.log("Document written with ID: ", docRef.id);
