@@ -742,184 +742,22 @@
                     return;
                 }
 
-                // Filter campaigns by view preference
-                const highViewCampaigns = campaigns.filter(c => c.viewpreference === 'high');
-                const lowViewCampaigns = campaigns.filter(c => c.viewpreference !== 'high');
+                // Filter campaigns based on type and platform
+                const filteredCampaigns = campaigns.filter(campaign => {
+                    if (campaign.type === 'app') {
+                        return isMobileDevice();
+                    }
+                    return true; // Include all other types (website, WhatsApp, Telegram)
+                });
 
-                // Randomly select a campaign with 70% chance for high view preference
-                let selectedCampaign;
-                if (Math.random() < 0.7 && highViewCampaigns.length > 0) {
-                    selectedCampaign = highViewCampaigns[Math.floor(Math.random() * highViewCampaigns.length)];
-                } else if (lowViewCampaigns.length > 0) {
-                    selectedCampaign = lowViewCampaigns[Math.floor(Math.random() * lowViewCampaigns.length)];
-                } else {
-                    selectedCampaign = campaigns[Math.floor(Math.random() * campaigns.length)];
-                }
-
-                if (!selectedCampaign.videoURL) {
-                    console.error("No video URL found in the selected campaign.");
-                    alert("Oops! You are trying to watch ads too often. Try again.");
+                if (filteredCampaigns.length === 0) {
+                    alert("No campaigns available for your platform.");
                     return;
                 }
 
-                // Create overlay for video
-                const adContainer = document.createElement('div');
-                adContainer.id = 'campaign-container';
-                adContainer.innerHTML = `
-                    <div class="video-wrapper">
-                        <a href="createcampaign.html" class="publish-ads-button">Post Ads</a>
-                        <video id="ad-video" src="${selectedCampaign.videoURL}" autoplay muted playsinline></video>
-                        <div class="banner">
-                            <div class="logo-name">
-                                <img src="${selectedCampaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
-                                <span>${selectedCampaign.name || 'App Name'}</span>
-                            </div>
-                            <a href="${selectedCampaign.link || '#'}" target="_blank" class="action-link">
-                                ${selectedCampaign.type === 'application' ? 'Install App' : 'Visit Web'}
-                            </a>
-                        </div>
-                        <div id="countdown" style="position: absolute; top: 10px; left: 10px; background: rgba(0, 0, 0, 0.7); color: white; padding: 5px 10px; border-radius: 5px;">30</div>
-                    </div>
-                `;
-                document.body.appendChild(adContainer);
-
-                // Start countdown
-                let countdown = 30;
-                const countdownElement = document.getElementById('countdown');
-                const countdownInterval = setInterval(async () => {
-                    countdown -= 1;
-                    countdownElement.textContent = countdown;
-                    if (countdown <= 0) {
-                        clearInterval(countdownInterval);
-                        countdownElement.textContent = "Reward Granted!";
-                        
-                        // Automatically reward user
-                        window.adUsage.adsWatched++;
-                        await updateAdUsage(user.uid, window.adUsage);
-                        await updateBalance(user.uid, 20);
-                        
-                        // Remove the ad container after a short delay
-                        setTimeout(() => {
-                            adContainer.remove();
-                            alert("You've earned 20 2KCoins!");
-                        }, 1000);
-                    }
-                }, 1000);
-
-                // Ensure video keeps playing
-                const videoElement = document.getElementById('ad-video');
-                videoElement.addEventListener('ended', () => {
-                    if (countdown > 0) {
-                        videoElement.play(); // Restart video if countdown is not complete
-                    }
-                });
-
-                // Style the overlay
-                adContainer.style.display = 'flex';
-                adContainer.style.flexDirection = 'column';
-                adContainer.style.alignItems = 'center';
-                adContainer.style.justifyContent = 'center';
-                adContainer.style.position = 'fixed';
-                adContainer.style.top = '50%';
-                adContainer.style.left = '50%';
-                adContainer.style.transform = 'translate(-50%, -50%)';
-                adContainer.style.zIndex = '1000';
-                adContainer.style.backgroundColor = 'transparent'; // Remove black background
-                adContainer.style.padding = '10px';
-                adContainer.style.borderRadius = '10px';
-                adContainer.style.width = '90%'; // Adjust width for smaller screens
-                adContainer.style.maxWidth = '600px';
-
-                // Style the video wrapper
-                const videoWrapper = adContainer.querySelector('.video-wrapper');
-                videoWrapper.style.position = 'relative';
-                videoWrapper.style.width = '100%';
-                videoWrapper.style.height = 'auto'; // Ensure the height adjusts to maintain aspect ratio
-                videoWrapper.style.overflow = 'hidden'; // Ensure content doesn't overflow
-
-                // Style the video
-                videoElement.style.width = '100%';
-                videoElement.style.height = 'auto'; // Maintain aspect ratio
-                videoElement.style.borderRadius = '10px';
-                videoElement.style.pointerEvents = 'none'; // Disable interaction with the video
-
-                // Style the banner
-                const banner = adContainer.querySelector('.banner');
-                banner.style.position = 'absolute';
-                banner.style.bottom = '-100%'; // Start hidden below
-                banner.style.left = '50%'; // Center horizontally
-                banner.style.transform = 'translateX(-50%)'; // Center adjustment
-                banner.style.width = '91%';
-                banner.style.maxWidth = '500px'; // Optional: limit maximum width
-                banner.style.display = 'flex';
-                banner.style.justifyContent = 'space-between';
-                banner.style.alignItems = 'center';
-                banner.style.backgroundColor = 'rgba(51, 51, 51, 0.8)';
-                banner.style.color = '#fff';
-                banner.style.padding = '10px';
-                banner.style.borderRadius = '5px';
-                banner.style.transition = 'bottom 1.5s ease-in-out';
-
-                // Style the publish ads button
-                const publishButton = adContainer.querySelector('.publish-ads-button');
-                publishButton.style.position = 'absolute';
-                publishButton.style.top = '-50px'; // Start hidden above
-                publishButton.style.right = '10px';
-                publishButton.style.padding = '8px 15px';
-                publishButton.style.backgroundColor = '#ec8f04';
-                publishButton.style.color = '#fff';
-                publishButton.style.textDecoration = 'none';
-                publishButton.style.borderRadius = '5px';
-                publishButton.style.fontWeight = 'bold';
-                publishButton.style.zIndex = '1002';
-                publishButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
-                publishButton.style.transition = 'top 1.5s ease-in-out'; // Slower transition (1.5s)
-                publishButton.onmouseover = () => publishButton.style.backgroundColor = '#d07c03';
-                publishButton.onmouseout = () => publishButton.style.backgroundColor = '#ec8f04';
-
-                // Add timer to show both elements after 2 seconds
-                videoElement.addEventListener('play', () => {
-                    setTimeout(() => {
-                        banner.style.bottom = '10px'; // Position closer to bottom
-                        publishButton.style.top = '10px';
-                    }, 2000);
-                });
-
-                // Style the logo and name container
-                const logoName = adContainer.querySelector('.logo-name');
-                logoName.style.display = 'flex';
-                logoName.style.alignItems = 'center';
-
-                // Style the logo
-                const logo = adContainer.querySelector('.logo');
-                logo.style.width = '30px'; // Adjust size as needed
-                logo.style.height = '30px'; // Adjust size as needed
-                logo.style.marginRight = '5px'; // Minimal space between logo and text
-
-                // Style the action link
-                const actionLink = adContainer.querySelector('.action-link');
-                actionLink.style.backgroundColor = '#ec8f04';
-                actionLink.style.color = '#fff';
-                actionLink.style.padding = '5px 10px';
-                actionLink.style.borderRadius = '5px';
-                actionLink.style.textDecoration = 'none';
-                actionLink.style.transition = 'background-color 0.3s';
-                actionLink.onmouseover = () => actionLink.style.backgroundColor = '#d07c03';
-                actionLink.onmouseout = () => actionLink.style.backgroundColor = '#ec8f04';
-
-                // Add event listener to detect video end
-                videoElement.addEventListener('ended', async () => {
-                    // Increment views count
-                    const campaignDocRef = doc(db, 'campaigns', selectedCampaign.id);
-                    await updateDoc(campaignDocRef, {
-                        views: (selectedCampaign.views || 0) + 1
-                    });
-
-                    // Restart video if countdown is not complete
-                    if (countdown > 0) {
-                        videoElement.play();
-                    }
-                });
+                // Display the first available campaign
+                const selectedCampaign = filteredCampaigns[0];
+                displayCampaign(selectedCampaign);
 
             } catch (error) {
                 console.error("Error loading campaigns:", error);
@@ -1632,7 +1470,59 @@
                 }
             }, 1000);
         }
+
+        // Function to detect if the user is on a mobile device
+        function isMobileDevice() {
+            return /Mobi|Android/i.test(navigator.userAgent);
+        }
+
+        // Function to display a campaign
+        function displayCampaign(campaign) {
+            const adContainer = document.createElement('div');
+            adContainer.id = 'campaign-container';
+            adContainer.innerHTML = `
+                <div class="video-wrapper">
+                    <video id="ad-video" src="${campaign.contentURL}" autoplay muted playsinline></video>
+                    <div class="banner">
+                        <div class="logo-name">
+                            <img src="${campaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
+                            <span>${campaign.name || 'App Name'}</span>
+                        </div>
+                        <a href="${getCampaignLink(campaign)}" target="_blank" class="action-link">
+                            ${campaign.type === 'app' ? 'Install App' : 'Visit Web'}
+                        </a>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(adContainer);
+        }
+
+        // Function to get the appropriate campaign link
+        function getCampaignLink(campaign) {
+            const userDevice = getUserDevice();
+            if (campaign.type === 'app') {
+                if (userDevice === 'android') {
+                    return campaign.androidLink;
+                } else if (userDevice === 'ios') {
+                    return campaign.iosLink;
+                }
+            }
+            return campaign.link; // Use the provided link for other types
+        }
+
+        // Function to detect the user's device
+        function getUserDevice() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            if (/android/i.test(userAgent)) {
+                return 'android';
+            }
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return 'ios';
+            }
+            return 'web';
+        }
     </script>
     <script type='text/javascript' src='https://pl25145596.profitablecpmrate.com/a1/91/a1/a191a1a71e1bfd8cf2b8b436068db02a.js'></script>
  </body> 
+</html>
 </html>
