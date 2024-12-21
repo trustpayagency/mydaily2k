@@ -590,12 +590,10 @@
 }
 
 .countdown-timer {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 24px;
+    font-size: 18px;
     font-weight: bold;
-    color: #fff;
+    margin-top: 10px;
+    color: #333;
 }
 
 .reward-message {
@@ -613,9 +611,8 @@
     background: none;
     border: none;
     font-size: 24px;
-    color: #fff;
+    color: #333;
     cursor: pointer;
-    display: none; /* Initially hidden */
 }
 </style>
     </head>
@@ -1593,43 +1590,23 @@
 
             const countdownTimer = document.createElement('div');
             countdownTimer.className = 'countdown-timer';
-            countdownTimer.textContent = countdown;
-            countdownTimer.style.cssText = `
-                color: #fff;
-                font-size: 24px;
-                font-weight: bold;
-            `; // Ensure the countdown is visible
-
-            const closeButton = document.createElement('button');
-            closeButton.className = 'close-button';
-            closeButton.innerHTML = '&times;';
-            closeButton.onclick = () => document.body.removeChild(overlay);
-
-            // Position countdown and close button on the same side (upper left)
-            const controlContainer = document.createElement('div');
-            controlContainer.style.cssText = `
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            `;
-            controlContainer.appendChild(countdownTimer);
-            controlContainer.appendChild(closeButton);
-
-            campaignContent.appendChild(controlContainer);
+            countdownTimer.textContent = ` ${countdown} `;
+            countdownTimer.style.position = 'absolute'; // Position it absolutely
+            countdownTimer.style.top = '10px'; // Position from the top
+            countdownTimer.style.left = '20px'; // Position from the left
+            countdownTimer.style.color = '#000'; // White text color
+            countdownTimer.style.borderRadius = '5px'; // Rounded corners
 
             if (campaign.contentType === 'video') {
                 campaignContent.innerHTML += `
                     <div class="video-wrapper">
                         <video id="ad-video" src="${campaign.contentURL}" autoplay muted playsinline></video>
-                        <div class="banner">
-                            <div class="logo-name">
+                        <div class="banner" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="logo-name" style="display: flex; align-items: center;">
                                 <img src="${campaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
-                                <span>${campaign.name || 'App Name'}</span>
+                                <span style="color: #fff; margin-left: 10px;">${campaign.name || 'App Name'}</span>
                             </div>
-                            <a href="${getCampaignLink(campaign)}" target="_blank" class="action-link">
+                            <a href="${getCampaignLink(campaign)}" target="_blank" class="action-link" style="margin-left: auto;">
                                 ${campaign.type === 'app' ? 'Install App' : 'Visit Web'}
                             </a>
                         </div>
@@ -1639,12 +1616,12 @@
                 campaignContent.innerHTML += `
                     <div class="image-wrapper">
                         <img src="${campaign.contentURL}" alt="${campaign.name || 'Campaign Image'}" class="campaign-image">
-                        <div class="banner">
-                            <div class="logo-name">
+                        <div class="banner" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="logo-name" style="display: flex; align-items: center;">
                                 <img src="${campaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
-                                <span>${campaign.name || 'App Name'}</span>
+                                <span style="color: #000; margin-left: 10px;">${campaign.name || 'App Name'}</span>
                             </div>
-                            <a href="${getCampaignLink(campaign)}" target="_blank" class="action-link">
+                            <a href="${getCampaignLink(campaign)}" target="_blank" class="action-link" style="margin-left: auto;">
                                 ${campaign.type === 'app' ? 'Install App' : 'Visit Web'}
                             </a>
                         </div>
@@ -1652,23 +1629,32 @@
                 `;
             }
 
+            campaignContent.appendChild(countdownTimer);
             overlay.appendChild(campaignContent);
             document.body.appendChild(overlay);
 
             // Countdown logic
             const countdownInterval = setInterval(() => {
                 countdown--;
-                countdownTimer.textContent = countdown; // Update the countdown display
+                countdownTimer.textContent = ` ${countdown} `;
 
                 if (countdown <= 0) {
                     clearInterval(countdownInterval);
                     rewardUser(campaign.userId);
                     countdownTimer.style.display = 'none';
+
+                    // Create reward message with close button
                     const rewardMessage = document.createElement('div');
                     rewardMessage.className = 'reward-message';
-                    rewardMessage.textContent = 'Reward granted!';
-                    controlContainer.appendChild(rewardMessage); // Append reward message to the control container
-                    closeButton.style.display = 'block'; // Show close button after countdown
+                    rewardMessage.style.fontSize = '12px';
+                    rewardMessage.style.fontWeight = 'bold';
+                    rewardMessage.style.position = 'absolute'; // Position it absolutely
+                    rewardMessage.style.top = '10px'; // Position from the top
+                    rewardMessage.style.left = '40px'; // Position from the left
+                    rewardMessage.style.color = '#000';  
+                    rewardMessage.innerHTML = '<button class="close-button" style="background: #000; border: none; color: #fff; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; margin-right: 80px; margin-top: -14px;" onclick="document.body.removeChild(this.closest(\'.overlay\'))">&times;</button> Reward granted!';
+
+                    campaignContent.appendChild(rewardMessage);
                 }
             }, 1000);
         }
