@@ -99,6 +99,33 @@
             height: 300px;
         }
 
+        .ad-types-container {
+            padding: 4rem 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .ad-types-card  {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .ad-types-card :hover {
+            transform: translateY(-10px);
+        }
+
+        .ad-types-card i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
         /* Features Section */
         .features {
             padding: 4rem 2rem;
@@ -168,8 +195,8 @@
         }
         .nav-links {
             position: absolute;  
-            top: 15px;
-            right:45px;
+            top: 20px;
+            right:50px;
             display: flex;
             align-items: center;
         }
@@ -219,10 +246,33 @@
             Drive targeted traffic, create compelling campaigns, and achieve measurable results.
         </p>
         <div class="btn-container">
-            <a href="advertise.html" class="btn">Get Started <i class="fas fa-arrow-right"></i></a>
-            <a href="createcampaign.html" class="btn">Create Campaign <i class="fas fa-plus"></i></a>
+            <a href="#ad-types" class="btn">Explore Ad Types <i class="fas fa-arrow-down"></i></a>
         </div>
     </div>
+    <section id="ad-types" 
+        <div class="ad-types-container">
+            <div class="ad-types-card " onclick="showInfo('createCampaign')">
+                <i class="fas fa-plus"></i>
+                <h3>Create Campaign</h3>
+                <p class="info" id="createCampaign" style="display:none;"> Create an ads campaign and gain thousand of traffic on your app and website.  <button onclick="window.location.href='createcampaign.html'">Go to Create Campaign</button></p>
+            </div>
+            <div class="ad-types-card " onclick="showInfo('hostAuction')">
+                <i class="fas fa-gavel"></i>
+                <h3>Host Auction</h3>
+                <p class="info" id="hostAuction" style="display:none;"><strong>HOW IT WORK:</strong> Host an auction the items could be anything giving u free advertisment for short period of time.<button onclick="window.location.href='createcampaign.html'">Go to Create Campaign</button></p></p>
+            </div>
+            <div class="ad-types-card " onclick="showInfo('hostContest')">
+                <i class="fas fa-trophy"></i>
+                <h3>Host Weekly Contest</h3>
+                <p class="info" id="hostContest" style="display:none;"> <strong>HOW IT WORK:</strong> Users create and share videos about your brand on TikTok and Facebook, increasing visibility. They’ll also upload the videos to our platform for rewards. The video with the most votes earns <strong>2,000 2KCoins</strong>, while the Admin’s Choice Award (optional) costs <strong>10,000 2KCoins</strong> and grants you usage rights for the video elsewhere.<button onclick="window.location.href='contest.html'">Host Contest</button></p>
+            </div>
+            <div class="ad-types-card " onclick="showInfo('buyTraffic')">
+                <i class="fas fa-shopping-cart"></i>
+                <h3>Buy social media Traffic</h3>
+                <p class="info" id="buyTraffic" style="display:none;">Buy likes, Views,Streams,Votes,Followers Sub. At very low cost<button onclick="window.location.href='advertise.html'">Go to Buy Traffic</button></p>
+            </div>
+        </div>
+    </section>
 
     <section class="features">
         <div class="feature-card">
@@ -231,7 +281,7 @@
             <p>Track your campaign performance with detailed insights and metrics.</p>
         </div>
         <div class="feature-card">
-            <i class="fas fa-target"></i>
+            <i class="fas fa-bullseye"></i>
             <h3>Targeted Traffic</h3>
             <p>Reach your ideal audience with precision targeting options.</p>
         </div>
@@ -240,8 +290,7 @@
             <h3>Secure Platform</h3>
             <p>Advanced security measures to protect your campaigns and data.</p>
         </div>
-    </section>
-
+    </section> 
     <footer>
         <div class="footer-content">
             <div class="footer-section">
@@ -272,5 +321,13 @@
             &copy; 2024 MyDaily2k Advertise Hub. All rights reserved.
         </div>
     </footer>
+
+    <script>
+        function showInfo(id) {
+            const infos = document.querySelectorAll('.info');
+            infos.forEach(info => info.style.display = 'none'); // Hide all info
+            document.getElementById(id).style.display = 'block'; // Show selected info
+        }
+    </script>
 </body>
 </html>
