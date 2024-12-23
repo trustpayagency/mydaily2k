@@ -30,7 +30,7 @@
         .navbar {
             position: fixed;
             top: 0;
-            width: 100%;
+            width: 100%; 
             background: rgba(28, 28, 30, 0.95);
             backdrop-filter: blur(10px);
             padding: 1rem 2rem;
@@ -48,21 +48,21 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
         .nav-links {
+            position: absolute;  
+            top: 15px;
+            right:45px;
             display: flex;
-            gap: 2rem;
+            align-items: center;
         }
 
         .nav-links a {
-            color: var(--text-light);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
+            margin-left: 10px;  
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: var(--dark-bg);
+            padding: 5px 5px;
+            border-radius: 20px;
+            text-decoration: none; 
         }
 
         /* Main Content */
@@ -143,18 +143,12 @@
         .btn {
             background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: var(--dark-bg);
-            padding: 1rem 2rem;
+            padding: 0.5rem 1rem;
             border-radius: 10px;
             border: none;
             font-weight: bold;
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .btn.full-width {
             width: 100%;
             margin-top: 1rem;
         }
@@ -163,7 +157,6 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(25, 226, 176, 0.3);
         }
-
         /* Loading Overlay */
         .loading-overlay {
             position: fixed;
@@ -194,14 +187,7 @@
         }
 
         /* Responsive Design */
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 1rem;
-            }
-
-            .nav-links {
-                display: none;
-            }
+        @media (max-width: 768px) { 
 
             main {
                 padding: 80px 1rem 1rem;
@@ -228,9 +214,7 @@
     <nav class="navbar">
         <div class="logo">MyDaily2k</div>
         <div class="nav-links">
-            <a href="advertisedashboard.html">Dashboard</a>
-            <a href="advertise.html">Buy Traffic</a>
-            <a href="contact.html">Contact</a>
+            <a href="advertisedashboard.html">Dashboard</a> 
             <a href="advertiseprofile.html" id="userProfile">My Account</a>
         </div>
     </nav>
@@ -248,8 +232,7 @@
                 <span id="userBalance" class="balance-text">₦0.00</span>
             </div>
             <div>
-                <a href="advertise.html" class="btn">Back</a>
-                <a href="addcash.html" class="btn">Add Cash</a>
+                <a href="addcash.html" class="btn">Add Cash</a> 
             </div>
         </div>
 
