@@ -1590,10 +1590,11 @@
             const countdownTimer = document.createElement('div');
             countdownTimer.className = 'countdown-timer';
             countdownTimer.textContent = ` ${countdown} `;
+            rewardMessage.style.backgroundColor = '#000';
             countdownTimer.style.position = 'absolute'; // Position it absolutely
             countdownTimer.style.top = '10px'; // Position from the top
             countdownTimer.style.left = '20px'; // Position from the left
-            countdownTimer.style.color = '#000'; // White text color
+            countdownTimer.style.color = '#fff'; // White text color
             countdownTimer.style.borderRadius = '5px'; // Rounded corners
 
             if (campaign.contentType === 'video') {
@@ -1652,7 +1653,7 @@
                     rewardMessage.style.top = '10px'; // Position from the top
                     rewardMessage.style.left = '40px'; // Position from the left
                     rewardMessage.style.color = '#fff';  
-                    rewardMessage.innerHTML = '<button class="close-button" style="background: #000; border: none; color: #fff; border-radius: 100%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; margin-right: 80px; margin-top: -14px;" onclick="document.body.removeChild(this.closest(\'.overlay\'))">&times;</button> Reward granted!';
+                    rewardMessage.innerHTML = '<button class="close-button" style="background: #000; border: none; color: #fff; border-radius: 100%; width: 10px; height: 20px; display: inline-flex; align-items: center; justify-content: center; margin-right: 80px; margin-top: -14px;" onclick="document.body.removeChild(this.closest(\'.overlay\'))">&times;</button> Reward granted!';
 
                     campaignContent.appendChild(rewardMessage);
                 }
