@@ -2,7 +2,341 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyDaily2k Advertise Hub - Professional Advertising Solutions</title>
+    <!-- Add meta description for SEO -->
+    <meta name="description" content="Professional advertising solutions for businesses. Drive traffic and create impactful campaigns with MyDaily2k Advertise Hub.">
+    <!-- Add favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        /* General Styling */
+        :root {
+            --primary-color: #19e2b0;
+            --secondary-color: #f58c79;
+            --dark-bg: #1c1c1e;
+            --text-light: #ffffff;
+            --text-muted: #cccccc;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--dark-bg), #2a2a2d, #333335);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(28, 28, 30, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        } 
+
+        /* Hero Section */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+
+        .background-circles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: move 15s infinite;
+        }
+
+        .circle.small {
+            width: 100px;
+            height: 100px;
+        }
+
+        .circle.medium {
+            width: 200px;
+            height: 200px;
+        }
+
+        .circle.large {
+            width: 300px;
+            height: 300px;
+        }
+
+        .ad-types-container {
+            padding: 4rem 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .ad-types-card  {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .ad-types-card :hover {
+            transform: translateY(-10px);
+        }
+
+        .ad-types-card i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        /* Enhanced Footer */
+        footer {
+            background: rgba(28, 28, 30, 0.95);
+            padding: 2rem;
+            margin-top: 4rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section ul li a:hover {
+            color: var(--primary-color);
+        }
+        .nav-links {
+            position: absolute;  
+            top: 20px;
+            right:50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            margin-left: 10px;  
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: var(--dark-bg);
+            padding: 5px 5px;
+            border-radius: 20px;
+            text-decoration: none; 
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .navbar {
+                padding: 1rem;
+            } 
+        }
+    </style>
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">MyDaily2k</div>
+        <div class="nav-links"> 
+            <a href="dashboard.html"style="background: linear-gradient(to right, #ec8f04, #f58c79 50%);"> switch to User</a>
+            <a href="advertiseprofile.html">My Account</a> 
+        </div>
+    </nav>
+
+    <div class="background-circles">
+        <div class="circle small" style="top: 10%; left: 20%;"></div>
+        <div class="circle medium" style="top: 50%; left: 60%;"></div>
+        <div class="circle large" style="top: 80%; left: 30%;"></div>
+    </div>
+
+    <div class="hero">
+        <h1>MY DAILY2K: Smart Advertising Solutions for Maximum Engagement</h1>
+        <p>
+           Boost your brand’s visibility with <strong>MY DAILY2K</strong>'s innovative advertising platform. 
+           Connect with a highly engaged audience, run targeted campaigns, and achieve measurable results.
+           Whether it’s driving traffic, increasing conversions, or building brand loyalty, <strong>MY DAILY2K</strong> delivers powerful tools to help you succeed in the digital space.
+        </p>
+        <div class="btn-container">
+            <a href="#ad-types" class="btn">Explore Ad Types <i class="fas fa-arrow-down"></i></a>
+        </div>
+    </div>
+    <section id="ad-types" 
+        <div class="ad-types-container">
+            <div class="ad-types-card " onclick="showInfo('createCampaign')">
+                <i class="fas fa-plus"></i>
+                <h3>Create Campaign</h3>
+                <p class="info" id="createCampaign" style="display:none;"> Create an ads campaign and gain thousand of traffic on your app and website.  <button onclick="window.location.href='createcampaign.html'">Go to Create Campaign</button></p>
+            </div>
+            <div class="ad-types-card " onclick="showInfo('hostAuction')">
+                <i class="fas fa-gavel"></i>
+                <h3>Host Auction</h3>
+                <p class="info" id="hostAuction" style="display:none;"><strong>HOW IT WORK:</strong> Host an auction the items could be anything giving u free advertisment for short period of time.<button onclick="window.location.href='createcampaign.html'">Go to Create Campaign</button></p></p>
+            </div>
+            <div class="ad-types-card " onclick="showInfo('hostContest')">
+                <i class="fas fa-trophy"></i>
+                <h3>Host Weekly Contest</h3>
+                <p class="info" id="hostContest" style="display:none;"> <strong>HOW IT WORK:</strong> Users create and share videos about your brand on TikTok and Facebook, increasing visibility. They’ll also upload the videos to our platform for rewards. The video with the most votes earns <strong>2,000 2KCoins</strong>, while the Admin’s Choice Award (optional) costs <strong>10,000 2KCoins</strong> and grants you usage rights for the video elsewhere.<button onclick="window.location.href='contest.html'">Host Contest</button></p>
+            </div>
+            <div class="ad-types-card " onclick="showInfo('buyTraffic')">
+                <i class="fas fa-shopping-cart"></i>
+                <h3>Buy social media Traffic</h3>
+                <p class="info" id="buyTraffic" style="display:none;">Buy likes, Views,Streams,Votes,Followers Sub. At very low cost<button onclick="window.location.href='advertise.html'">Go to Buy Traffic</button></p>
+            </div>
+        </div>
+    </section> 
+
+    <section class="features">
+        <div class="feature-card">
+            <i class="fas fa-chart-line"></i>
+            <h3>Real-time Analytics</h3>
+            <p>Track your campaign performance with detailed insights and metrics.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-bullseye"></i>
+            <h3>Targeted Traffic</h3>
+            <p>Reach your ideal audience with precision targeting options.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-shield-alt"></i>
+            <h3>Secure Platform</h3>
+            <p>Advanced security measures to protect your campaigns and data.</p>
+        </div>
+    </section> 
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="advertise.html">Buy Traffic</a></li>
+                    <li><a href="createcampaign.html">Create Campaign</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="reviews.html">Reviews</a></li>
+                    <li><a href="faq.html">FAQ</a></li> 
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2024 MyDaily2k Advertise Hub. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        function showInfo(id) {
+            const infos = document.querySelectorAll('.info');
+            infos.forEach(info => info.style.display = 'none'); // Hide all info
+            document.getElementById(id).style.display = 'block'; // Show selected info
+        }
+    </script>
+</body>
+</html>
+
     <title>MyDaily2k Advertise Hub - Professional Advertising Solutions</title>
     <!-- Add meta description for SEO -->
     <meta name="description" content="Professional advertising solutions for businesses. Drive traffic and create impactful campaigns with MyDaily2k Advertise Hub.">
