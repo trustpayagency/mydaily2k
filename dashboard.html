@@ -613,7 +613,25 @@
     color: #333;
     cursor: pointer;
 }
-</style>
+
+/* Add styles for the banner */
+.install-banner {
+    background-color: #19e2b0; /* Banner color */
+    color: white; /* Text color */
+    width: 80%; /* Reduced width */
+    max-width: 400px; /* Maximum width for larger screens */
+    padding: 10px; /* Padding */
+    text-align: center; /* Center text */
+    position: fixed; /* Fixed position */
+    top: 20px; /* Position from the top */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Center the banner */
+    z-index: 1000; /* Ensure it appears above other elements */
+    display: none; /* Initially hidden */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+}
+    </style>
     </head>
 
 <body>
@@ -633,6 +651,19 @@
     <div class="switch1" style="top: 20px; left: 20px;">
         <button id="modeToggle">switch mode</button>
     </div> 
+        <!-- Add the install banner -->
+        <div class="install-banner" id="installBanner">
+            Install this app to your home screen and earn 300 2KCoins! 
+            <button id="installButton" style="background: black; border: none; font-style: bold; color: white; cursor: pointer;">Install</button>
+            <div id="instruction" style="display: none; margin-top: 5px;">
+                <p>To add to your home screen:</p>
+                <ul style="list-style-type: none; padding: 0; margin: 0;">
+                    <li>1. Tap the share icon (usually at the bottom of your browser).</li>
+                    <li>2. Select "Add to Home Screen".</li>
+                </ul>
+            </div>
+            <button id="closeBanner" style="background: black; border: none; color: white; cursor: pointer;">X</button>
+        </div>
     <div class="balance-container">
         <div class="balance">
             <div class="card">
@@ -719,6 +750,8 @@
             <span class="button-label">Friends</span>
         </div>
     </footer>
+
+
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
@@ -1653,7 +1686,7 @@
                     rewardMessage.style.top = '10px'; // Position from the top
                     rewardMessage.style.left = '40px'; // Position from the left
                     rewardMessage.style.color = '#fff';  
-                    rewardMessage.innerHTML = '<button class="close-button" style="background: #000; border: none; color: #fff; border-radius: 100%; width: 100%; height: 100%; display: inline-flex; align-items: center; justify-content: center; margin-right: 80px; margin-top: -14px;" onclick="document.body.removeChild(this.closest(\'.overlay\'))">&times;</button> Reward granted!';
+                    rewardMessage.innerHTML = '<button class="close-button" style="background: #000; border: none; color: #fff; border-radius: 100%; width: 10px; height: 20px; display: inline-flex; align-items: center; justify-content: center; margin-right: 80px; margin-top: -14px;" onclick="document.body.removeChild(this.closest(\'.overlay\'))">&times;</button> Reward granted!';
 
                     campaignContent.appendChild(rewardMessage);
                 }
@@ -1694,8 +1727,38 @@
             }
             return 'web';
         }
+
+        // Function to check if the app is installed
+        function isAppInstalled() {
+            return window.matchMedia('(display-mode: standalone)').matches;
+        }
+
+        // Function to show the install banner
+        function showInstallBanner() {
+            const banner = document.getElementById('installBanner');
+            banner.style.display = 'block'; // Show the banner
+        }
+
+        // Check if the app is installed
+        if (!isAppInstalled()) {
+            showInstallBanner(); // Show the banner if not installed
+        }
+
+        // Close banner and reward user
+        document.getElementById('closeBanner').onclick = async function() {
+            const user = auth.currentUser; // Get the current user
+            if (user) {
+                await rewardUser(user.uid); // Reward the user
+            }
+            document.getElementById('installBanner').style.display = 'none'; // Hide the banner
+        };
+
+        // Show instructions when the Install button is clicked
+        document.getElementById('installButton').onclick = function() {
+            const instruction = document.getElementById('instruction');
+            instruction.style.display = instruction.style.display === 'none' ? 'block' : 'none'; // Toggle instruction visibility
+        };
     </script>
     <script type='text/javascript' src='https://pl25145596.profitablecpmrate.com/a1/91/a1/a191a1a71e1bfd8cf2b8b436068db02a.js'></script>
  </body> 
-</html>
 </html>
