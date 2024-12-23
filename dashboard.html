@@ -1618,7 +1618,7 @@
                         <div class="banner" style="display: flex; justify-content: space-between; align-items: center;">
                             <div class="logo-name" style="display: flex; align-items: center;">
                                 <img src="${campaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
-                                <span style="color: #000; margin-left: 10px;">${campaign.name || 'App Name'}</span>
+                                <span style="color: #fff; margin-left: 10px;">${campaign.name || 'App Name'}</span>
                             </div>
                             <a href="${getCampaignLink(campaign)}" target="_blank" class="action-link" style="margin-left: auto;">
                                 ${campaign.type === 'app' ? 'Install App' : 'Visit Web'}
@@ -1647,11 +1647,12 @@
                     rewardMessage.className = 'reward-message';
                     rewardMessage.style.fontSize = '12px';
                     rewardMessage.style.fontWeight = 'bold';
+                    rewardMessage.style.backgroundColor = '#000';
                     rewardMessage.style.position = 'absolute'; // Position it absolutely
                     rewardMessage.style.top = '10px'; // Position from the top
                     rewardMessage.style.left = '40px'; // Position from the left
-                    rewardMessage.style.color = '#000';  
-                    rewardMessage.innerHTML = '<button class="close-button" style="background: #000; border: none; color: #fff; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; margin-right: 80px; margin-top: -14px;" onclick="document.body.removeChild(this.closest(\'.overlay\'))">&times;</button> Reward granted!';
+                    rewardMessage.style.color = '#fff';  
+                    rewardMessage.innerHTML = '<button class="close-button" style="background: #000; border: none; color: #fff; border-radius: 100%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; margin-right: 80px; margin-top: -14px;" onclick="document.body.removeChild(this.closest(\'.overlay\'))">&times;</button> Reward granted!';
 
                     campaignContent.appendChild(rewardMessage);
                 }
