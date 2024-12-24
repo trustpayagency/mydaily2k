@@ -891,6 +891,11 @@
 
                 console.log("Selected campaign:", selectedCampaign); // Debugging: Log selected campaign
 
+                // Save the view to the campaign document
+                await updateDoc(doc(db, 'campaigns', selectedCampaign.id), {
+                    views: (selectedCampaign.views || 0) + 1 // Increment the views count
+                });
+
                 displayCampaign(selectedCampaign);
 
             } catch (error) {
@@ -949,6 +954,12 @@
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
+
+                // Save engagement to the campaign document
+                const campaignId = 'your_campaign_id'; // Replace with the actual campaign ID
+                await updateDoc(doc(db, 'campaigns', campaignId), {
+                    engagements: (campaign.engagements || 0) + 1 // Increment the engagements count
+                });
 
                 // Start checking for reward immediately
                 startRewardCheck();
@@ -1640,7 +1651,7 @@
                                 <img src="${campaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
                                 <span style="color: #fff; margin-left: 10px;">${campaign.name || 'App Name'}</span>
                             </div>
-                            <a href="${getCampaignLink(campaign)}" target="_blank" class="action-link" style="margin-left: auto;">
+                            <a href="${getCampaignLink(campaign)}" target="_blank" class="action-link" style="margin-left: auto;" id="installButton">
                                 ${campaign.type === 'app' ? 'Install App' : 'Visit Web'}
                             </a>
                         </div>
@@ -1655,7 +1666,7 @@
                                 <img src="${campaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
                                 <span style="color: #fff; margin-left: 10px;">${campaign.name || 'App Name'}</span>
                             </div>
-                            <a href="${getCampaignLink(campaign)}" target="_blank" class="action-link" style="margin-left: auto;">
+                            <a href="${getCampaignLink(campaign)}" target="_blank" class="action-link" style="margin-left: auto;" id="visitWebButton">
                                 ${campaign.type === 'app' ? 'Install App' : 'Visit Web'}
                             </a>
                         </div>
@@ -1666,6 +1677,26 @@
             campaignContent.appendChild(countdownTimer);
             overlay.appendChild(campaignContent);
             document.body.appendChild(overlay);
+
+            // Add event listeners for engagement tracking
+            const installButton = overlay.querySelector('#installButton');
+            const visitWebButton = overlay.querySelector('#visitWebButton');
+
+            if (installButton) {
+                installButton.addEventListener('click', async () => {
+                    await updateDoc(doc(db, 'campaigns', campaign.id), {
+                        engagements: (campaign.engagements || 0) + 1 // Increment the engagements count
+                    });
+                });
+            }
+
+            if (visitWebButton) {
+                visitWebButton.addEventListener('click', async () => {
+                    await updateDoc(doc(db, 'campaigns', campaign.id), {
+                        engagements: (campaign.engagements || 0) + 1 // Increment the engagements count
+                    });
+                });
+            }
 
             // Countdown logic
             const countdownInterval = setInterval(() => {
