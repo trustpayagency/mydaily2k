@@ -686,6 +686,10 @@
         </div>
     </div>
  
+    <div class="banner-container" id="bannerContainer" style="display: none; text-align: center; margin: 20px 0;">
+        <img id="bannerImage" src="" alt="Banner" style="width: 234px; height: 60px; cursor: pointer;">
+    </div>
+
     <div class="switch">
         <a href="advertisedashboard.html"style="background: linear-gradient(to right, #19e2b0, #f58c79);">switch to Advertise</a> 
     </div>
@@ -1762,6 +1766,51 @@
             const instruction = document.getElementById('instruction');
             instruction.style.display = instruction.style.display === 'none' ? 'block' : 'none'; // Toggle instruction visibility
         };
+
+        async function loadBanners() {
+            try {
+                const bannersCollection = collection(db, 'banner');
+                const snapshot = await getDocs(bannersCollection);
+                const banners = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                if (banners.length > 0) {
+                    displayBanner(banners);
+                } else {
+                    console.log("No banners found.");
+                }
+            } catch (error) {
+                console.error("Error loading banners:", error);
+            }
+        }
+
+        let currentBannerIndex = 0;
+        let banners = [];
+
+        function displayBanner(bannerList) {
+            banners = bannerList;
+            const bannerContainer = document.getElementById('bannerContainer');
+            const bannerImage = document.getElementById('bannerImage');
+
+            function showNextBanner() {
+                if (banners.length === 0) return;
+
+                const banner = banners[currentBannerIndex];
+                bannerImage.src = banner.imageUrl; // Assuming the Firestore document has an imageUrl field
+                bannerContainer.style.display = 'block';
+
+                bannerImage.onclick = function() {
+                    window.open(banner.link, '_blank'); // Assuming the Firestore document has a link field
+                };
+
+                currentBannerIndex = (currentBannerIndex + 1) % banners.length; // Loop through banners
+                setTimeout(showNextBanner, 20000); // Change banner every 20 seconds
+            }
+
+            showNextBanner();
+        }
+
+        // Call loadBanners when the page loads
+        loadBanners();
     </script>
     <script type='text/javascript' src='https://pl25145596.profitablecpmrate.com/a1/91/a1/a191a1a71e1bfd8cf2b8b436068db02a.js'></script>
  </body> 
