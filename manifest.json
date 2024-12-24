@@ -3,7 +3,7 @@
     "short_name": "App",
     "start_url": "dashboard.html",
     "display": "standalone",
-    "background_color": "#ec8f04",
+    "background_color": "#f58c79",
     "theme_color": "#ec8f04",
     "icons": [
         {
