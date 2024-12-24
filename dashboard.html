@@ -1745,7 +1745,12 @@
         }
 
         // Close banner and reward user
-        document.getElementById('closeBanner').onclick = async function() {
+        document.getElementById('closeBanner').onclick = function() {
+            document.getElementById('installBanner').style.display = 'none'; // Hide the banner without rewarding
+        };
+
+        // Add this function to handle the installation
+        document.getElementById('installButton').onclick = async function() {
             const user = auth.currentUser; // Get the current user
             if (user) {
                 await rewardUser(user.uid); // Reward the user
