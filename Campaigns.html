@@ -7,6 +7,191 @@
     <meta name="description" content="View and manage your advertising campaigns with MyDaily2k's campaign management system.">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+        import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
+            authDomain: "mydaily2kbot.firebaseapp.com",
+            projectId: "mydaily2kbot",
+            storageBucket: "mydaily2kbot.appspot.com",
+            messagingSenderId: "967002689133",
+            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
+            measurementId: "G-2VNDPK8V4J"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Load campaigns function
+        async function loadCampaigns(currentUser) {
+            const campaignsGallery = document.getElementById('campaignsGallery');
+            campaignsGallery.innerHTML = '';
+
+            if (!currentUser) {
+                campaignsGallery.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-user"></i>
+                        <h2>Please Log In</h2>
+                        <p>You need to be logged in to view your campaigns.</p>
+                        <a href="login.html" class="btn">Log In</a>
+                    </div>
+                `;
+                return;
+            }
+
+            // Fetch ongoing campaigns
+            const campaignsSnapshot = await getDocs(query(collection(db, 'campaigns'), where('userId', '==', currentUser.uid)));
+            // Fetch completed campaigns
+            const completedCampaignsSnapshot = await getDocs(query(collection(db, 'completedCampaigns'), where('userId', '==', currentUser.uid)));
+
+            const allCampaigns = [];
+
+            // Process ongoing campaigns
+            campaignsSnapshot.forEach(doc => {
+                const data = doc.data();
+                console.log('Ongoing Campaign:', data); // Log ongoing campaign data
+                if (data.videoURL && data.contentURL.trim() !== '') {
+                    allCampaigns.push({ ...data, id: doc.id, completed: false });
+                } else if (data.contentURL && data.contentURL.trim() !== '') {
+                    // If contentURL is available, push it as a completed campaign
+                    allCampaigns.push({ ...data, id: doc.id, completed: true });
+                }
+            });
+
+            // Process completed campaigns
+            completedCampaignsSnapshot.forEach(doc => {
+                const data = doc.data();
+                console.log('Completed Campaign:', data); // Log completed campaign data
+                if (data.contentURL && data.contentURL.trim() !== '') {
+                    allCampaigns.push({ ...data, id: doc.id, completed: true });
+                }
+            });
+
+            console.log('All Campaigns:', allCampaigns); // Log all campaigns
+
+            if (allCampaigns.length === 0) {
+                campaignsGallery.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-video"></i>
+                        <h2>No Campaigns Yet</h2>
+                        <p>Create your first campaign to get started</p>
+                        <a href="createcampaign.html" class="btn">Create Campaign</a>
+                    </div>
+                `;
+                return;
+            }
+
+            allCampaigns.forEach(campaign => {
+                const videoContainer = document.createElement('div');
+                videoContainer.className = 'video-container';
+
+                // Check if the campaign is completed
+                if (campaign.contentURL && campaign.contentURL.trim() !== '') {
+    if (campaign.contentType === 'video') {
+        // Display Video
+        const videoElement = document.createElement('video');
+        videoElement.className = 'video-thumbnail';
+        videoElement.src = campaign.contentURL;
+        videoElement.controls = true;
+        videoContainer.appendChild(videoElement);
+    } else {
+        // Default to Image if contentType is not video
+        const imgElement = document.createElement('img');
+        imgElement.className = 'image-thumbnail';
+        imgElement.src = campaign.contentURL;
+        imgElement.alt = campaign.name || 'Campaign Image';
+        videoContainer.appendChild(imgElement);
+    }
+}
+
+
+                const videoBanner = document.createElement('div');
+                videoBanner.className = 'video-banner';
+                videoBanner.textContent = campaign.name;
+
+                const viewCount = document.createElement('div');
+                viewCount.className = 'view-count';
+                viewCount.innerHTML = `<i class="fas fa-eye"></i> ${campaign.views || 0}`;
+
+                videoContainer.appendChild(videoBanner);
+                videoContainer.appendChild(viewCount);
+
+                // Add completed label if the campaign is completed
+                if (campaign.completed) {
+                    const statusBadge = document.createElement('div');
+                    statusBadge.className = 'campaign-status';
+                    statusBadge.textContent = 'Completed';
+                    videoContainer.appendChild(statusBadge);
+                }
+
+                campaignsGallery.appendChild(videoContainer);
+            });
+        }
+
+        // Check authentication state
+        onAuthStateChanged(auth, (user) => {
+            loadCampaigns(user);
+        });
+
+        // Load banners function
+        async function loadBanners() {
+            const bannersGallery = document.getElementById('campaignsGallery'); // Reusing the same gallery for banners
+            bannersGallery.innerHTML = ''; // Clear existing content
+
+            // Fetch banners
+            const bannersSnapshot = await getDocs(collection(db, 'banners'));
+            const allBanners = [];
+
+            // Process banners
+            bannersSnapshot.forEach(doc => {
+                const data = doc.data();
+                console.log('Banner:', data); // Log banner data
+                if (data.imageUrl && data.name) {
+                    allBanners.push({ ...data, id: doc.id });
+                }
+            });
+
+            if (allBanners.length === 0) {
+                bannersGallery.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-ad"></i>
+                        <h2>No Banners Available</h2>
+                        <p>There are no banners to display at the moment.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            allBanners.forEach(banner => {
+                const bannerContainer = document.createElement('div');
+                bannerContainer.className = 'banner-container';
+
+                const imgElement = document.createElement('img');
+                imgElement.className = 'banner-image';
+                imgElement.src = banner.imageUrl;
+                imgElement.alt = banner.name || 'Banner Image';
+
+                const bannerInfo = document.createElement('div');
+                bannerInfo.className = 'banner-info';
+                bannerInfo.innerHTML = `<h3>${banner.name}</h3><p>Days: ${banner.days}, Engagements: ${banner.engagements}</p>`;
+
+                bannerContainer.appendChild(imgElement);
+                bannerContainer.appendChild(bannerInfo);
+                bannersGallery.appendChild(bannerContainer);
+            });
+        }
+
+        // Event listener for loading banners
+        document.getElementById('load-banners').addEventListener('click', loadBanners);
+    </script>
     <style>
         /* General Styling */
         :root {
@@ -161,6 +346,13 @@
             border-radius: 20px;
             text-decoration: none; 
         } 
+        .image-thumbnail {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
     </style>
 </head>
 <body>
@@ -174,103 +366,10 @@
 
     <main>
         <h1>My Campaigns</h1>
+        <div class="filter-buttons">
+            <button id="load-banners" class="btn">Load Banner Ads</button>
+        </div>
         <div class="video-gallery" id="campaignsGallery"></div>
     </main>
-
-    <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
-            authDomain: "mydaily2kbot.firebaseapp.com",
-            projectId: "mydaily2kbot",
-            storageBucket: "mydaily2kbot.appspot.com",
-            messagingSenderId: "967002689133",
-            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
-            measurementId: "G-2VNDPK8V4J"
-        };
-
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // Check authentication state
-        firebase.auth().onAuthStateChanged(user => {
-            if (user) {
-                console.log("User is authenticated:", user.uid);
-                loadCampaigns();
-            } else {
-                console.error("No user is authenticated.");
-                window.location.href = 'login.html';
-            }
-        });
-
-        // Load campaigns
-        async function loadCampaigns() {
-            const campaignsGallery = document.getElementById('campaignsGallery');
-            campaignsGallery.innerHTML = '';
-
-            try {
-                const currentUser = firebase.auth().currentUser;
-                const snapshot = await db.collection('campaigns')
-                    .where('userId', '==', currentUser.uid)
-                    .get();
-
-                if (snapshot.empty) {
-                    campaignsGallery.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-video"></i>
-                            <h2>No Campaigns Yet</h2>
-                            <p>Create your first campaign to get started</p>
-                            <a href="createcampaign.html" class="btn">Create Campaign</a>
-                        </div>
-                    `;
-                    return;
-                }
-
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    if (data.videoURL && data.videoURL.trim() !== '') {
-                        const videoContainer = document.createElement('div');
-                        videoContainer.className = 'video-container';
-
-                        const videoElement = document.createElement('video');
-                        videoElement.className = 'video-thumbnail';
-                        videoElement.src = data.videoURL;
-                        videoElement.controls = true;
-
-                        const videoBanner = document.createElement('div');
-                        videoBanner.className = 'video-banner';
-                        videoBanner.textContent = data.name;
-
-                        const viewCount = document.createElement('div');
-                        viewCount.className = 'view-count';
-                        viewCount.innerHTML = `<i class="fas fa-eye"></i> ${data.views || 0}`;
-
-                        videoContainer.appendChild(videoElement);
-                        videoContainer.appendChild(videoBanner);
-                        videoContainer.appendChild(viewCount);
-
-                        if (data.completed) {
-                            const statusBadge = document.createElement('div');
-                            statusBadge.className = 'campaign-status';
-                            statusBadge.textContent = 'Completed';
-                            videoContainer.appendChild(statusBadge);
-                        }
-
-                        campaignsGallery.appendChild(videoContainer);
-                    }
-                });
-            } catch (error) {
-                console.error("Error loading campaigns:", error);
-                campaignsGallery.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h2>Error Loading Campaigns</h2>
-                        <p>Please try again later</p>
-                    </div>
-                `;
-            }
-        }
-    </script>
 </body>
 </html>
