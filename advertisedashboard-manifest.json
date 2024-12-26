@@ -1,10 +1,10 @@
 {
-    "name": "My Daily2K Advertise Hub",
-    "short_name": "Advertise Hub",
-    "start_url": "advertisedashboard.html",
+    "name": "My Daily2K",
+    "short_name": "App",
+    "start_url": "dashboard.html",
     "display": "standalone",
-    "background_color": "#000000",
-    "theme_color": "#00000",
+    "background_color": "#f58c79",
+    "theme_color": "#f58c79",
     "icons": [
         {
             "src": "icon-192x192.png",
