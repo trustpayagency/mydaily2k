@@ -1,7 +1,7 @@
 {
-    "name": "Daily2K",
+    "name": "ads",
     "short_name": "App",
-    "start_url": "index.html",
+    "start_url": "advertiserdashboard.html",
     "display": "standalone",
     "background_color": "#00000",
     "theme_color": "#00000",
