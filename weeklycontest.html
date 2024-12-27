@@ -1137,54 +1137,16 @@
             entriesContainer.innerHTML = '<div style="text-align: center; padding: 20px;">Loading entries...</div>';
 
             try {
-                // Create query for approved entries and current user's pending entries
-                const currentUser = auth.currentUser;
+                // Create query for approved entries only
                 const approvedQuery = query(
                     collection(db, 'contestEntries'),
                     where('weekNumber', '==', getCurrentWeekNumber()),
-                    where('approved', '==', true),
+                    where('approved', '==', true), // Only show approved entries
                     orderBy('votes', 'desc')
                 );
 
-                const userPendingQuery = query(
-                    collection(db, 'contestEntries'),
-                    where('weekNumber', '==', getCurrentWeekNumber()),
-                    where('userId', '==', currentUser.uid),
-                    where('approved', '==', false)
-                );
-
-                // Get both approved and user's pending entries
-                const [approvedSnapshot, pendingSnapshot] = await Promise.all([
-                    getDocs(approvedQuery),
-                    getDocs(userPendingQuery)
-                ]);
-
+                const approvedSnapshot = await getDocs(approvedQuery);
                 entriesContainer.innerHTML = '';
-
-                // Show pending notice for user's own entries
-                pendingSnapshot.forEach((doc) => {
-                    const entry = doc.data();
-                    const entryElement = createEntryElement(entry, doc.id);
-                    entryElement.querySelector('.entry-details').innerHTML += `
-                        <div class="pending-notice" style="
-                            background: rgba(255, 165, 0, 0.2);
-                            color: #ffa500;
-                            padding: 10px;
-                            border-radius: 5px;
-                            margin-top: 10px;
-                        ">
-                            <i class="fas fa-clock"></i> Your entry is pending admin approval
-                        </div>
-                    `;
-                    // Disable voting on pending entries
-                    const voteBtn = entryElement.querySelector('.vote-btn');
-                    if (voteBtn) {
-                        voteBtn.disabled = true;
-                        voteBtn.style.opacity = '0.5';
-                        voteBtn.title = 'Voting available after approval';
-                    }
-                    entriesContainer.appendChild(entryElement);
-                });
 
                 // Show approved entries
                 approvedSnapshot.forEach((doc) => {
@@ -1203,24 +1165,29 @@
             }
         }
 
-        // Update initializeRealTimeUpdates to include error handling
+        // Real-time updates with approval check
         function initializeRealTimeUpdates() {
             try {
                 const q = query(
                     collection(db, 'contestEntries'),
-                    where('weekNumber', '==', getCurrentWeekNumber())
+                    where('weekNumber', '==', getCurrentWeekNumber()),
+                    where('approved', '==', true) // Ensure only approved entries are fetched
                 );
-                
+
                 onSnapshot(q, (snapshot) => {
                     snapshot.docChanges().forEach((change) => {
-                        if (change.type === "modified") {
-                            updateEntryInDOM(change.doc.id, change.doc.data());
-                        } else if (change.type === "added") {
-                            appendNewEntry(change.doc.id, change.doc.data());
+                        const entryData = change.doc.data();
+                        const entryId = change.doc.id;
+
+                        if (change.type === "added" && entryData.approved === true) {
+                            appendNewEntry(entryId, entryData);
+                        } else if (change.type === "modified" && entryData.approved === true) {
+                            updateEntryInDOM(entryId, entryData);
                         } else if (change.type === "removed") {
-                            removeEntryFromDOM(change.doc.id);
+                            removeEntryFromDOM(entryId);
                         }
                     });
+
                     updateLeaderboard();
                     updateProgressBar();
                 }, (error) => {
@@ -1448,12 +1415,12 @@
                     votes: 0,
                     timestamp: Date.now(),
                     weekNumber: getCurrentWeekNumber(),
-                    approved: false, // Explicitly set to false
+                    approved: false, // Explicitly set to false for pending approval
                     status: 'pending'
                 };
 
                 await addDoc(collection(db, 'contestEntries'), contestEntry);
-                showSuccess('Your video has been uploaded and is pending admin approval!');
+                showSuccess('Your video has been uploaded and is pending admin approval!'); // Notify user
             } catch (error) {
                 console.error('Error uploading video:', error);
                 showError(error.message);
@@ -1542,7 +1509,11 @@
                 initializeRealTimeUpdates();
                 updateProgressBar();
                 updateLeaderboard();
-                setInterval(updateCountdown, 1000);
+                loadContestEntries(); // Ensure approved entries are displayed initially
+                
+                // Call updateCountdown and set interval
+                updateCountdown(); // Initial call to set the countdown
+                setInterval(updateCountdown, 1000); // Update countdown every second
             }
         });
 
