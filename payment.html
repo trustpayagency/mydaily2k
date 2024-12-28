@@ -7,7 +7,6 @@
     <meta name="description" content="Secure payment processing for MyDaily2k's social media services.">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="manifest" href="advertisedashboard-manifest.json">
     <style>
         /* General Styling */
         :root {
@@ -280,8 +279,8 @@
                 <p> So we advice you to buy more than one days to get more traffic on your post </p> 
             </div>
 
-            <label for="post-link">Upload The Page or Post Link:</label>
-            <input type="text" id="post-link" name="post-link" required>
+            <label for="link">Upload The Page or Post Link:</label>
+            <input type="text" id="link" name="link" required>
 
             <button type="submit" class="btn">Submit Payment</button>
         </form>
@@ -402,7 +401,7 @@
                 const days = parseInt(document.getElementById('days').value);
                 const amount = parseFloat(document.getElementById('amount').value);
                 const description = document.getElementById('description').value;
-                const postLink = document.getElementById('post-link').value;
+                const link = document.getElementById('link').value;
 
                 // Determine reward based on service type
                 const streamingServices = [
@@ -438,7 +437,7 @@
                     days: days,
                     amount: amount,
                     description: description,
-                    postLink: postLink,
+                    link: link,
                     startTime: startTime,
                     endTime: endTime,
                     status: 'pending',
