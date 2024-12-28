@@ -857,20 +857,16 @@
 
                 console.log("Fetched campaigns:", campaigns); // Debugging: Log fetched campaigns
 
-                if (campaigns.length === 0) {
-                    alert("No campaigns available.");
-                    return;
-                }
-
-                const userDevice = getUserDevice();
-                const validCampaigns = campaigns.filter(campaign => {
-                    return campaign.contentURL && campaign.name && campaign.contentType && 
-                           (campaign.type !== 'balance') && 
-                           (campaign.type === 'app' ? (campaign.platform === userDevice || campaign.platform === 'both') : true);
-                });
+                // Filter out campaigns with zero views
+                const validCampaigns = campaigns.filter(campaign => 
+                    campaign.contentURL && campaign.name && campaign.contentType && 
+                    (campaign.type !== 'balance') && 
+                    (campaign.views > 0) &&
+                    (campaign.type === 'app' ? (campaign.platform === getUserDevice() || campaign.platform === 'both') : true)
+                );
 
                 if (validCampaigns.length === 0) {
-                    alert("No campaigns available for your platform.");
+                    alert("No campaigns available.");
                     return;
                 }
 
@@ -892,9 +888,23 @@
                 console.log("Selected campaign:", selectedCampaign); // Debugging: Log selected campaign
 
                 // Save the view to the campaign document
-                await updateDoc(doc(db, 'campaigns', selectedCampaign.id), {
-                    views: (selectedCampaign.views || 0) + 1 // Increment the views count
-                });
+                const currentViews = selectedCampaign.views || 0;
+
+                if (currentViews > 0) {
+                    await updateDoc(doc(db, 'campaigns', selectedCampaign.id), {
+                        views: currentViews - 1 // Decrement the views count
+                    });
+
+                    // Check if views have reached zero
+                    if (currentViews - 1 === 0) {
+                        // Move to completedCampaigns collection
+                        const campaignData = (await getDoc(doc(db, 'campaigns', selectedCampaign.id))).data();
+                        await setDoc(doc(db, 'completedCampaigns', selectedCampaign.id), campaignData);
+                        await deleteDoc(doc(db, 'campaigns', selectedCampaign.id)); // Remove from campaigns collection
+                    }
+                } else {
+                    console.warn("Campaign views are already zero or negative.");
+                }
 
                 displayCampaign(selectedCampaign);
 
@@ -955,15 +965,21 @@
                 link.click();
                 document.body.removeChild(link);
 
-                // Save engagement to the campaign document
-                const campaignId = 'your_campaign_id'; // Replace with the actual campaign ID
-                await updateDoc(doc(db, 'campaigns', campaignId), {
-                    engagements: (campaign.engagements || 0) + 1 // Increment the engagements count
-                });
+                // Increment the usage count
+                window.adUsage.directLinksUsed++; // Increment the usage count
+                await updateAdUsage(user.uid, window.adUsage); // Update the ad usage in Firestore
 
-                // Start checking for reward immediately
-                startRewardCheck();
-                
+                // Reward the user after a 5-second delay
+                setTimeout(async () => {
+                    await updateBalance(user.uid, 10); // Reward the user with 10 2KCoins
+
+                    // Update the balance display immediately
+                    const newBalance = parseInt(document.getElementById("balance").textContent) + 10;
+                    document.getElementById("balance").textContent = newBalance;
+
+                    alert("Direct link used! You've earned 10 2KCoins!");
+                }, 5000); // 5000 milliseconds = 5 seconds
+
             } catch (error) {
                 console.error("Error processing direct link:", error);
                 alert("Error processing direct link. Please try again later.");
@@ -1645,7 +1661,7 @@
             if (campaign.contentType === 'video') {
                 campaignContent.innerHTML += `
                     <div class="video-wrapper">
-                        <video id="ad-video" src="${campaign.contentURL}" autoplay muted playsinline></video>
+                        <video id="ad-video" src="${campaign.contentURL}" autoplay playsinline></video>
                         <div class="banner" style="display: flex; justify-content: space-between; align-items: center;">
                             <div class="logo-name" style="display: flex; align-items: center;">
                                 <img src="${campaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
@@ -1670,6 +1686,21 @@
                                 ${campaign.type === 'app' ? 'Install App' : 'Visit Web'}
                             </a>
                         </div>
+                    </div>
+                `;
+            }
+
+            // Add Contact Us buttons for WhatsApp and Telegram
+            if (campaign.type === 'whatsapp') {
+                campaignContent.innerHTML += `
+                    <div style="margin-top: 20px;">
+                        <a href="${campaign.whatsappLink}" target="_blank" class="action-link">Contact Us on WhatsApp</a>
+                    </div>
+                `;
+            } else if (campaign.type === 'telegram') {
+                campaignContent.innerHTML += `
+                    <div style="margin-top: 20px;">
+                        <a href="${campaign.telegramLink}" target="_blank" class="action-link">Contact Us on Telegram</a>
                     </div>
                 `;
             }
