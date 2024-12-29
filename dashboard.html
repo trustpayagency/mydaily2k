@@ -1667,8 +1667,8 @@
                                 <img src="${campaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
                                 <span style="color: #fff; margin-left: 10px;">${campaign.name || 'App Name'}</span>
                             </div>
-                            <a href="${getCampaignLink(campaign)}" target="_blank" class="action-link" style="margin-left: auto;" id="installButton">
-                                ${campaign.type === 'app' ? 'Install App' : 'Visit Web'}
+                            <a href="${(campaign.type === 'whatsapp') ? campaign.whatsappLink : (campaign.type === 'telegram' ? campaign.telegramLink : getCampaignLink(campaign))}" target="_blank" class="action-link" style="margin-left: auto;" id="installButton">
+                                ${(campaign.type === 'whatsapp' || campaign.type === 'telegram') ? 'Contact Us' : (campaign.type === 'app' ? 'Install App' : 'Visit Web')}
                             </a>
                         </div>
                     </div>
@@ -1682,28 +1682,14 @@
                                 <img src="${campaign.logoURL || 'default-logo.png'}" alt="Logo" class="logo">
                                 <span style="color: #fff; margin-left: 10px;">${campaign.name || 'App Name'}</span>
                             </div>
-                            <a href="${getCampaignLink(campaign)}" target="_blank" class="action-link" style="margin-left: auto;" id="visitWebButton">
-                                ${campaign.type === 'app' ? 'Install App' : 'Visit Web'}
+                            <a href="${(campaign.type === 'whatsapp') ? campaign.whatsappLink : (campaign.type === 'telegram' ? campaign.telegramLink : getCampaignLink(campaign))}" target="_blank" class="action-link" style="margin-left: auto;" id="visitWebButton">
+                                ${(campaign.type === 'whatsapp' || campaign.type === 'telegram') ? 'Contact Us' : (campaign.type === 'app' ? 'Install App' : 'Visit Web')}
                             </a>
                         </div>
                     </div>
                 `;
-            }
-
-            // Add Contact Us buttons for WhatsApp and Telegram
-            if (campaign.type === 'whatsapp') {
-                campaignContent.innerHTML += `
-                    <div style="margin-top: 20px;">
-                        <a href="${campaign.whatsappLink}" target="_blank" class="action-link">Contact Us on WhatsApp</a>
-                    </div>
-                `;
-            } else if (campaign.type === 'telegram') {
-                campaignContent.innerHTML += `
-                    <div style="margin-top: 20px;">
-                        <a href="${campaign.telegramLink}" target="_blank" class="action-link">Contact Us on Telegram</a>
-                    </div>
-                `;
-            }
+            } 
+            
 
             campaignContent.appendChild(countdownTimer);
             overlay.appendChild(campaignContent);
