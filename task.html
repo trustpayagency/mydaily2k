@@ -474,18 +474,26 @@
                         <h3>${task.name} - ${task.reward} points</h3>
                         <p>${task.description}</p>
                         <div class="buttons">
-                            <button class="do-task-button" onclick="doTask('${taskId}')" ${isClaimed ? 'disabled' : ''}>
+                            <button class="do-task-button" 
+                                    onclick="event.preventDefault(); doTask('${taskId}', ${task.reward})" 
+                                    ${isClaimed ? 'disabled' : ''}>
                                 Do Task
                             </button>
-                            <button class="check-button" onclick="checkTask('${taskId}', ${task.reward}, ${task.requiresCode ? 'true' : 'false'})" ${!userTask.startTime || isClaimed ? 'disabled' : ''}>
+                            <button class="check-button" 
+                                    onclick="event.preventDefault(); checkTask('${taskId}', ${task.reward}, ${task.requiresCode ? 'true' : 'false'})" 
+                                    ${!userTask.startTime || isClaimed ? 'disabled' : ''}>
                                 Check
                             </button>
                             ${isClaimed ? `
-                                <button class="claim-button" onclick="claimReward('${taskId}', ${task.reward})" disabled>
+                                <button class="claim-button" 
+                                        onclick="event.preventDefault(); claimReward('${taskId}', ${task.reward})" 
+                                        disabled>
                                     Claim
                                 </button>
                             ` : (userTask.isVerified || !task.requiresCode) && userTask.startTime ? `
-                                <button class="claim-button" onclick="claimReward('${taskId}', ${task.reward})">
+                                <button class="claim-button" 
+                                        onclick="event.preventDefault(); claimReward('${taskId}', ${task.reward})"
+                                        data-task-id="${taskId}">
                                     Claim
                                 </button>
                             ` : ''}
@@ -507,7 +515,7 @@
             }
         }
 
-        async function doTask(taskId) {
+        async function doTask(taskId, reward) {
             try {
                 const taskDoc = await getDoc(doc(db, "tasks", taskId));
                 if (!taskDoc.exists()) {
@@ -520,33 +528,31 @@
                 window.open(task.link, '_blank');
 
                 // Delay the claim button based on the reward
-                const delayTime = task.reward === 10 ? 10000 : (task.reward === 20 ? 60000 : 0); // 10 seconds for 10 points, 60 seconds for 20 points
-                if (delayTime > 0) {
-                    showNotification(`You can claim your reward in ${delayTime / 1000} seconds.`, "info");
-                    setTimeout(() => {
-                        // Enable the claim button after the delay
-                        const claimButton = document.querySelector(`.claim-button[data-task-id='${taskId}']`);
-                        if (claimButton) {
-                            claimButton.disabled = false; // Enable the claim button
-                            claimButton.textContent = "Claim"; // Reset button text
-                        }
-                    }, delayTime);
-                }
-
+                const delayTime = reward === 10 ? 10000 : (reward === 20 ? 60000 : 0);
+                
                 // Record the start time in Firestore
                 const userTaskRef = doc(db, "userTasks", currentUser.uid);
-                const userTaskDoc = await getDoc(userTaskRef);
-                const userTasks = userTaskDoc.exists() ? userTaskDoc.data() : {};
-
                 await setDoc(userTaskRef, {
                     [taskId]: {
                         startTime: new Date(),
-                        isVerified: false,
+                        isVerified: true, // Set to true since we're not checking
                         isClaimed: false
                     }
                 }, { merge: true });
 
-                showNotification("Task started! Please complete it as required.", "success");
+                if (delayTime > 0) {
+                    showNotification(`Please wait ${delayTime / 1000} seconds before claiming.`, "info");
+                    // Disable claim button initially
+                    const claimButton = document.querySelector(`button.claim-button[data-task-id="${taskId}"]`);
+                    if (claimButton) {
+                        claimButton.disabled = true;
+                        setTimeout(() => {
+                            claimButton.disabled = false;
+                            showNotification("You can now claim your reward!", "success");
+                        }, delayTime);
+                    }
+                }
+
                 loadTasks(); // Reload tasks to update UI
             } catch (error) {
                 console.error("Error starting task:", error);
