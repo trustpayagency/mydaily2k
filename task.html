@@ -519,6 +519,20 @@
                 // Open the task link in a new tab
                 window.open(task.link, '_blank');
 
+                // Delay the claim button based on the reward
+                const delayTime = task.reward === 10 ? 10000 : (task.reward === 20 ? 60000 : 0); // 10 seconds for 10 points, 60 seconds for 20 points
+                if (delayTime > 0) {
+                    showNotification(`You can claim your reward in ${delayTime / 1000} seconds.`, "info");
+                    setTimeout(() => {
+                        // Enable the claim button after the delay
+                        const claimButton = document.querySelector(`.claim-button[data-task-id='${taskId}']`);
+                        if (claimButton) {
+                            claimButton.disabled = false; // Enable the claim button
+                            claimButton.textContent = "Claim"; // Reset button text
+                        }
+                    }, delayTime);
+                }
+
                 // Record the start time in Firestore
                 const userTaskRef = doc(db, "userTasks", currentUser.uid);
                 const userTaskDoc = await getDoc(userTaskRef);
