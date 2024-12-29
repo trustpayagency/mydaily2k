@@ -133,11 +133,12 @@
             top: 15px;
             right: 15px;
             background-color: #4CAF50;
-            color: #fff;
-            padding: 5px 10px;
-            border-radius: 20px;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
             font-size: 14px;
             font-weight: bold;
+            z-index: 1;
         }
 
         .code-input {
@@ -219,7 +220,7 @@
         .switch1 {
             position: absolute;
             top: 20px;
-            left: 20px;
+            left: 10px;
             display: flex;
             align-items: center;
         }
@@ -232,7 +233,7 @@
             text-decoration: none;
             padding: 5px 5px;
             background-color: #555;
-            border-radius: 10px;
+            border-radius: 5px;
         }
 
         /* Notifications */
@@ -392,6 +393,33 @@
             color: #4CAF50;
             background-color: rgba(76, 175, 80, 0.1);
         }
+
+        /* Add this CSS for scrolling effect */
+        .scrolling-container {
+            overflow: hidden; /* Hide overflow */
+            white-space: nowrap; /* Prevent text from wrapping */
+            width: 100%; /* Set width to 100% of the parent */
+        }
+
+        .scrolling-text {
+            display: inline-block; /* Allow the text to be treated as a block for animation */
+            animation: scroll 60s linear infinite; /* Adjusted duration for smoother scrolling */
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(100%); /* Start off-screen to the right */
+            }
+            100% {
+                transform: translateX(-100%); /* End off-screen to the left */
+            }
+        }
+
+        .task-list li button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
@@ -403,12 +431,14 @@
     </div>
     <div class="NOTE"> 
         <h3>Important Guidelines!!!</h3>
-        <ul>
-            <li>Complete tasks truthfully to maintain plaform quality and fair rewards</li>
-            <li>Dishonest actions, like undoing task after rewards or not Completing task will lead to a ban </li>
-            <li>Additionally we will not be responsible for any third-party action outside this platform</li>
-            <li><strong>While making your Daily2k stay sharp🕵️</strong> </li>
-        </ul>
+        <div class="scrolling-container">
+            <div class="scrolling-text">
+                Complete tasks truthfully to maintain platform quality and fair rewards. 
+                Dishonest actions, like undoing task after rewards or not completing tasks will lead to a ban. 
+                Additionally, we will not be responsible for any third-party action outside this platform. 
+                <strong>While making your Daily2k stay sharp🕵️</strong>
+            </div>
+        </div>
     </div>
 
     <div class="content">
@@ -452,7 +482,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, increment, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
         const firebaseConfig = {
@@ -483,16 +513,24 @@
         }
 
         // Create task element
-        function createTaskElement(task) {
+        function createTaskElement(task, claimedTasks) {
             const taskElement = document.createElement('div');
             taskElement.className = 'task-item';
+            const isClaimed = claimedTasks.includes(task.id);
+            
             taskElement.innerHTML = `
                 <div class="task-list li">
+                    ${isClaimed ? '<span class="claimed-label"></span>' : ''}
                     <h3>${task.name} - ${task.reward} points</h3>
                     <p>${task.description}</p>
                     <div class="buttons">
-                        <button onclick="window.startTask('${task.id}', ${task.reward}, '${task.link}')">Start Task</button>
-                        <button id="claim-${task.id}" class="claim-button" onclick="window.claimReward('${task.id}', ${task.reward})" disabled>
+                        <button onclick="window.startTask('${task.id}', ${task.reward}, '${task.link}')" 
+                            ${isClaimed ? 'disabled' : ''}>
+                            ${isClaimed ? 'Task Completed' : 'Start Task'}
+                        </button>
+                        <button id="claim-${task.id}" class="claim-button" 
+                            onclick="window.claimReward('${task.id}', ${task.reward})" 
+                            disabled style="${isClaimed ? 'display: none;' : ''}">
                             Claim Reward
                         </button>
                     </div>
@@ -513,6 +551,10 @@
 
                 taskContainer.innerHTML = ''; // Clear existing tasks
                 
+                // Get user's claimed tasks
+                const userClaimedTasksDoc = await getDoc(doc(db, "userClaimedTasks", currentUser.uid));
+                const claimedTasks = userClaimedTasksDoc.exists() ? userClaimedTasksDoc.data().tasks || [] : [];
+                
                 const querySnapshot = await getDocs(collection(db, "tasks"));
                 if (querySnapshot.empty) {
                     taskContainer.innerHTML = '<p>No tasks available at the moment.</p>';
@@ -524,7 +566,7 @@
                         id: doc.id,
                         ...doc.data()
                     };
-                    taskContainer.appendChild(createTaskElement(task));
+                    taskContainer.appendChild(createTaskElement(task, claimedTasks));
                 });
             } catch (error) {
                 console.error("Error loading tasks:", error);
@@ -570,9 +612,22 @@
                     balance: increment(reward)
                 });
 
-                // Disable claim button
-                const claimButton = document.getElementById(`claim-${taskId}`);
-                claimButton.disabled = true;
+                // Add task to user's claimed tasks
+                const userClaimedTasksRef = doc(db, "userClaimedTasks", currentUser.uid);
+                const userClaimedTasksDoc = await getDoc(userClaimedTasksRef);
+                
+                if (userClaimedTasksDoc.exists()) {
+                    await updateDoc(userClaimedTasksRef, {
+                        tasks: [...userClaimedTasksDoc.data().tasks, taskId]
+                    });
+                } else {
+                    await setDoc(userClaimedTasksRef, {
+                        tasks: [taskId]
+                    });
+                }
+
+                // Reload tasks to update UI
+                loadTasks();
                 
                 showNotification(`Successfully claimed ${reward} points!`);
             } catch (error) {
