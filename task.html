@@ -396,22 +396,25 @@
 
         /* Add this CSS for scrolling effect */
         .scrolling-container {
-            overflow: hidden; /* Hide overflow */
-            white-space: nowrap; /* Prevent text from wrapping */
-            width: 100%; /* Set width to 100% of the parent */
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+            padding: 10px 0;
         }
 
         .scrolling-text {
-            display: inline-block; /* Allow the text to be treated as a block for animation */
-            animation: scroll 60s linear infinite; /* Adjusted duration for smoother scrolling */
+            display: inline-block;
+            animation: scroll 60s linear infinite;
+            padding: 0 100%;
+            position: relative;
         }
 
         @keyframes scroll {
-            0% {
-                transform: translateX(100%); /* Start off-screen to the right */
+            from {
+                transform: translateX(0);
             }
-            100% {
-                transform: translateX(-100%); /* End off-screen to the left */
+            to {
+                transform: translateX(-100%);
             }
         }
 
