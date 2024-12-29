@@ -7,7 +7,6 @@
     <meta name="description" content="View and manage your advertising campaigns with MyDaily2k's campaign management system.">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="manifest" href="advertisedashboard-manifest.json">
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
@@ -58,21 +57,20 @@
             // Process ongoing campaigns
             campaignsSnapshot.forEach(doc => {
                 const data = doc.data();
-                console.log('Ongoing Campaign:', data); // Log ongoing campaign data
+                console.log('Ongoing Campaign:', data);
                 if (data.videoURL && data.contentURL.trim() !== '') {
-                    allCampaigns.push({ ...data, id: doc.id, completed: false });
+                    allCampaigns.push({ ...data, id: doc.id, status: 'ongoing' });
                 } else if (data.contentURL && data.contentURL.trim() !== '') {
-                    // If contentURL is available, push it as a completed campaign
-                    allCampaigns.push({ ...data, id: doc.id, completed: true });
+                    allCampaigns.push({ ...data, id: doc.id, status: 'ongoing' });
                 }
             });
 
             // Process completed campaigns
             completedCampaignsSnapshot.forEach(doc => {
                 const data = doc.data();
-                console.log('Completed Campaign:', data); // Log completed campaign data
+                console.log('Completed Campaign:', data);
                 if (data.contentURL && data.contentURL.trim() !== '') {
-                    allCampaigns.push({ ...data, id: doc.id, completed: true });
+                    allCampaigns.push({ ...data, id: doc.id, status: 'completed' });
                 }
             });
 
@@ -125,13 +123,11 @@
                 videoContainer.appendChild(videoBanner);
                 videoContainer.appendChild(viewCount);
 
-                // Add completed label if the campaign is completed
-                if (campaign.completed) {
-                    const statusBadge = document.createElement('div');
-                    statusBadge.className = 'campaign-status';
-                    statusBadge.textContent = 'Completed';
-                    videoContainer.appendChild(statusBadge);
-                }
+                // Add status label
+                const statusBadge = document.createElement('div');
+                statusBadge.className = 'campaign-status';
+                statusBadge.textContent = campaign.status === 'ongoing' ? 'Ongoing' : 'Completed';
+                videoContainer.appendChild(statusBadge);
 
                 campaignsGallery.appendChild(videoContainer);
             });
@@ -207,8 +203,8 @@
             font-family: 'Roboto', Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, var(--dark-bg), #2a2a2d, #333335);
-            color: var(--text-light);
+            background-color: #000000; /* Pink background for Campaigns */
+            color: #000; /* Black text for contrast */
             min-height: 100vh;
         }
 
@@ -352,6 +348,14 @@
             border-radius: 10px;
             margin-bottom: 1rem;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .campaign-status[textContent="Ongoing"] {
+            background: linear-gradient(to right, #19e2b0, #00ff00);
+        }
+
+        .campaign-status[textContent="Completed"] {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
         }
 
     </style>
