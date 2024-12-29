@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY DAILY2K Task</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset CSS */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(to top, #ec8f04, #f58c79);
+            color: #f0f0f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        body.light-mode {
+            background: linear-gradient(to top, #ec8f04, black); /* Change to black in light mode */
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .task-list {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 40px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .task-list h2 {
+            margin-bottom: 20px;
+            font-size: 28px;
+            color: #ffb84d;
+        }
+
+        .task-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .task-list li {
+            background-color: #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s;
+        }
+
+        .task-list li:hover {
+            background-color: #444;
+        }
+
+        .task-list li h3 {
+            margin-bottom: 10px;
+            font-size: 22px;
+            color: #ec8f04;
+        }
+
+        .task-list li p {
+            margin-bottom: 15px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .task-list li .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .task-list li .buttons button {
+            flex: 1;
+            max-width: 200px;
+            min-width: 120px;
+            background-color: #ec8f04;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-list li .buttons button:hover:not(:disabled) {
+            background-color: #ffb84d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .task-list li .buttons button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+            opacity: 0.7;
+            transform: none;
+        }
+
+        .task-list li .buttons .claim-button {
+            background-color: #4CAF50;
+        }
+
+        .task-list li .buttons .claim-button:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+
+        .task-list li .buttons .claim-button:disabled {
+            background-color: #666;
+        }
+
+        .claimed-label {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 1;
+        }
+
+        .code-input {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .code-input input {
+            padding: 8px;
+            border-radius: 5px;
+            border: none;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        /* Bottom Banner */
+        .bottom-banner {
+            border-radius: 20px; /* Curved edges */
+            overflow: hidden; /* Ensure content fits within the border */
+            background-color: #222; /* Change background color */
+            padding: 13px; /* Adjust padding */
+            width: 75%; /* Set width */
+            margin:  0px auto; /* Center the banner */
+            position: fixed; /* Keep it fixed at the bottom */
+            bottom: 20px;
+            left:  50px; 
+            z-index: 1;
+            display: flex;
+            justify-content: space-around;
+        }
+ 
+        .bottom-banner .button {
+            width: 50px; /* Adjusted size for consistency */
+            height: 50px;
+            background-color: #ec8f04;
+            color: #000;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 10px; /* Adjusted padding */
+            font-size: 24px; /* Adjusted icon size */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .bottom-banner .button:hover {
+            background-color: #ec8f04;
+            transform: scale(1.1);
+        }
+
+        .button-label {
+            display: block;
+            color: #fff;
+            text-align: center;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+         .switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .switch a {
+            margin-left: 10px;
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            font-size: 15px; 
+            border-radius: 5px;
+        }
+        
+        .switch1 {
+            position: absolute;
+            top: 20px;
+            left: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .switch1 p {
+            margin-right: 5px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            padding: 5px 5px;
+            background-color: #555;
+            border-radius: 5px;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #333;
+            color: #fff;
+            padding: 15px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .notification.success {
+            background-color: #4CAF50;
+        }
+
+        .notification.error {
+            background-color: #f44336;
+        }
+        .NOTE {
+            background: rgba(255, 0, 0, 0.774);
+            padding: 5px;
+            border-radius: 15px;
+            margin-top: 50px;
+        }
+
+        .NOTE h3 {
+            color: #fff3f3; 
+            margin-bottom: 10px;
+        }
+
+        .NOTE ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .NOTE li {
+            margin: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .NOTE li:before {
+            content: '•';
+            color: #f8f8f8;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .task-list li h3 {
+                font-size: 20px;
+            }
+
+            .task-list li p {
+                font-size: 14px;
+            }
+
+            .task-list li button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            .bottom-banner .button {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+
+            .button-label {
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .task-list {
+                padding: 15px;
+            }
+
+            .task-list h2 {
+                font-size: 24px;
+            }
+
+            .task-list li {
+                padding: 10px;
+            }
+
+            .task-list li h3 {
+                font-size: 18px;
+            }
+
+            .task-list li p {
+                font-size: 14px;
+            }
+
+            .task-list li button {
+                font-size: 14px;
+                padding: 6px 12px;
+            }
+
+            .bottom-banner .button {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+
+            .button-label {
+                font-size: 10px;
+            }
+        }
+
+        .task-item {
+            margin-bottom: 20px;
+        }
+
+        .reload-button {
+            background-color: #ec8f04;
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .reload-button:hover {
+            background-color: #ffb84d;
+            transform: scale(1.05);
+        }
+
+        .timer {
+            margin-top: 15px;
+            color: #ffb84d;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            padding: 8px;
+            border-radius: 15px;
+            background-color: rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .timer:contains('You can now claim your reward!') {
+            color: #4CAF50;
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        /* Add this CSS for scrolling effect */
+        .scrolling-container {
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+            padding: 10px 0;
+        }
+
+        .scrolling-text {
+            display: inline-block;
+            animation: scroll 60s linear infinite;
+            padding: 0 100%;
+            position: relative;
+        }
+
+        @keyframes scroll {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-100%);
+            }
+        }
+
+        .task-list li button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="switch">
+        <a href="advertise.html" style="background-color: #ec8f04;">ADD TASK</a> 
+    </div>
+    <div class="switch1">
+        <p>BUY Likes,Followers,Views,Streams,contact HERE 👉</p> 
+    </div>
+    <div class="NOTE"> 
+        <h3>Important Guidelines!!!</h3>
+        <div class="scrolling-container">
+            <div class="scrolling-text">
+                Complete tasks truthfully to maintain platform quality and fair rewards. 
+                Dishonest actions, like undoing task after rewards or not completing tasks will lead to a ban. 
+                Additionally, we will not be responsible for any third-party action outside this platform. 
+                <strong>While making your Daily2k stay sharp🕵️</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="task-list">
+            <h2>Available Tasks</h2>
+            <button onclick="loadTasks()" class="reload-button">Reload Tasks</button>
+            <div id="taskContainer">
+                <!-- Task items will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-banner">
+        <div class="button-container">
+            <button class="button" onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-home"></i>
+            </button>
+            <span class="button-label">Dashboard</span>
+        </div>
+        <div class="button-container">
+            <button class="button" onclick="window.location.href='withdraw.html'">
+                <i class="fas fa-wallet"></i>
+            </button>
+            <span class="button-label">Withdraw</span>
+        </div>
+        <div class="button-container">
+            <button class="button" onclick="window.location.href='friends.html'">
+                <i class="fas fa-user-friends"></i>
+            </button>
+            <span class="button-label">Friends</span>
+        </div>
+        <div class="button-container">
+            <button class="button" onclick="window.location.href='profile.html'">
+                <i class="fas fa-user"></i>
+            </button>
+            <span class="button-label">Profile</span>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, increment, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
+            authDomain: "mydaily2kbot.firebaseapp.com",
+            projectId: "mydaily2kbot",
+            storageBucket: "mydaily2kbot.appspot.com",
+            messagingSenderId: "967002689133",
+            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
+            measurementId: "G-2VNDPK8V4J"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let currentUser = null;
+
+        // Show notification function
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Create task element
+        function createTaskElement(task, claimedTasks) {
+            const taskElement = document.createElement('div');
+            taskElement.className = 'task-item';
+            const isClaimed = claimedTasks.includes(task.id);
+            
+            taskElement.innerHTML = `
+                <div class="task-list li">
+                    ${isClaimed ? '<span class="claimed-label"></span>' : ''}
+                    <h3>${task.name} - ${task.reward} points</h3>
+                    <p>${task.description}</p>
+                    <div class="buttons">
+                        <button onclick="window.startTask('${task.id}', ${task.reward}, '${task.link}')" 
+                            ${isClaimed ? 'disabled' : ''}>
+                            ${isClaimed ? 'Task Completed' : 'Start Task'}
+                        </button>
+                        <button id="claim-${task.id}" class="claim-button" 
+                            onclick="window.claimReward('${task.id}', ${task.reward})" 
+                            disabled style="${isClaimed ? 'display: none;' : ''}">
+                            Claim Reward
+                        </button>
+                    </div>
+                    <div id="timer-${task.id}" class="timer"></div>
+                </div>
+            `;
+            return taskElement;
+        }
+
+        // Load tasks from Firestore
+        async function loadTasks() {
+            try {
+                const taskContainer = document.getElementById('taskContainer');
+                if (!taskContainer) {
+                    console.error("Task container element not found");
+                    return;
+                }
+
+                taskContainer.innerHTML = ''; // Clear existing tasks
+                
+                // Get user's claimed tasks
+                const userClaimedTasksDoc = await getDoc(doc(db, "userClaimedTasks", currentUser.uid));
+                const claimedTasks = userClaimedTasksDoc.exists() ? userClaimedTasksDoc.data().tasks || [] : [];
+                
+                const querySnapshot = await getDocs(collection(db, "tasks"));
+                if (querySnapshot.empty) {
+                    taskContainer.innerHTML = '<p>No tasks available at the moment.</p>';
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const task = {
+                        id: doc.id,
+                        ...doc.data()
+                    };
+                    taskContainer.appendChild(createTaskElement(task, claimedTasks));
+                });
+            } catch (error) {
+                console.error("Error loading tasks:", error);
+                showNotification("Error loading tasks");
+            }
+        }
+
+        // Start task function
+        window.startTask = function(taskId, reward, link) {
+            // Open link in new tab
+            window.open(link, '_blank');
+
+            // Start timer based on reward
+            const waitTime = reward === 10 ? 10 : 60; // 10 seconds for 10 points, 60 seconds for 20 points
+            let timeLeft = waitTime;
+            
+            const timerElement = document.getElementById(`timer-${taskId}`);
+            const claimButton = document.getElementById(`claim-${taskId}`);
+            
+            const timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = `Time remaining: ${timeLeft} seconds`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timerElement.textContent = 'You can now claim your reward!';
+                    claimButton.disabled = false;
+                }
+            }, 1000);
+        };
+
+        // Claim reward function
+        window.claimReward = async function(taskId, reward) {
+            try {
+                if (!currentUser) {
+                    showNotification("Please login first");
+                    return;
+                }
+
+                // Update user's balance in Firestore
+                const userRef = doc(db, "users", currentUser.uid);
+                await updateDoc(userRef, {
+                    balance: increment(reward)
+                });
+
+                // Add task to user's claimed tasks
+                const userClaimedTasksRef = doc(db, "userClaimedTasks", currentUser.uid);
+                const userClaimedTasksDoc = await getDoc(userClaimedTasksRef);
+                
+                if (userClaimedTasksDoc.exists()) {
+                    await updateDoc(userClaimedTasksRef, {
+                        tasks: [...userClaimedTasksDoc.data().tasks, taskId]
+                    });
+                } else {
+                    await setDoc(userClaimedTasksRef, {
+                        tasks: [taskId]
+                    });
+                }
+
+                // Reload tasks to update UI
+                loadTasks();
+                
+                showNotification(`Successfully claimed ${reward} points!`);
+            } catch (error) {
+                console.error("Error claiming reward:", error);
+                showNotification("Error claiming reward");
+            }
+        };
+
+        // Check authentication state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                loadTasks();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html> 
