@@ -433,7 +433,7 @@
         }
 
         document.getElementById("withdrawForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
+            e.preventDefault(); // Prevent form submission
             if (!userId) {
                 console.error("User is not authenticated");
                 return;
@@ -450,51 +450,51 @@
                     alert("Insufficient balance for withdrawal.");
                     return;
                 }
-                if (coinAmount + chargeAmount > currentBalance) { // Check for charge
+                if (coinAmount + chargeAmount > currentBalance) {
                     alert("Insufficient balance for withdrawal after charge.");
                     return;
                 }
 
-                // Update user's balance in Firestore
-                const newBalance = currentBalance - coinAmount - chargeAmount; // Deduct charge
-                await updateDoc(userDocRef, { balance: newBalance });
-
-                // Create withdrawal document
-                const withdrawalData = {
-                    userId: userId,
-                    amount: coinAmount,
-                    nairaAmount: parseFloat(document.getElementById("nairaAmount").value),
-                    accountName: document.getElementById("accountName").value,
-                    accountNumber: document.getElementById("accountNumber").value,
-                    bankName: document.getElementById("bankname").value,
-                    username: userData.username,
-                    timestamp: new Date(),
-                    status: "Pending"
-                };
-
                 try {
+                    // Update user's balance in Firestore
+                    const newBalance = currentBalance - coinAmount - chargeAmount;
+                    await updateDoc(userDocRef, { balance: newBalance });
+
+                    // Create withdrawal document
+                    const withdrawalData = {
+                        userId: userId,
+                        amount: coinAmount,
+                        nairaAmount: parseFloat(document.getElementById("nairaAmount").value),
+                        accountName: document.getElementById("accountName").value,
+                        accountNumber: document.getElementById("accountNumber").value,
+                        bankName: document.getElementById("bankname").value,
+                        username: userData.username,
+                        timestamp: new Date(),
+                        status: "Pending"
+                    };
+
                     const docRef = await addDoc(collection(db, "withdrawals"), withdrawalData);
                     console.log("Withdrawal document added with ID: ", docRef.id);
+
+                    // Update displayed balance
+                    document.getElementById("2KCoinBalance").textContent = newBalance;
+
+                    // Refresh withdrawal history
+                    await loadWithdrawalHistory();
+
+                    // Show success overlay
+                    showSuccessOverlay();
+
+                    // Reset form
+                    e.target.reset();
+
                 } catch (error) {
-                    console.error("Error adding withdrawal document: ", error);
+                    console.error("Error processing withdrawal: ", error);
+                    alert("An error occurred while processing your withdrawal. Please try again.");
                 }
-
-                // Update displayed balance
-                document.getElementById("2KCoinBalance").textContent = newBalance;
-
-                // Refresh withdrawal history
-                await loadWithdrawalHistory();
-
-                // Submit the form to Basin
-                e.target.submit();
             } else {
                 console.error("User document not found");
             }
-                    // Check localStorage for the user's mode preference
-        const currentMode = localStorage.getItem('mode') || 'dark';
-        if (currentMode === 'light') {
-            document.body.classList.add('light-mode'); // Apply light mode if set
-        }
         });
     </script>
 
@@ -527,6 +527,25 @@
         };
     </script>
     <script type="text/javascript" src="https://www.highperformanceformat.com/e9369fa7ab04e1f49cb1e4a02c06c81b/invoke.js"></script>
+
+    <div id="successOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
+        <div style="background-color:#444; padding:30px; border-radius:10px; text-align:center; max-width:80%; margin:20px;">
+            <i class="fas fa-check-circle" style="color:#ec8f04; font-size:48px; margin-bottom:20px;"></i>
+            <h2 style="color:#fff; margin-bottom:20px;">Withdrawal Successful!</h2>
+            <p style="color:#fff; margin-bottom:20px;">Your withdrawal request has been successfully submitted. If you don't receive your payment in 30 minutes, contact support.</p>
+            <button onclick="closeSuccessOverlay()" style="background-color:#ec8f04; color:#000; border:none; border-radius:25px; padding:10px 30px; font-size:16px; cursor:pointer;">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function showSuccessOverlay() {
+            document.getElementById("successOverlay").style.display = "flex";
+        }
+
+        function closeSuccessOverlay() {
+            document.getElementById("successOverlay").style.display = "none";
+        }
+    </script>
 </body>
 
 </html>
