@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyDaily2k Advertise Hub - My Contests</title>
+    <meta name="description" content="View and manage your hosted contests on MyDaily2k's professional campaign management system.">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* General Styling */
+        :root {
+            --primary-color: #19e2b0;
+            --secondary-color: #f58c79;
+            --dark-bg: #1c1c1e;
+            --text-light: #ffffff;
+            --text-muted: #cccccc;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--dark-bg), #2a2a2d, #333335);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(28, 28, 30, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            position: absolute;
+            top: 15px;
+            right: 45px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            margin-left: 10px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: var(--dark-bg);
+            padding: 5px 5px;
+            border-radius: 20px;
+            text-decoration: none;
+        }
+
+        /* Main Content */
+        main {
+            padding: 100px 2rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+        }
+
+        /* Contest Cards */
+        .contests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .contest-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--primary-color);
+            transition: transform 0.3s;
+        }
+
+        .contest-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .contest-status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-active {
+            background: rgba(25, 226, 176, 0.2);
+            color: var(--primary-color);
+        }
+
+        .status-completed {
+            background: rgba(245, 140, 121, 0.2);
+            color: var(--secondary-color);
+        }
+
+        .contest-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+
+        .contest-info {
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .contest-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 0.2rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .no-contests {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+
+        .action-btn {
+            display: inline-block;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: var(--dark-bg);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            text-decoration: none;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .contests-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--dark-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .entries-list {
+            margin: 1rem 0;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .entry-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 10px;
+        }
+
+        .entry-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .entry-info {
+            flex-grow: 1;
+        }
+
+        .admin-choice-section {
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .admin-choice-status {
+            color: var(--primary-color);
+            font-weight: bold;
+            padding: 0.5rem;
+            background: rgba(25, 226, 176, 0.1);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .admin-choice-btn {
+            background: linear-gradient(to right, #ffd700, #ffa500);
+            color: var(--dark-bg);
+        }
+
+        .admin-choice-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">MyDaily2k</div>
+        <div class="nav-links">
+            <a href="advertisedashboard.html">Dashboard</a>
+            <a href="contestbooking.html">Book Contest</a>
+        </div>
+    </nav>
+
+    <main>
+        <h1>My Hosted Contests</h1>
+        <div class="contests-grid" id="contestsGrid">
+            <!-- Contests will be dynamically populated here -->
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            query, 
+            where, 
+            getDocs,
+            orderBy,
+            getDoc,
+            doc,
+            updateDoc,
+            increment
+        } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
+            authDomain: "mydaily2kbot.firebaseapp.com",
+            projectId: "mydaily2kbot",
+            storageBucket: "mydaily2kbot.appspot.com",
+            messagingSenderId: "967002689133",
+            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
+            measurementId: "G-2VNDPK8V4J"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Load user's contests
+        async function loadContests() {
+            try {
+                const contestsGrid = document.getElementById('contestsGrid');
+                const user = auth.currentUser;
+
+                if (!user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Query weeklyThemes collection for user's contests
+                const q = query(
+                    collection(db, 'weeklyThemes'),
+                    where('advertiserId', '==', user.uid)
+                );
+
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    contestsGrid.innerHTML = `
+                        <div class="no-contests">
+                            <i class="fas fa-calendar-times fa-3x"></i>
+                            <h3>No Contests Found</h3>
+                            <p>You haven't hosted any contests yet.</p>
+                            <a href="contestbooking.html" class="action-btn">Book Your First Contest</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                contestsGrid.innerHTML = '';
+                
+                for (const doc of querySnapshot.docs) {
+                    const contest = doc.data();
+                    const isActive = isContestActive(contest.weekNumber);
+                    
+                    // Get contest entries and count likes
+                    const entriesQuery = query(
+                        collection(db, 'contestEntries'),
+                        where('weekNumber', '==', contest.weekNumber)
+                    );
+                    const entriesSnapshot = await getDocs(entriesQuery);
+                    
+                    let totalLikes = 0;
+                    let adminChoiceSelected = false;
+                    let entries = [];
+
+                    entriesSnapshot.forEach(entryDoc => {
+                        const entry = entryDoc.data();
+                        totalLikes += entry.votes?.length || 0;
+                        entries.push({
+                            id: entryDoc.id,
+                            ...entry
+                        });
+                        if (entry.adminChoice) {
+                            adminChoiceSelected = true;
+                        }
+                    });
+
+                    contestsGrid.innerHTML += `
+                        <div class="contest-card">
+                            <span class="contest-status ${isActive ? 'status-active' : 'status-completed'}">
+                                ${isActive ? 'Active' : 'Completed'}
+                            </span>
+                            <h3 class="contest-title">${contest.title}</h3>
+                            <p class="contest-info">Week ${contest.weekNumber}</p>
+                            <p class="contest-info">${contest.description}</p>
+                            <div class="contest-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">${entries.length}</div>
+                                    <div class="stat-label">Entries</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">${totalLikes}</div>
+                                    <div class="stat-label">Total Likes</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">${getWeekDates(contest.weekNumber)}</div>
+                                    <div class="stat-label">Date</div>
+                                </div>
+                            </div>
+                            ${!isActive ? `
+                                <div class="admin-choice-section">
+                                    ${adminChoiceSelected ? `
+                                        <div class="admin-choice-status">
+                                            <i class="fas fa-crown"></i> Admin Choice Selected
+                                        </div>
+                                    ` : `
+                                        <button onclick="selectAdminChoice(${contest.weekNumber})" class="action-btn admin-choice-btn">
+                                            <i class="fas fa-crown"></i> Select Admin Choice (₦5,000)
+                                        </button>
+                                    `}
+                                </div>
+                            ` : ''}
+                            <a href="weeklycontest.html?week=${contest.weekNumber}" class="action-btn">
+                                View Entries
+                            </a>
+                        </div>
+                    `;
+                }
+
+            } catch (error) {
+                console.error('Error loading contests:', error);
+                contestsGrid.innerHTML = `
+                    <div class="no-contests">
+                        <i class="fas fa-exclamation-circle fa-3x"></i>
+                        <h3>Error Loading Contests</h3>
+                        <p>Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Check if contest is active based on week number
+        function isContestActive(weekNumber) {
+            const currentWeek = getCurrentWeekNumber();
+            return weekNumber >= currentWeek;
+        }
+
+        // Get current week number
+        function getCurrentWeekNumber() {
+            const now = new Date();
+            const start = new Date(now.getFullYear(), 0, 1);
+            return Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
+        }
+
+        // Get formatted dates for week
+        function getWeekDates(weekNumber) {
+            const now = new Date();
+            const start = new Date(now.getFullYear(), 0, 1);
+            const weekStart = new Date(start.getTime() + (weekNumber - 1) * 7 * 24 * 60 * 60 * 1000);
+            return weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        // Add the selectAdminChoice function
+        window.selectAdminChoice = async (weekNumber) => {
+            try {
+                const user = auth.currentUser;
+                if (!user) throw new Error('Please login to select admin choice');
+
+                // Check user balance
+                const campaignDoc = await getDoc(doc(db, 'campaigns', user.uid));
+                const balance = campaignDoc.data()?.balance || 0;
+                
+                if (balance < 5000) {
+                    throw new Error('Insufficient balance. You need ₦5,000 to select admin choice.');
+                }
+
+                // Get entries for the week
+                const entriesQuery = query(
+                    collection(db, 'contestEntries'),
+                    where('weekNumber', '==', weekNumber)
+                );
+                const entriesSnapshot = await getDocs(entriesQuery);
+                
+                if (entriesSnapshot.empty) {
+                    throw new Error('No entries found for this contest');
+                }
+
+                // Show modal to select admin choice
+                const entries = [];
+                entriesSnapshot.forEach(doc => {
+                    entries.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+
+                // Create and show modal
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <h3>Select Admin Choice</h3>
+                        <p>Choose an entry to mark as admin choice. This will cost ₦5,000.</p>
+                        <div class="entries-list">
+                            ${entries.map(entry => `
+                                <div class="entry-item">
+                                    <img src="${entry.imageUrl}" alt="Entry">
+                                    <div class="entry-info">
+                                        <p>By: ${entry.username}</p>
+                                        <p>Likes: ${entry.votes?.length || 0}</p>
+                                    </div>
+                                    <button onclick="confirmAdminChoice('${entry.id}', ${weekNumber})" class="action-btn">
+                                        Select
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button onclick="closeModal()" class="action-btn">Cancel</button>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+            } catch (error) {
+                alert(error.message);
+            }
+        };
+
+        // Add confirmAdminChoice function
+        window.confirmAdminChoice = async (entryId, weekNumber) => {
+            try {
+                const user = auth.currentUser;
+                
+                // Update entry with admin choice
+                await updateDoc(doc(db, 'contestEntries', entryId), {
+                    adminChoice: true,
+                    adminChoiceDate: Date.now()
+                });
+
+                // Deduct balance
+                const campaignRef = doc(db, 'campaigns', user.uid);
+                await updateDoc(campaignRef, {
+                    balance: increment(-5000)
+                });
+
+                // Close modal and reload
+                closeModal();
+                loadContests();
+                
+            } catch (error) {
+                alert('Error selecting admin choice: ' + error.message);
+            }
+        };
+
+        // Add closeModal function
+        window.closeModal = () => {
+            const modal = document.querySelector('.modal');
+            if (modal) modal.remove();
+        };
+
+        // Initialize
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadContests();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html> 

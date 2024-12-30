@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyDaily2k Advertise Hub - Contest Booking</title>
+    <meta name="description" content="Book your weekly contest slot with MyDaily2k's professional campaign management system.">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* General Styling */
+        :root {
+            --primary-color: #19e2b0;
+            --secondary-color: #f58c79;
+            --dark-bg: #1c1c1e;
+            --text-light: #ffffff;
+            --text-muted: #cccccc;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--dark-bg), #2a2a2d, #333335);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(28, 28, 30, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            position: absolute;  
+            top: 15px;
+            right: 45px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            margin-left: 10px;  
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: var(--dark-bg);
+            padding: 5px 5px;
+            border-radius: 20px;
+            text-decoration: none; 
+        }
+
+        /* Main Content */
+        main {
+            padding: 100px 2rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        /* Balance Container */
+        .balance-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .balance-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-light);
+        }
+
+        /* Calendar Section */
+        .calendar-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            margin-bottom: 2rem;
+        }
+
+        .week-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .slot-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid var(--primary-color);
+            transition: transform 0.3s;
+        }
+
+        .slot-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .slot-card.booked {
+            border-color: var(--secondary-color);
+            opacity: 0.7;
+        }
+
+        .slot-price {
+            font-size: 1.5em;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+
+        /* Form Styling */
+        .booking-form {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .btn {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: var(--dark-bg);
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(25, 226, 176, 0.3);
+        }
+
+        /* Messages */
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .success {
+            background: rgba(25, 226, 176, 0.2);
+            color: var(--primary-color);
+        }
+
+        .error {
+            background: rgba(245, 140, 121, 0.2);
+            color: var(--secondary-color);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            main {
+                padding: 80px 1rem 1rem;
+            }
+
+            .balance-container {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .week-slots {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .balance-container .btn {
+            margin: 5px;
+            width: auto;
+            display: inline-block;
+        }
+
+        .coin-equivalent {
+            font-size: 0.9em;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .slot-price {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            margin: 10px 0 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            .balance-container .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+
+        .theme-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .admin-input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--primary-color);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        textarea.admin-input {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .requirement-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .requirement-item input {
+            flex-grow: 1;
+        }
+
+        .admin-btn {
+            background: var(--primary-color);
+            color: var(--dark-bg);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .admin-btn.danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .admin-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">MyDaily2k</div>
+        <div class="nav-links">
+            <a href="advertisedashboard.html">Dashboard</a>
+            <a href="advertiseprofile.html">My Account</a>
+        </div>
+    </nav>
+
+    <main>
+        <h1>Book Weekly Contest Slot</h1>
+
+        <div class="balance-container">
+            <div class="balance-text-container">
+                <span class="balance-text">Balance: ₦<span id="balance">0</span></span>
+            </div>
+            <div>
+                <button class="btn" onclick="window.location.href='addcash.html'">Add Cash</button>
+                <button class="btn" onclick="window.location.href='mycontests.html'">View My Contests</button>
+            </div>
+        </div>
+
+        <div class="calendar-section">
+            <h2>Available Contest Slots</h2>
+            <p>Book your slot to host the next exciting Weekly Ambassador Contest!</p>
+            <div class="week-slots" id="weekSlots">
+                <!-- Slots will be dynamically populated -->
+            </div>
+        </div>
+
+        <div class="booking-form" id="bookingForm">
+            <h2>Complete Your Booking</h2>
+            <div class="theme-form">
+                <input type="text" id="themeTitle" placeholder="Theme Title" class="admin-input">
+                <textarea id="themeDescription" placeholder="Theme Description" class="admin-input"></textarea>
+                <div id="requirementsList">
+                    <div class="requirement-item">
+                        <input type="text" placeholder="Requirement" class="admin-input">
+                        <button class="admin-btn danger remove-requirement">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <button id="addRequirementBtn" class="admin-btn">
+                    <i class="fas fa-plus"></i> Add Requirement
+                </button>
+                <button onclick="submitBooking()" class="admin-btn">
+                    <i class="fas fa-save"></i> Book Contest
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            getDocs,
+            query,
+            where,
+            doc,
+            setDoc,
+            getDoc
+        } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
+            authDomain: "mydaily2kbot.firebaseapp.com",
+            projectId: "mydaily2kbot",
+            storageBucket: "mydaily2kbot.appspot.com",
+            messagingSenderId: "967002689133",
+            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
+            measurementId: "G-2VNDPK8V4J"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let selectedWeek = null;
+        const slotPrice = 10000; // ₦10,000 (equivalent to 20,000 2KCoins)
+
+        // Get current week number
+        function getCurrentWeekNumber() {
+            const now = new Date();
+            const start = new Date(now.getFullYear(), 0, 1);
+            return Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
+        }
+
+        // Generate next 4 weeks
+        function generateWeeks() {
+            const currentWeek = getCurrentWeekNumber();
+            const weeks = [];
+            for (let i = 1; i <= 4; i++) {
+                weeks.push(currentWeek + i);
+            }
+            return weeks;
+        }
+
+        // Load available slots
+        async function loadSlots() {
+            const weeks = generateWeeks();
+            const slotsContainer = document.getElementById('weekSlots');
+            slotsContainer.innerHTML = '';
+
+            for (const week of weeks) {
+                const isBooked = await checkIfWeekIsBooked(week);
+                const startDate = getWeekStartDate(week);
+                const endDate = getWeekEndDate(week);
+
+                const slotCard = document.createElement('div');
+                slotCard.className = `slot-card ${isBooked ? 'booked' : ''}`;
+                slotCard.innerHTML = `
+                    <h3>Week ${week}</h3>
+                    <p>${formatDate(startDate)} - ${formatDate(endDate)}</p>
+                    <div class="slot-price">₦10,000</div>
+                    <p class="coin-equivalent">(20,000 2KCoins)</p>
+                    <button class="btn" 
+                            onclick="selectWeek(${week})" 
+                            ${isBooked ? 'disabled' : ''}>
+                        ${isBooked ? '<i class="fas fa-lock"></i> Booked' : '<i class="fas fa-calendar-plus"></i> Book Now'}
+                    </button>
+                `;
+                slotsContainer.appendChild(slotCard);
+            }
+        }
+
+        // Check if week is already booked
+        async function checkIfWeekIsBooked(weekNumber) {
+            const themeDoc = await getDoc(doc(db, 'weeklyThemes', weekNumber.toString()));
+            return themeDoc.exists();
+        }
+
+        // Get week start date
+        function getWeekStartDate(weekNumber) {
+            const date = new Date();
+            date.setDate(date.getDate() + ((weekNumber - getCurrentWeekNumber()) * 7));
+            return date;
+        }
+
+        // Get week end date
+        function getWeekEndDate(weekNumber) {
+            const date = getWeekStartDate(weekNumber);
+            date.setDate(date.getDate() + 6);
+            return date;
+        }
+
+        // Format date
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        // Select week for booking
+        window.selectWeek = async (weekNumber) => {
+            selectedWeek = weekNumber;
+            document.getElementById('bookingForm').style.display = 'block';
+            document.getElementById('bookingForm').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        // Submit booking
+        window.submitBooking = async () => {
+            try {
+                if (!auth.currentUser) {
+                    throw new Error('Please login to book a slot');
+                }
+
+                // Add loading state
+                const submitButton = document.querySelector('#bookingForm .admin-btn:last-child');
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+                // Check user balance from campaigns collection
+                const campaignsDoc = await getDoc(doc(db, 'campaigns', auth.currentUser.uid));
+                const userBalance = campaignsDoc.data().balance || 0;
+
+                if (userBalance < slotPrice) {
+                    throw new Error('Insufficient balance. Please add cash.');
+                }
+
+                const weekNumber = selectedWeek.toString();
+                
+                // First check if there's an existing admin theme
+                const themeDoc = await getDoc(doc(db, 'weeklyThemes', weekNumber));
+                if (themeDoc.exists()) {
+                    throw new Error('This week already has a theme set by admin');
+                }
+
+                // Get all requirements from the form
+                const requirements = Array.from(document.querySelectorAll('.requirement-item input'))
+                    .map(input => input.value.trim())
+                    .filter(value => value !== '');
+
+                const bookingData = {
+                    title: document.getElementById('themeTitle').value.trim(),
+                    description: document.getElementById('themeDescription').value.trim(),
+                    requirements: requirements,
+                    createdAt: Date.now(),
+                    updatedAt: Date.now(),
+                    weekNumber: selectedWeek,
+                    status: 'active',
+                    type: 'advertiser',
+                    advertiserId: auth.currentUser.uid
+                };
+
+                // Validate required fields
+                if (!bookingData.title || !bookingData.description || bookingData.requirements.length === 0) {
+                    throw new Error('Please fill in all required fields');
+                }
+
+                // Save booking
+                await setDoc(doc(db, 'weeklyThemes', weekNumber), bookingData);
+
+                // Deduct cash from campaigns balance
+                await setDoc(doc(db, 'campaigns', auth.currentUser.uid), {
+                    balance: userBalance - slotPrice
+                }, { merge: true });
+
+                showSuccess('Booking confirmed successfully!');
+                setTimeout(() => location.reload(), 2000);
+
+            } catch (error) {
+                console.error('Booking error:', error);
+                showError(error.message || 'Failed to book slot. Please try again.');
+            } finally {
+                // Reset button state
+                const submitButton = document.querySelector('#bookingForm .admin-btn:last-child');
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-save"></i> Book Contest';
+            }
+        };
+
+        // Show success message
+        function showSuccess(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message success';
+            messageDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            document.getElementById('bookingForm').prepend(messageDiv);
+            setTimeout(() => messageDiv.remove(), 3000);
+        }
+
+        // Show error message
+        function showError(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message error';
+            messageDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            document.getElementById('bookingForm').prepend(messageDiv);
+            setTimeout(() => messageDiv.remove(), 3000);
+        }
+
+        // Initialize
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                await initializeCampaign();
+                loadSlots();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Add initialization function to match createcampaign.html
+        async function initializeCampaign() {
+            const user = auth.currentUser;
+            if (user) {
+                const campaignsDocRef = doc(db, "campaigns", user.uid);
+                const campaignsDocSnap = await getDoc(campaignsDocRef);
+
+                if (!campaignsDocSnap.exists()) {
+                    await setDoc(campaignsDocRef, { balance: 0 });
+                }
+
+                const campaignsData = campaignsDocSnap.data();
+                const currentBalance = campaignsData.balance;
+                document.getElementById('balance').textContent = currentBalance;
+            } else {
+                console.log("No user is signed in.");
+            }
+        }
+
+        // Add requirement input field
+        window.addRequirement = () => {
+            const requirementsList = document.getElementById('requirementsList');
+            const newRequirement = document.createElement('div');
+            newRequirement.className = 'requirement-item';
+            newRequirement.innerHTML = `
+                <input type="text" placeholder="Requirement" class="admin-input">
+                <button class="admin-btn danger remove-requirement">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            requirementsList.appendChild(newRequirement);
+            // Add event listener to the new remove button
+            newRequirement.querySelector('.remove-requirement').addEventListener('click', function() {
+                this.closest('.requirement-item').remove();
+            });
+        }
+
+        // Add event listeners after DOM content is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add event listener for the add requirement button
+            document.getElementById('addRequirementBtn').addEventListener('click', addRequirement);
+            
+            // Add event listeners to existing remove buttons
+            document.querySelectorAll('.remove-requirement').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.requirement-item').remove();
+                });
+            });
+        });
+
+        // Add validation before submission
+        function validateBookingForm() {
+            const title = document.getElementById('themeTitle').value.trim();
+            const description = document.getElementById('themeDescription').value.trim();
+            const requirements = Array.from(document.querySelectorAll('.requirement-item input'))
+                .map(input => input.value.trim())
+                .filter(value => value !== '');
+
+            if (!title) throw new Error('Theme title is required');
+            if (!description) throw new Error('Theme description is required');
+            if (requirements.length === 0) throw new Error('At least one requirement is needed');
+
+            return { title, description, requirements };
+        }
+    </script>
+</body>
+</html> 
