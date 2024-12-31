@@ -317,7 +317,7 @@
             const shouldReveal = isEnded;
             
             const content = `
-                <div class="timer" id="timer-${auctionId}">Calculating time...</div>
+                
                 <div class="auction-image-container">
                     <img src="${shouldReveal ? auction.imageUrl : ''}" alt="${auction.itemName}" class="auction-image">
                     <div class="auction-overlay ${shouldReveal ? 'revealed' : ''}">
@@ -332,6 +332,7 @@
                     <h3>${shouldReveal ? auction.itemName : 'Mystery Item'}</h3>
                     <p>${shouldReveal ? auction.description : 'Bid to win this exclusive mystery item!'}</p>
                     <p>Current Bid: ${auction.currentBid} 2KCoins</p>
+                    <div class="timer" id="timer-${auctionId}">Calculating time...</div>
                     <p>Minimum Increment: ${auction.bidIncrement} 2KCoins</p>
                     ${auction.sponsorName ? `<p>Sponsored by: ${auction.sponsorName}</p>` : ''}
                     <div class="bid-form">
@@ -552,4 +553,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
