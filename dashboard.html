@@ -701,7 +701,8 @@
             <button class="glowing-button" onclick="window.location.href='weeklycontest.html'">
                 <i class="fas fa-trophy" alt="Trophy Icon"></i>
             </button>
-            <span class="button-label">Weekly Contest</span>
+            <span class="button-label">Weekly 
+                Contest</span>
         </div>
         <div>
             <button class="button" onclick="handleWatchAdsClick()" id="watchAdsButton">
@@ -806,6 +807,9 @@
                 adsWatchLimit: 20,    // Default limit
                 directLinkLimit: 20    // Default limit
             };
+
+            // Check and reset limits if a new day has started
+            resetDailyLimits();
         } else {
             console.error("User not found in Firestore.");
             alert("Error: User data not found. Please contact support.");
@@ -1860,6 +1864,19 @@
 
         // Call the loadBanners function after Firebase initialization
         loadBanners();
+
+        // Function to reset daily limits
+        function resetDailyLimits() {
+            const now = new Date();
+            const lastReset = localStorage.getItem('lastReset');
+
+            // Check if the last reset was not today
+            if (!lastReset || new Date(lastReset).toDateString() !== now.toDateString()) {
+                window.adUsage.adsWatched = 0; // Reset ads watched
+                window.adUsage.directLinksUsed = 0; // Reset direct links used
+                localStorage.setItem('lastReset', now.toISOString()); // Update last reset time
+            }
+        }
     </script>
     <script type='text/javascript' src='https://pl25145596.profitablecpmrate.com/a1/91/a1/a191a1a71e1bfd8cf2b8b436068db02a.js'></script>
  </body> 
