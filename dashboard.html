@@ -849,7 +849,7 @@
                 return;
             }
 
-            if (window.adUsage.adsWatched >= (window.adUsage.adsWatchLimit || 20)) {
+            if (window.adUsage.adsWatched >= window.adUsage.adsWatchLimit) {
                 alert("You have reached the daily limit for watching ads. Use 'Increase Ads Limit' to watch more.");
                 return;
             }
@@ -890,6 +890,93 @@
                 }
 
                 console.log("Selected campaign:", selectedCampaign); // Debugging: Log selected campaign
+                // Function to handle watching ads
+async function handleWatchAdsClick() {
+    const user = auth.currentUser;
+    if (!user) {
+        alert("Please log in to watch ads and earn coins.");
+        return;
+    }
+
+    try {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+            const adUsage = userDoc.data().adUsage || { adsWatched: 0, adsWatchLimit: 20 };
+
+            // Check if the user has reached the daily limit
+            if (adUsage.adsWatched >= adUsage.adsWatchLimit) {
+                alert("You have reached your daily limit for watching ads.");
+                return;
+            }
+
+            // Increment adsWatched and update in Firestore
+            await updateDoc(userDocRef, {
+                "adUsage.adsWatched": adUsage.adsWatched + 1,
+                "adUsage.lastReset": adUsage.lastReset || new Date().toISOString()
+            });
+
+            // Load the ad campaign
+            await loadAdCampaign();
+
+            console.log(`Ads Watched: ${adUsage.adsWatched + 1}`);
+        } else {
+            console.error("User document not found in Firestore.");
+            alert("Error: User data not found. Please contact support.");
+        }
+    } catch (error) {
+        console.error("Error handling watch ads click:", error);
+        alert("Failed to load ad. Please try again.");
+    }
+}
+
+// Function to reset daily ad limits
+async function resetDailyLimits(userId) {
+    try {
+        const userDocRef = doc(db, "users", userId);
+        await updateDoc(userDocRef, {
+            "adUsage.adsWatched": 0,
+            "adUsage.lastReset": new Date().toISOString()
+        });
+        console.log("Daily limits reset successfully.");
+    } catch (error) {
+        console.error("Failed to reset daily limits:", error);
+    }
+}
+
+// Function to check and reset daily limits
+async function checkAndResetDailyLimits(userId) {
+    try {
+        const userDocRef = doc(db, "users", userId);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+            const adUsage = userDoc.data().adUsage || {};
+            const lastReset = adUsage.lastReset ? new Date(adUsage.lastReset) : null;
+            const today = new Date();
+
+            // Check if the last reset was not today
+            if (!lastReset || lastReset.toDateString() !== today.toDateString()) {
+                await resetDailyLimits(userId);
+            }
+        }
+    } catch (error) {
+        console.error("Error checking/resetting daily limits:", error);
+    }
+}
+
+// Call this during user authentication
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        await checkAndResetDailyLimits(user.uid);
+        await loadUserData(user.uid);
+        console.log("Daily limits checked and reset if needed.");
+    } else {
+        console.log("User not logged in. Redirecting to login page.");
+        window.location.href = 'login.html';
+    }
+});
 
                 // Save the view to the campaign document
                 const currentViews = selectedCampaign.views || 0;
@@ -951,7 +1038,7 @@
                 return;
             }
 
-            if (window.adUsage.directLinksUsed >= (window.adUsage.directLinkLimit || 20)) {
+            if (window.adUsage.directLinksUsed >= window.adUsage.directLinkLimit) {
                 alert("You have reached the daily limit for direct links. Use 'Increase Link Limit' to use more.");
                 return;
             }
@@ -1107,20 +1194,42 @@
 
         // Make handleWatchAdsClick globally accessible
         window.handleWatchAdsClick = async function() {
-            const button = document.getElementById('watchAdsButton');
-            
-            // Add loading state
-            button.classList.add('loading');
-            
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Please log in to watch ads and earn coins.");
+                return;
+            }
+
             try {
-                // Call your existing ad loading function
-                await loadAdCampaign();
+                const userDocRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userDocRef);
+
+                if (userDoc.exists()) {
+                    const adUsage = userDoc.data().adUsage || { adsWatched: 0, adsWatchLimit: 20 };
+
+                    // Check if the user has reached the daily limit
+                    if (adUsage.adsWatched >= adUsage.adsWatchLimit) {
+                        alert("You have reached your daily limit for watching ads.");
+                        return;
+                    }
+
+                    // Increment adsWatched and update in Firestore
+                    await updateDoc(userDocRef, {
+                        "adUsage.adsWatched": adUsage.adsWatched + 1,
+                        "adUsage.lastReset": adUsage.lastReset || new Date().toISOString()
+                    });
+
+                    // Load the ad campaign
+                    await loadAdCampaign();
+
+                    console.log(`Ads Watched: ${adUsage.adsWatched + 1}`);
+                } else {
+                    console.error("User document not found in Firestore.");
+                    alert("Error: User data not found. Please contact support.");
+                }
             } catch (error) {
-                console.error('Error loading ad:', error);
-                alert('Failed to load ad. Please try again.');
-            } finally {
-                // Remove loading state
-                button.classList.remove('loading');
+                console.error("Error handling watch ads click:", error);
+                alert("Failed to load ad. Please try again.");
             }
         }
 
@@ -1877,6 +1986,20 @@
                 localStorage.setItem('lastReset', now.toISOString()); // Update last reset time
             }
         }
+
+        // Function to start a timer that checks for reset every minute
+        function startDailyResetTimer() {
+            setInterval(() => {
+                const now = new Date();
+                // Check if it's 12:01 AM
+                if (now.getHours() === 0 && now.getMinutes() === 1) {
+                    resetDailyLimits(); // Reset limits
+                }
+            }, 60000); // Check every minute
+        }
+
+        // Call the function to start the timer
+        startDailyResetTimer();
     </script>
     <script type='text/javascript' src='https://pl25145596.profitablecpmrate.com/a1/91/a1/a191a1a71e1bfd8cf2b8b436068db02a.js'></script>
  </body> 
