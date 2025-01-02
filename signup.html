@@ -1,257 +1,313 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MY DAILY2K Profile</title>
+    <title>MY DAILY2K Sign-up</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
+        html {
+            min-height: 100%;
+            height: 100%;
+        }
         body {
-            font-family: 'Roboto', Arial, sans-serif;
-            background: linear-gradient(to top, #ec8f04, #f58c79);
-            color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-        }
-
-        body.light-mode {
-            background: linear-gradient(to top, #ec8f04, black);
-        }
-
-        main {
-            padding: 20px 2rem;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .profile-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 2rem;
-            backdrop-filter: blur(5px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 80px;
-        }
-
-        .profile-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .profile-pic {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            margin: 0 auto 1rem;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            border: 3px solid #ec8f04;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .edit-pic {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.5);
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .info-container {
-            margin-top: 2rem;
-        }
-
-        .info-group {
-            background: rgba(5, 0, 0, 0.315);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-
-        .info-label {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .info-value {
-            color: #f0f0f0;
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-
-        .balance-info {
-            background: rgba(36, 22, 2, 0.438);
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin: 2rem 0;
-            text-align: center;
-        }
-
-        .button {
-            background-color: #ec8f04;
-            width: 100%;
-            padding: 0.8rem;
-            border-radius: 10px;
-            margin-top: 1rem;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(236, 143, 4, 0.3);
-        }
-
-        .switch {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        .switch .button{
-            color: #f0f0f0;
-        }
-
-        .bottom-banner {
-            border-radius: 20px;
-            overflow: hidden;
-            background-color: #222;
-            padding: 13px;
-            width: 75%;
-            margin: 0px auto;
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1;
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .bottom-banner .button {
-            width: 50px;
-            height: 50px;
-            background-color: #ec8f04;
-            color: #000;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            padding: 10px;
-            font-size: 24px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-
-        .bottom-banner .button:hover {
-            background-color: #d58b00;
-            transform: scale(1.1);
-        }
-
-        .button-label {
-            display: block;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to top, #ec8f04, #f58c79) fixed;
             color: #fff;
+            margin: 0;
+            padding: 20px 0;
+            min-height: 100%;
+            height: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+        .signup-container {
+            background-color: black;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 350px;
+            box-sizing: border-box;
+            margin: 20px auto;
+            position: relative;
+        }
+        h1 {
             text-align: center;
-            font-size: 12px;
+            font-size: 24px;
+            color: #ec8f04;
+            margin-bottom: 20px;
+        }
+        input {
+            width: calc(100% - 24px);
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #444;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            background-color: #555;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #ec8f04;
+            border: none;
+            border-radius: 5px;
+            color: rgb(0, 0, 0);
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ec8f04;
+        }
+        p {
+            text-align: center;
+            margin-top: 15px;
+        }
+        p a {
+            color: #ec8f04;
+            text-decoration: none;
+        }
+        p a:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: #e23838;
+            font-size: 14px;
             margin-top: 5px;
+        }
+        .password-strength-meter {
+            height: 5px;
+            background-color: #ddd;
+            margin-top: 5px;
+        }
+        .password-strength-meter div {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .loading::after {
+            content: "...";
+            animation: dots 1s steps(5, end) infinite;
+        }
+        @keyframes dots {
+            0%, 20% { content: "."; }
+            40% { content: ".."; }
+            60% { content: "..."; }
+            80%, 100% { content: ""; }
+        }
+        .user-info {
+            background-color: #444;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+        .user-info h2 {
+            color: #ec8f04;
+            margin-bottom: 10px;
+        }
+        .user-info p {
+            margin: 5px 0;
+        }
+        .advertiser-link {
+            text-align: right;
+            margin-bottom: 15px;
+        }
+
+        .advertiser-link a {
+            color: #19e2b0;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .advertiser-link a:hover {
+            background-color: rgba(25, 226, 176, 0.1);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo img {
+            max-width: 70px;
+            height: auto;
+        }
+        
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .input-group i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+        
+        .input-group input {
+            padding-left: 40px;
+        }
+
+        .terms-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.terms-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.terms-group label {
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.error-message {
+    color: #e23838;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+
+        .g-recaptcha {
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .animate-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* For smaller screens */
+        @media screen and (max-height: 800px) {
+            body {
+                align-items: flex-start;
+                min-height: 100%;
+            }
+            
+            .signup-container {
+                margin: 20px auto;
+            }
         }
     </style>
 </head>
-
 <body>
-    <main>
-        <h1>My Profile</h1>
+
+    <div class="signup-container animate-in">
+        <div class="advertiser-link">
+            <a href="adssignup.html">SIGNUP AS ADVERTISER</a>
+        </div>
         
-        <div class="profile-card">
-            <div class="profile-header">
-                <div class="profile-pic" id="profilePic" style="background-image: url('R.png');">
-                    <button class="edit-pic" onclick="editProfilePic()" style="color: #ec8f04; margin-top: 100px;">
-                        <i class="fas fa-camera" > </i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="balance-info">
-                <strong>Balance:</strong>
-                <span id="balance">0</span> 2K Coins
-            </div>
-
-            <div class="info-container">
-                <div class="info-group">
-                    <div class="info-label">Full Name</div>
-                    <div class="info-value" id="fullname">Loading...</div>
-                </div>
-
-                <div class="info-group">
-                    <div class="info-label">Username</div>
-                    <div class="info-value" id="username">Loading...</div>
-                </div>
-
-                <div class="info-group">
-                    <div class="info-label">Email</div>
-                    <div class="info-value" id="email">Loading...</div>
-                </div>
-            </div>
-
-            <div class="switch">
-                <button class="button" onclick="window.location.href='forgetpassword.html'">Change Password</button>
-                <button class="button" onclick="window.location.href='terms-and-conditions.html'">Terms and Conditions</button>
-            </div>
-            <div class="switch"> 
-                <button class="button" onclick="window.location.href='privacy.html'">Privacy Policy</button>
-                <button class="button" onclick="window.location.href='contact.html'">Contact Support</button>
-            </div>
+        <div class="logo">
+            <img src="logo.png" alt="MY DAILY2K Logo">
         </div>
-    </main>
 
-    <div class="bottom-banner">
-        <div>
-            <button class="button" onclick="window.location.href='dashboard.html'">
-                <i class="fas fa-home"></i>
-            </button>
-            <span class="button-label">Dashboard</span>
-        </div>
-        <div>
-            <button class="button" onclick="window.location.href='withdraw.html'">
-                <i class="fas fa-wallet"></i>
-            </button>
-            <span class="button-label">Withdraw</span>
-        </div>
-        <div>
-            <button class="button" onclick="window.location.href='friends.html'">
-                <i class="fas fa-user-friends"></i>
-            </button>
-            <span class="button-label">Friends</span>
+        <h1>SIGN UP</h1>
+        <form id="signupForm">
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="username" name="username" placeholder="Username" required>
+                <div id="usernameError" class="error-message"></div>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-user-circle"></i>
+                <input type="text" id="fullname" name="fullname" placeholder="Full Name" required>
+                <div id="fullnameError" class="error-message"></div>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" name="email" placeholder="Email" required>
+                <div id="emailError" class="error-message"></div>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" name="password" placeholder="Password" required>
+                <i class="fas fa-eye toggle-password"></i>
+                <div id="passwordError" class="error-message"></div>
+                <div class="password-strength-meter"><div id="strengthMeter"></div></div>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-user-plus"></i>
+                <input type="text" id="referralCode" name="referralCode" placeholder="Referral Code (optional)">
+                <div id="referralError" class="error-message"></div>
+            </div>
+
+            <div class="input-group terms-group">
+                <input type="checkbox" id="termsPrivacyCheckbox" required>
+                <label for="termsPrivacyCheckbox">
+                    I have read and agree to the 
+                    <a href="terms-and-conditions.html">Terms and Conditions</a> and 
+                    <a href="privacy.html">Privacy Policy</a>
+                </label>
+                <div id="termsError" class="error-message"></div>
+            </div>
+
+            <div class="g-recaptcha" data-sitekey="6LfFQZUqAAAAAMTDu1ZhHQabWXrGeGPb48rM0XYa"></div>
+
+            <button type="submit">Sign Up</button>
+            <div id="loading" class="loading">Signing up</div>
+        </form>
+        <p>Already have an account? <a href="login.html">Login here</a></p>
+
+        <div id="userInfo" class="user-info">
+            <h2>User Information</h2>
+            <p><strong>Full Name:</strong> <span id="infoFullname"></span></p>
+            <p><strong>Username:</strong> <span id="infoUsername"></span></p>
+            <p><strong>Email:</strong> <span id="infoEmail"></span></p>
+            <p><strong>Balance:</strong> <span id="infoBalance"></span> 2KCoin</p>
         </div>
     </div>
 
+    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
-        import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
-    
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+        import { getFirestore, doc, setDoc, collection, query, where, getDocs, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
             authDomain: "mydaily2kbot.firebaseapp.com",
@@ -261,109 +317,230 @@
             appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
             measurementId: "G-2VNDPK8V4J"
         };
-    
+
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const storage = getStorage(app);
-    
-        async function loadUserProfile(userId) {
-            const userDocRef = doc(db, "users", userId);
-            const docSnap = await getDoc(userDocRef);
-    
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                document.getElementById("username").textContent = data['username'] || 'N/A';
-                document.getElementById("fullname").textContent = data['fullname'] || 'N/A';
-                document.getElementById("balance").textContent = data.balance || '0';
-                document.getElementById("email").textContent = data.email || 'N/A';
-                if (data.profilePic) {
-                    document.getElementById("profilePic").style.backgroundImage = `url('${data.profilePic}')`;
-                }
-            } else {
-                console.error("User not found in Firestore.");
-                document.getElementById("fullname").textContent = 'User not found';
-                document.getElementById("balance").textContent = '0';
-                document.getElementById("email").textContent = 'N/A';
-            }
-        }
-    
-        window.editProfilePic = function() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/jpeg, image/png, image/gif, image/webp, image/bmp, image/tiff';
-            input.onchange = async (event) => {
-                const file = event.target.files[0];
-                if (file) {
-                    if (!file.type.startsWith('image/')) {
-                        alert('Please select an image file');
-                        return;
-                    }
 
-                    const maxSize = 5 * 1024 * 1024;
-                    if (file.size > maxSize) {
-                        alert('Image size should be less than 5MB');
-                        return;
-                    }
+        document.addEventListener('DOMContentLoaded', () => {
+            const passwordInput = document.getElementById('password');
+            const usernameInput = document.getElementById('username');
+            const fullnameInput = document.getElementById('fullname');
 
-                    const statusDiv = document.getElementById("uploadStatus");
-                    statusDiv.style.display = 'block';
-                    statusDiv.style.color = '#ec8f04';
-                    statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            passwordInput.addEventListener('input', () => {
+                const strength = calculatePasswordStrength(passwordInput.value);
+                updatePasswordStrengthMeter(strength);
+            });
 
-                    const reader = new FileReader();
-                    reader.onload = async function (e) {
-                        try {
-                            const imageData = e.target.result;
-                            document.getElementById("profilePic").style.backgroundImage = `url('${imageData}')`;
+            usernameInput.addEventListener('input', () => {
+                usernameInput.value = sanitizeInput(usernameInput.value);
+            });
 
-                            const userId = auth.currentUser.uid;
-                            const storageRef = ref(storage, `profilePics/${userId}`);
-
-                            await uploadString(storageRef, imageData, 'data_url');
-                            const downloadURL = await getDownloadURL(storageRef);
-                            const userDocRef = doc(db, "users", userId);
-                            await updateDoc(userDocRef, { profilePic: downloadURL });
-                            
-                            statusDiv.style.color = '#4CAF50';
-                            statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Upload successful!';
-                            
-                            setTimeout(() => {
-                                statusDiv.style.display = 'none';
-                            }, 3000);
-                        } catch (error) {
-                            console.error("Error uploading image: ", error);
-                            statusDiv.style.color = '#f44336';
-                            statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Upload failed. Please try again.';
-                        }
-                    };
-
-                    reader.onerror = () => {
-                        statusDiv.style.color = '#f44336';
-                        statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Error reading file. Please try again.';
-                    };
-
-                    reader.readAsDataURL(file);
-                }
-            };
-            input.click();
-        };
-    
-        document.addEventListener("DOMContentLoaded", () => {
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    await loadUserProfile(user.uid);
-                } else {
-                    window.location.href = 'login.html';
-                }
+            fullnameInput.addEventListener('input', () => {
+                fullnameInput.value = sanitizeFullName(fullnameInput.value);
             });
         });
-                const currentMode = localStorage.getItem('mode') || 'dark';
-        if (currentMode === 'light') {
-            document.body.classList.add('light-mode');
+
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const recaptchaResponse = grecaptcha.getResponse();
+            if (!recaptchaResponse) {
+                document.getElementById('passwordError').textContent = 'Please complete the CAPTCHA verification';
+                return;
+            }
+
+            const username = document.getElementById('username').value;
+            const fullname = document.getElementById('fullname').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const referredByCode = document.getElementById('referralCode').value;
+
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+            document.getElementById('loading').style.display = 'block';
+
+            try {
+                console.log("Validating username...");
+                if (username.length < 3) {
+                    throw new Error("Username must be at least 3 characters long");
+                }
+
+                console.log("Validating full name...");
+                if (fullname.length < 2) {
+                    throw new Error("Full name must be at least 2 characters long");
+                }
+
+                console.log("Validating password...");
+                if (password.length < 6) {
+                    throw new Error("Password must be at least 6 characters long");
+                }
+
+                // Check if the checkbox is checked
+                document.getElementById('signupForm').addEventListener('submit', (event) => {
+                 const termsCheckbox = document.getElementById('termsPrivacyCheckbox');
+                 const termsError = document.getElementById('termsError');
+
+                if (!termsCheckbox.checked) {
+                  event.preventDefault();
+                  termsError.textContent = 'You must agree to the Terms and Conditions and Privacy Policy to sign up.';
+                } else {
+                 termsError.textContent = ''; // Clear the error if checkbox is checked
+                }
+                });
+
+
+                // First create the user account
+                console.log("Creating user...");
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                console.log("User created successfully:", user.uid);
+
+                const referralCode = generateReferralCode();
+                console.log("Generated referral code:", referralCode);
+
+                // Prepare user data
+                const userData = {
+                    username: username,
+                    fullname: fullname,
+                    email: email,
+                    referralCode: referralCode,
+                    balance: 0,
+                    referredBy: null,
+                    joinedAt: new Date(),
+                    referralCount: 0
+                };
+
+                // If there's a referral code, verify it after user creation
+                if (referredByCode) {
+                    console.log("Checking referral code:", referredByCode);
+                    try {
+                        const usersRef = collection(db, "users");
+                        const q = query(usersRef, where("referralCode", "==", referredByCode));
+                        const querySnapshot = await getDocs(q);
+                        
+                        if (!querySnapshot.empty) {
+                            const referrerDoc = querySnapshot.docs[0];
+                            userData.referredBy = referrerDoc.id;
+                            
+                            // Update referrer's balance and referral count
+                            console.log("Updating referrer's balance and referral count...");
+                            await updateDoc(doc(db, "users", referrerDoc.id), {
+                                balance: increment(100),
+                                referralCount: increment(1)
+                            });
+                            console.log("Referrer updated successfully");
+                        } else {
+                            console.log("Invalid referral code");
+                            document.getElementById('referralError').textContent = 'Invalid referral code';
+                            // Continue with signup without the referral
+                        }
+                    } catch (referralError) {
+                        console.error("Error processing referral:", referralError);
+                        // Add user-friendly error message
+                        document.getElementById('referralError').textContent = 'Unable to process referral code at this time';
+                        // Store the referral code to process later
+                        userData.pendingReferralCode = referredByCode;
+                    }
+                }
+
+                // Store user data
+                console.log("Storing user data...");
+                await setDoc(doc(db, "users", user.uid), userData);
+                console.log("User data stored successfully");
+
+                // Success! Redirect to dashboard
+                alert("Sign up successful!");
+                window.location.href = 'dashboard.html';
+
+            } catch (error) {
+                console.error("Error during sign up:", error);
+                if (error.code === 'auth/email-already-in-use') {
+                    document.getElementById('emailError').textContent = 'This email is already registered.';
+                } else if (error.code === 'auth/invalid-email') {
+                    document.getElementById('emailError').textContent = 'Invalid email address.';
+                } else if (error.code === 'auth/weak-password') {
+                    document.getElementById('passwordError').textContent = 'Password should be at least 6 characters long.';
+                } else if (error.message.includes("Username")) {
+                    document.getElementById('usernameError').textContent = error.message;
+                } else if (error.message.includes("Full name")) {
+                    document.getElementById('fullnameError').textContent = error.message;
+                } else {
+                    document.getElementById('passwordError').textContent = 'An error occurred. Please try again.';
+                }
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                grecaptcha.reset();
+            }
+        });
+
+        function generateReferralCode() {
+            return Math.random().toString(36).substring(2, 8).toUpperCase();
         }
+
+        function calculatePasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength += 25;
+            if (password.match(/[a-z]+/)) strength += 25;
+            if (password.match(/[A-Z]+/)) strength += 25;
+            if (password.match(/[0-9]+/)) strength += 25;
+            return strength;
+        }
+
+        function updatePasswordStrengthMeter(strength) {
+            const meter = document.getElementById('strengthMeter');
+            meter.style.width = strength + '%';
+            if (strength < 50) {
+                meter.style.backgroundColor = '#ff4d4d';
+            } else if (strength < 75) {
+                meter.style.backgroundColor = '#ffd700';
+            } else {
+                meter.style.backgroundColor = '#5cd65c';
+            }
+        }
+
+        function sanitizeInput(input) {
+            return input.replace(/[^a-zA-Z0-9_]/g, '');
+        }
+
+        function sanitizeFullName(input) {
+            return input.replace(/[^a-zA-Z\s]/g, '');
+        }
+
+        document.querySelector('.toggle-password').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+    </script>
+
+    <script>
+        // Function to get query parameters from the URL
+        function getQueryParams() {
+            const params = {};
+            const queryString = window.location.search.substring(1);
+            const regex = /([^&=]+)=([^&]*)/g;
+            let m;
+            while (m = regex.exec(queryString)) {
+                params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+            }
+            return params;
+        }
+
+        // On page load, check for referral code
+        window.onload = function() {
+            const params = getQueryParams();
+            if (params.referralCode) {
+                const referralCodeInput = document.getElementById('referralCode'); // Use the actual input field ID
+                if (referralCodeInput) {
+                    referralCodeInput.value = params.referralCode; // Set the referral code in the input field
+                }
+            }
+        };
     </script>
 
 </body>
-
 </html>
