@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MY DAILY2K Sign-up</title>
-    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
@@ -252,6 +251,11 @@
                 <div id="referralError" class="error-message"></div>
             </div>
 
+            <div class="input-group">
+                <input type="checkbox" id="termsPrivacyCheckbox" required>
+                <label for="termsPrivacyCheckbox">I have read and agree to the <a href="terms-and-conditions.html">Terms and Conditions</a> and <a href="privacy.html">Privacy Policy</a></label>
+            </div>
+
             <div class="g-recaptcha" data-sitekey="6LfFQZUqAAAAAMTDu1ZhHQabWXrGeGPb48rM0XYa"></div>
 
             <button type="submit">Sign Up</button>
@@ -341,6 +345,14 @@
                 console.log("Validating password...");
                 if (password.length < 6) {
                     throw new Error("Password must be at least 6 characters long");
+                }
+
+                // Check if the checkbox is checked
+                const termsPrivacyChecked = document.getElementById('termsPrivacyCheckbox').checked;
+
+                if (!termsPrivacyChecked) {
+                    alert("You must agree to the Terms and Conditions and Privacy Policy to sign up.");
+                    return;
                 }
 
                 // First create the user account
