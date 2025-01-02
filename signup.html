@@ -172,6 +172,31 @@
             padding-left: 40px;
         }
 
+        .terms-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.terms-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.terms-group label {
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.error-message {
+    color: #e23838;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+
         .g-recaptcha {
             margin: 15px 0;
             display: flex;
@@ -251,9 +276,14 @@
                 <div id="referralError" class="error-message"></div>
             </div>
 
-            <div class="input-group">
+            <div class="input-group terms-group">
                 <input type="checkbox" id="termsPrivacyCheckbox" required>
-                <label for="termsPrivacyCheckbox">I have read and agree to the <a href="terms-and-conditions.html">Terms and Conditions</a> and <a href="privacy.html">Privacy Policy</a></label>
+                <label for="termsPrivacyCheckbox">
+                    I have read and agree to the 
+                    <a href="terms-and-conditions.html">Terms and Conditions</a> and 
+                    <a href="privacy.html">Privacy Policy</a>
+                </label>
+                <div id="termsError" class="error-message"></div>
             </div>
 
             <div class="g-recaptcha" data-sitekey="6LfFQZUqAAAAAMTDu1ZhHQabWXrGeGPb48rM0XYa"></div>
@@ -348,12 +378,18 @@
                 }
 
                 // Check if the checkbox is checked
-                const termsPrivacyChecked = document.getElementById('termsPrivacyCheckbox').checked;
+                document.getElementById('signupForm').addEventListener('submit', (event) => {
+                 const termsCheckbox = document.getElementById('termsPrivacyCheckbox');
+                 const termsError = document.getElementById('termsError');
 
-                if (!termsPrivacyChecked) {
-                    alert("You must agree to the Terms and Conditions and Privacy Policy to sign up.");
-                    return;
+                if (!termsCheckbox.checked) {
+                  event.preventDefault();
+                  termsError.textContent = 'You must agree to the Terms and Conditions and Privacy Policy to sign up.';
+                } else {
+                 termsError.textContent = ''; // Clear the error if checkbox is checked
                 }
+                });
+
 
                 // First create the user account
                 console.log("Creating user...");
