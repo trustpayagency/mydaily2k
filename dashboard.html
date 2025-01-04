@@ -1926,9 +1926,10 @@ onAuthStateChanged(auth, async (user) => {
 
         async function loadBanners() {
             const bannersContainer = document.createElement('div');
-            bannersContainer.style.position = 'absolute'; // Position it absolutely
+            bannersContainer.style.position = 'absolute'; // Position it absolutely 
             bannersContainer.style.top = '350px'; // Adjust this value to position it above the middle button
             bannersContainer.style.left = '50%'; // Center horizontally
+            bannersContainer.style.boxShadow = '0 4px 8px rgba(228, 21, 21, 0.3)'; /* Shadow effect */
             bannersContainer.style.transform = 'translateX(-50%)'; // Center the container
             bannersContainer.style.width = '250px'; // Set fixed width for the banner container
             bannersContainer.style.height = '100px'; // Set fixed height for the banner container
