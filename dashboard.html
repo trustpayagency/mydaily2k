@@ -783,65 +783,70 @@
         } 
 
         async function loadUserData(userId) {
-    showLoading(true);
-    let userData = null; // Initialize userData variable
-    try {
-        const userDocRef = doc(db, "users", userId);
-        const docSnap = await getDoc(userDocRef);
+            showLoading(true);
+            let userData = null; // Initialize userData variable
+            try {
+                const userDocRef = doc(db, "users", userId);
+                const docSnap = await getDoc(userDocRef);
 
-        if (docSnap.exists()) {
-            userData = docSnap.data(); // Store user data
-            console.log("User data:", userData); // Log user data
-            document.getElementById("balance").textContent = userData.balance || 0;
-            document.getElementById("user-full-name").textContent = userData.username || "User"; // Set full name
-            
-            // Set profile picture and username
-            document.getElementById("profile-pic").src = userData.profilePic || "default/R.png"; // Set profile picture URL
-            document.getElementById("username").textContent = userData.username || "User Name"; // Set username
-            
-            // Store ad usage limits
-            window.adUsage = userData.adUsage || { 
-                adsWatched: 0,
-                directLinksUsed: 0,
-                increaseLimitUsed: 0,
-                adsWatchLimit: 20,    // Default limit
-                directLinkLimit: 20    // Default limit
-            };
+                if (docSnap.exists()) {
+                    userData = docSnap.data(); // Store user data
+                    console.log("User data:", userData); // Log user data
+                    document.getElementById("balance").textContent = userData.balance || 0;
+                    document.getElementById("user-full-name").textContent = userData.username || "User"; // Set full name
+                    
+                    // Set profile picture and username
+                    document.getElementById("profile-pic").src = userData.profilePic || "default/R.png"; // Set profile picture URL
+                    document.getElementById("username").textContent = userData.username || "User Name"; // Set username
+                    
+                    // Store ad usage limits
+                    window.adUsage = userData.adUsage || { 
+                        adsWatched: 0,
+                        directLinksUsed: 0,
+                        increaseLimitUsed: 0,
+                        adsWatchLimit: 20,    // Default limit
+                        directLinkLimit: 20    // Default limit
+                    };
 
-            // Check and reset limits if a new day has started
-            resetDailyLimits();
-        } else {
-            console.error("User not found in Firestore.");
-            alert("Error: User data not found. Please contact support.");
-        }
-    } catch (error) {
-        console.error("Error loading user data: ", error);
-        alert("Error loading user data. Please try again later.");
-    } finally {
-        showLoading(false);
-    }
-    return userData; // Return the user data
-}
+                    // Check and reset limits if a new day has started
+                    const lastReset = window.adUsage.lastReset ? new Date(window.adUsage.lastReset) : null;
+                    const today = new Date();
 
-        function checkNewUser(userId) {
-            const hasVisited = localStorage.getItem(`hasVisited_${userId}`);
-            if (!hasVisited) {
-                // Start the tour after a short delay to ensure all elements are loaded
-                setTimeout(startTour, 1000);
+                    if (!lastReset || lastReset.toDateString() !== today.toDateString()) {
+                        window.adUsage.adsWatched = 0; // Reset ads watched
+                        window.adUsage.directLinksUsed = 0; // Reset direct links used
+                        window.adUsage.lastReset = today.toISOString(); // Update last reset time
+
+                        // Update Firestore with the reset values
+                        await updateDoc(userDocRef, {
+                            "adUsage.adsWatched": 0,
+                            "adUsage.directLinksUsed": 0,
+                            "adUsage.lastReset": today.toISOString()
+                        });
+                    }
+                } else {
+                    console.error("User not found in Firestore.");
+                    alert("Error: User data not found. Please contact support.");
+                }
+            } catch (error) {
+                console.error("Error loading user data: ", error);
+                alert("Error loading user data. Please try again later.");
+            } finally {
+                showLoading(false);
             }
+            return userData; // Return the user data
         }
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 await loadUserData(user.uid);
-                await checkFeatureAccess(); // Add this line
-                checkNewUser(user.uid);
-                console.log("User object:", user);
+                console.log("User data loaded and daily limits checked.");
             } else {
                 console.log("User not logged in. Redirecting to login page.");
                 window.location.href = 'login.html';
             }
-        });   
+        });
+
         async function loadAdCampaign() {
             const user = auth.currentUser;
             if (!user) {
