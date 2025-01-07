@@ -395,7 +395,15 @@
                     balance: 0,
                     referredBy: null,
                     joinedAt: new Date(),
-                    referralCount: 0
+                    referralCount: 0,
+                    adUsage: {
+                        adsWatched: 0,
+                        directLinksUsed: 0,
+                        increaseLimitUsed: 0,
+                        adsWatchLimit: 20,
+                        directLinkLimit: 20,
+                        lastReset: new Date().toISOString()
+                    }
                 };
 
                 if (referredByCode) {
