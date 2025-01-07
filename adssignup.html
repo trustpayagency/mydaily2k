@@ -182,6 +182,31 @@
             animation: fadeIn 0.5s ease-out;
         }
 
+        .terms-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.terms-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.terms-group label {
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.error-message {
+    color: #e23838;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -249,6 +274,16 @@
                 <i class="fas fa-user-plus"></i>
                 <input type="text" id="referralCode" name="referralCode" placeholder="Referral Code (optional)">
                 <div id="referralError" class="error-message"></div>
+            </div>
+
+            <div class="input-group terms-group">
+                <input type="checkbox" id="termsPrivacyCheckbox" required>
+                <label for="termsPrivacyCheckbox">
+                    I have read and agree to the 
+                    <a href="terms-and-conditions.html">Terms and Conditions</a> and 
+                    <a href="privacy.html">Privacy Policy</a>
+                </label>
+                <div id="termsError" class="error-message"></div>
             </div>
 
             <div class="g-recaptcha" data-sitekey="6LfFQZUqAAAAAMTDu1ZhHQabWXrGeGPb48rM0XYa"></div>
