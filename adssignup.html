@@ -13,7 +13,7 @@
         }
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(to top, #19e2b0, #f58c79) fixed;
+            background: linear-gradient(to top, #ec8f04, #f58c79) fixed;
             color: #fff;
             margin: 0;
             padding: 20px 0;
@@ -40,7 +40,7 @@
         h1 {
             text-align: center;
             font-size: 24px;
-            color: #19e2b0;
+            color: #ec8f04;
             margin-bottom: 20px;
         }
         input {
@@ -61,7 +61,7 @@
         button {
             width: 100%;
             padding: 12px;
-            background-color: #19e2b0;
+            background-color: #ec8f04;
             border: none;
             border-radius: 5px;
             color: rgb(0, 0, 0);
@@ -70,7 +70,7 @@
             transition: background-color 0.3s;
         }
         button:hover {
-            background-color: #19e2b0;
+            background-color: #ec8f04;
         }
         p {
             text-align: center;
@@ -121,7 +121,7 @@
             display: none;
         }
         .user-info h2 {
-            color: #19e2b0;
+            color: #ec8f04;
             margin-bottom: 10px;
         }
         .user-info p {
@@ -133,7 +133,7 @@
         }
 
         .advertiser-link a {
-            color: #ec8f04;
+            color: #19e2b0;
             text-decoration: none;
             padding: 5px 10px;
             border-radius: 5px;
@@ -172,16 +172,6 @@
             padding-left: 40px;
         }
 
-        .g-recaptcha {
-            margin: 15px 0;
-            display: flex;
-            justify-content: center;
-        }
-
-        .animate-in {
-            animation: fadeIn 0.5s ease-out;
-        }
-
         .terms-group {
     display: flex;
     align-items: center;
@@ -206,6 +196,16 @@
     margin-top: 5px;
 }
 
+
+        .g-recaptcha {
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .animate-in {
+            animation: fadeIn 0.5s ease-out;
+        }
 
         @keyframes fadeIn {
             from {
@@ -235,7 +235,7 @@
 
     <div class="signup-container animate-in">
         <div class="advertiser-link">
-            <a href="signup.html">SIGNUP AS USER</a>
+            <a href="adssignup.html">SIGNUP AS ADVERTISER</a>
         </div>
         
         <div class="logo">
@@ -291,7 +291,7 @@
             <button type="submit">Sign Up</button>
             <div id="loading" class="loading">Signing up</div>
         </form>
-        <p>Already have an account? <a href="adslogin.html">Login here</a></p>
+        <p>Already have an account? <a href="login.html">Login here</a></p>
 
         <div id="userInfo" class="user-info">
             <h2>User Information</h2>
@@ -304,239 +304,98 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-        import { getFirestore, doc, setDoc, collection, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+import { getFirestore, doc, setDoc, collection, query, where, getDocs, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
-            authDomain: "mydaily2kbot.firebaseapp.com",
-            projectId: "mydaily2kbot",
-            storageBucket: "mydaily2kbot.appspot.com",
-            messagingSenderId: "967002689133",
-            appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
-            measurementId: "G-2VNDPK8V4J"
-        };
+// Firebase Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyCpH_yjFtiib-QuaCnHy2qeVyXhXikWTFg",
+    authDomain: "mydaily2kbot.firebaseapp.com",
+    projectId: "mydaily2kbot",
+    storageBucket: "mydaily2kbot.appspot.com",
+    messagingSenderId: "967002689133",
+    appId: "1:967002689133:web:e3a8d03eaf7cf2f1b7f964",
+    measurementId: "G-2VNDPK8V4J"
+};
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const passwordInput = document.getElementById('password');
-            const usernameInput = document.getElementById('username');
-            const fullnameInput = document.getElementById('fullname');
+document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-            passwordInput.addEventListener('input', () => {
-                const strength = calculatePasswordStrength(passwordInput.value);
-                updatePasswordStrengthMeter(strength);
-            });
+    const username = document.getElementById('username').value.trim();
+    const fullname = document.getElementById('fullname').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const referralCode = document.getElementById('referralCode').value.trim();
 
-            usernameInput.addEventListener('input', () => {
-                usernameInput.value = sanitizeInput(usernameInput.value);
-            });
+    if (!username || !fullname || !email || !password) {
+        alert("Please fill all required fields.");
+        return;
+    }
 
-            fullnameInput.addEventListener('input', () => {
-                fullnameInput.value = sanitizeFullName(fullnameInput.value);
-            });
-        });
+    document.getElementById('loading').style.display = 'block';
 
-        document.getElementById('signupForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const recaptchaResponse = grecaptcha.getResponse();
-            if (!recaptchaResponse) {
-                document.getElementById('passwordError').textContent = 'Please complete the CAPTCHA verification';
-                return;
-            }
+    try {
+        // Create User
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        console.log("User created:", user.uid);
 
-            const username = document.getElementById('username').value;
-            const fullname = document.getElementById('fullname').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const referredByCode = document.getElementById('referralCode').value;
+        let referredByUserId = null;
 
-            // Reset error messages
-            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+        // Validate Referral Code
+        if (referralCode) {
+            const usersRef = collection(db, "users");
+            const q = query(usersRef, where("referralCode", "==", referralCode));
+            const querySnapshot = await getDocs(q);
 
-            // Show loading indicator
-            document.getElementById('loading').style.display = 'block';
+            if (!querySnapshot.empty) {
+                const referrerDoc = querySnapshot.docs[0];
+                referredByUserId = referrerDoc.id;
 
-            try {
-                console.log("Validating username...");
-                if (username.length < 3) {
-                    throw new Error("Username must be at least 3 characters long");
-                }
+                // Update referrer's balance and referralCount
+                await updateDoc(doc(db, "users", referredByUserId), {
+                    balance: increment(100),
+                    referralCount: increment(1)
+                });
 
-                console.log("Validating full name...");
-                if (fullname.length < 2) {
-                    throw new Error("Full name must be at least 2 characters long");
-                }
-
-                console.log("Validating password...");
-                if (password.length < 6) {
-                    throw new Error("Password must be at least 6 characters long");
-                }
-
-                console.log("Creating user...");
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                console.log("User created successfully:", user.uid);
-
-                const referralCode = generateReferralCode();
-                console.log("Generated referral code:", referralCode);
-
-                const userData = {
-                    username: username,
-                    fullname: fullname,
-                    email: email,
-                    referralCode: referralCode,
-                    balance: 0,
-                    referredBy: null,
-                    joinedAt: new Date(),
-                    referralCount: 0,
-                    adUsage: {
-                        adsWatched: 0,
-                        directLinksUsed: 0,
-                        increaseLimitUsed: 0,
-                        adsWatchLimit: 20,
-                        directLinkLimit: 20,
-                        lastReset: new Date().toISOString()
-                    }
-                };
-
-                if (referredByCode) {
-                    console.log("Checking referral code:", referredByCode);
-                    const usersRef = collection(db, "users");
-                    const q = query(usersRef, where("referralCode", "==", referredByCode));
-                    const querySnapshot = await getDocs(q);
-                    if (!querySnapshot.empty) {
-                        const referrerDoc = querySnapshot.docs[0];
-                        userData.referredBy = referrerDoc.id;
-                        
-                        console.log("Updating referrer's balance and referral count...");
-                        const referrerData = referrerDoc.data();
-                        const newBalance = (referrerData.balance || 0) + 100;
-                        const newReferralCount = (referrerData.referralCount || 0) + 1;
-                        await updateDoc(doc(db, "users", referrerDoc.id), { 
-                            balance: newBalance,
-                            referralCount: newReferralCount
-                        });
-                        console.log("Referrer's balance and referral count updated successfully");
-                    } else {
-                        throw new Error("Referral code not found");
-                    }
-                }
-
-                console.log("Storing user data...");
-                await setDoc(doc(db, "users", user.uid), userData);
-                console.log("User data stored successfully");
-
-                // Display user information
-                document.getElementById('infoFullname').textContent = fullname;
-                document.getElementById('infoUsername').textContent = username;
-                document.getElementById('infoEmail').textContent = email;
-                document.getElementById('infoBalance').textContent = '0';
-                document.getElementById('userInfo').style.display = 'block';
-
-                // Hide the form
-                document.getElementById('signupForm').style.display = 'none';
-
-                alert("Sign up successful!");
-                // Redirect to dashboard.html
-                window.location.href = 'advertise.html';
-            } catch (error) {
-                console.error("Error during sign up:", error);
-                if (error.code === 'auth/email-already-in-use') {
-                    document.getElementById('emailError').textContent = 'This email is already registered.';
-                } else if (error.code === 'auth/invalid-email') {
-                    document.getElementById('emailError').textContent = 'Invalid email address.';
-                } else if (error.code === 'auth/weak-password') {
-                    document.getElementById('passwordError').textContent = 'Password should be at least 6 characters long.';
-                } else if (error.message.includes("Username")) {
-                    document.getElementById('usernameError').textContent = error.message;
-                } else if (error.message.includes("Full name")) {
-                    document.getElementById('fullnameError').textContent = error.message;
-                } else if (error.message.includes("Referral code")) {
-                    document.getElementById('referralError').textContent = error.message;
-                } else {
-                    alert('Error: ' + error.message);
-                }
-            } finally {
-                // Hide loading indicator
-                document.getElementById('loading').style.display = 'none';
-                // Reset CAPTCHA after attempt
-                grecaptcha.reset();
-            }
-        });
-
-        function generateReferralCode() {
-            return Math.random().toString(36).substring(2, 8).toUpperCase();
-        }
-
-        function calculatePasswordStrength(password) {
-            let strength = 0;
-            if (password.length >= 8) strength += 25;
-            if (password.match(/[a-z]+/)) strength += 25;
-            if (password.match(/[A-Z]+/)) strength += 25;
-            if (password.match(/[0-9]+/)) strength += 25;
-            return strength;
-        }
-
-        function updatePasswordStrengthMeter(strength) {
-            const meter = document.getElementById('strengthMeter');
-            meter.style.width = strength + '%';
-            if (strength < 50) {
-                meter.style.backgroundColor = '#ff4d4d';
-            } else if (strength < 75) {
-                meter.style.backgroundColor = '#ffd700';
+                console.log("Referrer updated successfully.");
             } else {
-                meter.style.backgroundColor = '#5cd65c';
+                console.warn("Invalid referral code.");
             }
         }
 
-        function sanitizeInput(input) {
-            return input.replace(/[^a-zA-Z0-9_]/g, '');
-        }
+        // Generate Referral Code
+        const userReferralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-        function sanitizeFullName(input) {
-            return input.replace(/[^a-zA-Z\s]/g, '');
-        }
-
-        document.querySelector('.toggle-password').addEventListener('click', function() {
-            const passwordInput = document.getElementById('password');
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            this.classList.toggle('fa-eye');
-            this.classList.toggle('fa-eye-slash');
+        // Save User Data
+        await setDoc(doc(db, "users", user.uid), {
+            username,
+            fullname,
+            email,
+            referralCode: userReferralCode,
+            referredBy: referredByUserId || null,
+            balance: 0,
+            referralCount: 0,
+            joinedAt: new Date()
         });
-    </script>
 
-    <script>
-        // Function to get query parameters from the URL
-        function getQueryParams() {
-            const params = {};
-            const queryString = window.location.search.substring(1);
-            const regex = /([^&=]+)=([^&]*)/g;
-            let m;
-            while (m = regex.exec(queryString)) {
-                params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-            }
-            return params;
-        }
-
-        // On page load, check for referral code
-        window.onload = function() {
-            const params = getQueryParams();
-            if (params.referralCode) {
-                const referralCodeInput = document.getElementById('referralCode'); // Use the actual input field ID
-                if (referralCodeInput) {
-                    referralCodeInput.value = params.referralCode; // Set the referral code in the input field
-                }
-            }
-        };
-    </script>
+        console.log("User data saved successfully.");
+        alert("Signup successful!");
+        window.location.href = 'dashboard.html';
+    } catch (error) {
+        console.error("Signup Error:", error);
+        alert(error.message || "An error occurred during signup.");
+    } finally {
+        document.getElementById('loading').style.display = 'none';
+    }
+}); 
+ </script>
 
 </body>
 </html>
