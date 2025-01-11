@@ -427,11 +427,11 @@
                         const referrerRef = doc(db, "users", referrerDoc.id);
                         await updateDoc(referrerRef, {
                             referralCount: increment(1),
-                            balance: increment(50) // Give referrer 50 2KCoins
+                            balance: increment(100) // Give referrer 50 2KCoins
                         });
                         
                         // Give the new user a bonus
-                        userData.balance = 25; // Give new user 25 2KCoins
+                        userData.balance = 50; // Give new user 25 2KCoins
                         console.log("Referral bonus applied - Referrer: 50 coins, New user: 25 coins");
                     } else {
                         console.log("Invalid referral code");
