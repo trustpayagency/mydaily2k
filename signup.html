@@ -432,8 +432,7 @@
                 // Store user data
                 console.log("Storing user data...");
                 await setDoc(doc(db, "users", user.uid), userData);
-
-                // Initialize adUsage with default values
+                // Initialize adUsage and store it
                 const adUsageData = {
                     adsWatched: 0,
                     adsWatchLimit: 20,
@@ -441,8 +440,6 @@
                     directLinkLimit: 20,
                     lastReset: new Date().toISOString()
                 };
-
-                // Create adUsage subcollection for the user
                 await setDoc(doc(db, "users", user.uid, "adUsage", "usageData"), adUsageData);
                 console.log("User data and adUsage stored successfully");
 
@@ -498,14 +495,6 @@
             passwordInput.setAttribute('type', type);
             this.classList.toggle('fa-eye');
             this.classList.toggle('fa-eye-slash');
-        });
-
-        firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                console.log("User is signed in:", user.uid);
-            } else {
-                console.log("No user is signed in.");
-            }
         });
     </script>
 
