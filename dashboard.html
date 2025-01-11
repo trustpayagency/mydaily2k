@@ -808,6 +808,16 @@
                         directLinkLimit: 20    // Default limit
                     };
 
+                    // Check and set limits if they don't exist
+                    if (userData.adUsage.adsWatchLimit === undefined) {
+                        userData.adUsage.adsWatchLimit = 20; // Set default adsWatchLimit
+                        await updateDoc(userDocRef, { "adUsage.adsWatchLimit": 20 });
+                    }
+                    if (userData.adUsage.directLinkLimit === undefined) {
+                        userData.adUsage.directLinkLimit = 20; // Set default directLinkLimit
+                        await updateDoc(userDocRef, { "adUsage.directLinkLimit": 20 });
+                    }
+
                     // Check and reset limits if a new day has started
                     const lastReset = window.adUsage.lastReset ? new Date(window.adUsage.lastReset) : null;
                     const today = new Date();
@@ -934,7 +944,13 @@ async function handleWatchAdsClick() {
         const userDoc = await getDoc(userDocRef);
 
         if (userDoc.exists()) {
-            const adUsage = userDoc.data().adUsage || { adsWatched: 0, adsWatchLimit: 20 };
+            let adUsage = userDoc.data().adUsage || { adsWatched: 0 }; // Initialize adUsage if it doesn't exist
+
+            // Check if adsWatchLimit exists, if not, set it to default value
+            if (adUsage.adsWatchLimit === undefined) {
+                adUsage.adsWatchLimit = 20; // Default limit
+                await updateDoc(userDocRef, { "adUsage.adsWatchLimit": adUsage.adsWatchLimit });
+            }
 
             // Check if the user has reached the daily limit
             if (adUsage.adsWatched >= adUsage.adsWatchLimit) {
@@ -951,8 +967,6 @@ async function handleWatchAdsClick() {
             // Load the ad campaign
             await loadAdCampaign();
 
-            // Reward the user after watching the ad
-            await updateBalance(user.uid, 10); // Reward the user with 10 2KCoins
             console.log(`Ads Watched: ${adUsage.adsWatched + 1}`);
         } else {
             console.error("User document not found in Firestore.");
@@ -1076,12 +1090,12 @@ onAuthStateChanged(auth, async (user) => {
                 const userDoc = await getDoc(userDocRef);
 
                 if (userDoc.exists()) {
-                    let adUsage = userDoc.data().adUsage || {};
+                    let adUsage = userDoc.data().adUsage || {}; // Initialize adUsage if it doesn't exist
 
-                    // Check if directLinkLimit field exists, if not, create it with a default value
+                    // Check if directLinkLimit exists, if not, set it to default value
                     if (adUsage.directLinkLimit === undefined) {
-                        adUsage.directLinkLimit = 20;
-                        await updateDoc(userDocRef, { "adUsage.directLinkLimit": 20 });
+                        adUsage.directLinkLimit = 20; // Default limit
+                        await updateDoc(userDocRef, { "adUsage.directLinkLimit": adUsage.directLinkLimit });
                     }
 
                     // Check if the user has reached the daily limit
