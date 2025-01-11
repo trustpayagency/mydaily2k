@@ -422,32 +422,34 @@
                         
                         if (!querySnapshot.empty) {
                             const referrerDoc = querySnapshot.docs[0];
-                            userData.referredBy = referrerDoc.id;
-                            
-                            // Update referrer's balance and referral count
-                            console.log("Updating referrer's balance and referral count...");
-                            await updateDoc(doc(db, "users", referrerDoc.id), {
-                                balance: increment(100),
-                                referralCount: increment(1)
-                            });
-                            console.log("Referrer updated successfully");
+                            userData.referredBy = referrerDoc.id; // Set the referredBy to the referrer's ID
+                            userData.claimed = false; // Initialize claimed status
+                            console.log("Referral code valid. Referrer ID set to:", referrerDoc.id);
                         } else {
                             console.log("Invalid referral code");
                             document.getElementById('referralError').textContent = 'Invalid referral code';
-                            // Continue with signup without the referral
                         }
                     } catch (referralError) {
                         console.error("Error processing referral:", referralError);
-                        // Add user-friendly error message
                         document.getElementById('referralError').textContent = 'Unable to process referral code at this time';
-                        // Store the referral code to process later
-                        userData.pendingReferralCode = referredByCode;
                     }
                 }
 
                 // Store user data
                 console.log("Storing user data...");
                 await setDoc(doc(db, "users", user.uid), userData);
+
+                // Initialize adUsage with default values
+                const adUsageData = {
+                    adsWatched: 0,
+                    adsWatchLimit: 20, // Default limit for watching ads
+                    directLinksUsed: 0,
+                    directLinkLimit: 20, // Default limit for direct links
+                    lastReset: new Date().toISOString() // Initialize last reset time
+                };
+
+                // Create adUsage document for the user
+                await setDoc(doc(db, "adUsage", user.uid), adUsageData);
                 console.log("User data stored successfully");
 
                 // Success! Redirect to dashboard
