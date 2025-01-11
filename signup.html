@@ -412,43 +412,34 @@
                     referralCount: 0
                 };
 
-                // If there's a referral code, verify it after user creation
+                // Check if there's a referral code
                 if (referredByCode) {
                     console.log("Checking referral code:", referredByCode);
-                    try {
-                        const usersRef = collection(db, "users");
-                        const q = query(usersRef, where("referralCode", "==", referredByCode));
-                        const querySnapshot = await getDocs(q);
-                        
-                        if (!querySnapshot.empty) {
-                            const referrerDoc = querySnapshot.docs[0];
-                            userData.referredBy = referrerDoc.id; // Set the referredBy to the referrer's ID
-                            userData.claimed = false; // Initialize claimed status
-                            console.log("Referral code valid. Referrer ID set to:", referrerDoc.id);
-                        } else {
-                            console.log("Invalid referral code");
-                            document.getElementById('referralError').textContent = 'Invalid referral code';
-                        }
-                    } catch (referralError) {
-                        console.error("Error processing referral:", referralError);
-                        document.getElementById('referralError').textContent = 'Unable to process referral code at this time';
+                    const usersRef = collection(db, "users");
+                    const q = query(usersRef, where("referralCode", "==", referredByCode));
+                    const querySnapshot = await getDocs(q);
+                    
+                    if (!querySnapshot.empty) {
+                        const referrerDoc = querySnapshot.docs[0];
+                        userData.referredBy = referrerDoc.id; // Set the referredBy to the referrer's ID
+                        console.log("Referral code valid. Referrer ID set to:", referrerDoc.id);
+                    } else {
+                        console.log("Invalid referral code");
+                        document.getElementById('referralError').textContent = 'Invalid referral code';
                     }
                 }
 
                 // Store user data
                 console.log("Storing user data...");
                 await setDoc(doc(db, "users", user.uid), userData);
-
-                // Initialize adUsage with default values
+                // Initialize adUsage and store it
                 const adUsageData = {
                     adsWatched: 0,
-                    adsWatchLimit: 20, // Default limit for watching ads
+                    adsWatchLimit: 20,
                     directLinksUsed: 0,
-                    directLinkLimit: 20, // Default limit for direct links
-                    lastReset: new Date().toISOString() // Initialize last reset time
+                    directLinkLimit: 20,
+                    lastReset: new Date().toISOString()
                 };
-
-                // Create adUsage document for the user
                 await setDoc(doc(db, "adUsage", user.uid), adUsageData);
                 console.log("User data stored successfully");
 
@@ -458,19 +449,7 @@
 
             } catch (error) {
                 console.error("Error during sign up:", error);
-                if (error.code === 'auth/email-already-in-use') {
-                    document.getElementById('emailError').textContent = 'This email is already registered.';
-                } else if (error.code === 'auth/invalid-email') {
-                    document.getElementById('emailError').textContent = 'Invalid email address.';
-                } else if (error.code === 'auth/weak-password') {
-                    document.getElementById('passwordError').textContent = 'Password should be at least 6 characters long.';
-                } else if (error.message.includes("Username")) {
-                    document.getElementById('usernameError').textContent = error.message;
-                } else if (error.message.includes("Full name")) {
-                    document.getElementById('fullnameError').textContent = error.message;
-                } else {
-                    document.getElementById('passwordError').textContent = 'An error occurred. Please try again.';
-                }
+                alert("An error occurred during sign up. Please try again.");
             } finally {
                 document.getElementById('loading').style.display = 'none';
                 grecaptcha.reset();
