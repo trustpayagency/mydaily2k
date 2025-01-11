@@ -499,6 +499,14 @@
             this.classList.toggle('fa-eye');
             this.classList.toggle('fa-eye-slash');
         });
+
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                console.log("User is signed in:", user.uid);
+            } else {
+                console.log("No user is signed in.");
+            }
+        });
     </script>
 
     <script>
