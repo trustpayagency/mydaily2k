@@ -837,6 +837,32 @@
             return userData; // Return the user data
         }
 
+                // Function to check if user is new and handle first-time user experience
+                async function checkNewUser(userId) {
+            try {
+                const userDocRef = doc(db, "users", userId);
+                const userDoc = await getDoc(userDocRef);
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    
+                    // Check if this is the user's first visit
+                    if (!userData.hasVisited) {
+                        // Start the tour for new users
+                        startTour();
+                        
+                        // Update the user document to mark as visited
+                        await updateDoc(userDocRef, {
+                            hasVisited: true,
+                            firstVisitDate: serverTimestamp()
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error("Error checking new user status:", error);
+            }
+        } 
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 await loadUserData(user.uid);
@@ -925,6 +951,8 @@ async function handleWatchAdsClick() {
             // Load the ad campaign
             await loadAdCampaign();
 
+            // Reward the user after watching the ad
+            await updateBalance(user.uid, 10); // Reward the user with 10 2KCoins
             console.log(`Ads Watched: ${adUsage.adsWatched + 1}`);
         } else {
             console.error("User document not found in Firestore.");
@@ -1043,39 +1071,56 @@ onAuthStateChanged(auth, async (user) => {
                 return;
             }
 
-            if (window.adUsage.directLinksUsed >= window.adUsage.directLinkLimit) {
-                alert("You have reached the daily limit for direct links. Use 'Increase Link Limit' to use more.");
-                return;
-            }
-
             try {
-                // Store start time in localStorage
-                localStorage.setItem('directLinkStartTime', Date.now().toString());
-                
-                // Open in new tab
-                const link = document.createElement('a');
-                link.href = 'https://www.profitablecpmrate.com/e9ap8ata9?key=4899d6aafddc404944002ca071108e1c';
-                link.target = '_blank';
-                link.rel = 'noopener noreferrer';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                const userDocRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userDocRef);
 
-                // Increment the usage count
-                window.adUsage.directLinksUsed++; // Increment the usage count
-                await updateAdUsage(user.uid, window.adUsage); // Update the ad usage in Firestore
+                if (userDoc.exists()) {
+                    let adUsage = userDoc.data().adUsage || {};
 
-                // Reward the user after a 5-second delay
-                setTimeout(async () => {
-                    await updateBalance(user.uid, 10); // Reward the user with 10 2KCoins
+                    // Check if directLinkLimit field exists, if not, create it with a default value
+                    if (adUsage.directLinkLimit === undefined) {
+                        adUsage.directLinkLimit = 20;
+                        await updateDoc(userDocRef, { "adUsage.directLinkLimit": 20 });
+                    }
 
-                    // Update the balance display immediately
-                    const newBalance = parseInt(document.getElementById("balance").textContent) + 10;
-                    document.getElementById("balance").textContent = newBalance;
+                    // Check if the user has reached the daily limit
+                    if (adUsage.directLinksUsed >= adUsage.directLinkLimit) {
+                        alert("You have reached the daily limit for direct links. Use 'Increase Link Limit' to use more.");
+                        return;
+                    }
 
-                    alert("Direct link used! You've earned 10 2KCoins!");
-                }, 5000); // 5000 milliseconds = 5 seconds
+                    // Store start time in localStorage
+                    localStorage.setItem('directLinkStartTime', Date.now().toString());
+                    
+                    // Open in new tab
+                    const link = document.createElement('a');
+                    link.href = 'https://www.profitablecpmrate.com/e9ap8ata9?key=4899d6aafddc404944002ca071108e1c';
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
 
+                    // Increment the usage count
+                    adUsage.directLinksUsed++; // Increment the usage count
+                    await updateAdUsage(user.uid, adUsage); // Update the ad usage in Firestore
+
+                    // Reward the user after a 5-second delay
+                    setTimeout(async () => {
+                        await updateBalance(user.uid, 10); // Reward the user with 10 2KCoins
+
+                        // Update the balance display immediately
+                        const newBalance = parseInt(document.getElementById("balance").textContent) + 10;
+                        document.getElementById("balance").textContent = newBalance;
+
+                        alert("Direct link used! You've earned 10 2KCoins!");
+                    }, 5000); // 5000 milliseconds = 5 seconds
+
+                } else {
+                    console.error("User document not found in Firestore.");
+                    alert("Error: User data not found. Please contact support.");
+                }
             } catch (error) {
                 console.error("Error processing direct link:", error);
                 alert("Error processing direct link. Please try again later.");
@@ -1137,6 +1182,7 @@ onAuthStateChanged(auth, async (user) => {
                     const newBalance = (userDoc.data().balance || 0) + amount;
                     await updateDoc(userDocRef, { balance: newBalance });
                     document.getElementById("balance").textContent = newBalance;
+                    console.log('User rewarded with 20 2KCoins');
                 } else {
                     console.error("User not found.");
                     alert("Error: Unable to update balance. Please contact support.");
@@ -1840,7 +1886,11 @@ onAuthStateChanged(auth, async (user) => {
 
                 if (countdown <= 0) {
                     clearInterval(countdownInterval);
-                    rewardUser(campaign.userId);
+                    // Use auth.currentUser instead of currentUser
+                    const user = auth.currentUser; // Get the current user
+                    if (user) {
+                        rewardUser(user.uid); // Pass the user ID to rewardUser
+                    }
                     countdownTimer.style.display = 'none';
 
                     // Create reward message with close button
