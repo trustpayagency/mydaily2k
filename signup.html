@@ -432,7 +432,8 @@
                 // Store user data
                 console.log("Storing user data...");
                 await setDoc(doc(db, "users", user.uid), userData);
-                // Initialize adUsage and store it
+
+                // Initialize adUsage with default values
                 const adUsageData = {
                     adsWatched: 0,
                     adsWatchLimit: 20,
@@ -440,8 +441,10 @@
                     directLinkLimit: 20,
                     lastReset: new Date().toISOString()
                 };
-                await setDoc(doc(db, "adUsage", user.uid), adUsageData);
-                console.log("User data stored successfully");
+
+                // Create adUsage subcollection for the user
+                await setDoc(doc(db, "users", user.uid, "adUsage", "usageData"), adUsageData);
+                console.log("User data and adUsage stored successfully");
 
                 // Success! Redirect to dashboard
                 alert("Sign up successful!");
