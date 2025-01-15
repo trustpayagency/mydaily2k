@@ -1307,9 +1307,12 @@ onAuthStateChanged(auth, async (user) => {
         const modeToggle = document.getElementById('modeToggle');
         modeToggle.addEventListener('click', () => {
             document.body.classList.toggle('light-mode'); // Toggle light mode class
-            // Save the current mode to localStorage
             const newMode = document.body.classList.contains('light-mode') ? 'light' : 'dark';
             localStorage.setItem('mode', newMode);
+            
+            // Update the theme color in the manifest
+            const themeColor = newMode === 'light' ? '#ffffff' : '#000000'; // Set appropriate colors
+            document.querySelector("meta[name=theme-color]").setAttribute("content", themeColor);
             
             // Update button text based on the current mode
             modeToggle.textContent = newMode === 'light' ? 'Light Mode' : 'Dark Mode';
