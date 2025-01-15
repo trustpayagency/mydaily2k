@@ -132,7 +132,7 @@
         .switch .button{
             border-radius: 20px;
             border-color: #000000;
-            color: #000000;
+            color: #f0f0f0;
         }
 
         .bottom-banner {
@@ -151,25 +151,22 @@
             justify-content: space-around;
         }
 
-        .bottom-banner .button {
-            width: 50px;
-            height: 50px;
-            background-color: #ec8f04;
-            color: #000;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            padding: 10px;
+        .bottom-banner a {
+            color: rgb(0, 0, 0);
             font-size: 24px;
-            display: flex;
-            justify-content: center;
+            text-decoration: none;
+            padding: 15px;
+            border-radius: 50%;
+            background-color: #ec8f04;
+            display: inline-flex;
             align-items: center;
-            transition: background-color 0.3s, transform 0.3s;
+            justify-content: center;
+            transition: background-color 0.3s ease;
         }
 
-        .bottom-banner .button:hover {
-            background-color: #d58b00;
-            transform: scale(1.1);
+        .bottom-banner a:hover {
+            color: #ec8f04;
+            background-color: #666;
         }
 
         .button-label {
@@ -218,11 +215,11 @@
             </div>
 
             <div class="switch">
-                <button class="button" onclick="window.location.href='forgetpassword.html'">Change Password</button>
+                <button class="button" onclick="window.location.href='privacy.html'">Privacy Policy</button>
                 <button class="button" onclick="window.location.href='terms-and-conditions.html'">Terms and Conditions</button>
             </div>
             <div class="switch"> 
-                <button class="button" onclick="window.location.href='privacy.html'">Privacy Policy</button>
+                <button class="button" onclick="window.location.href='userfaq.html'">FAQ</button>
                 <button class="button" onclick="window.location.href='contact.html'">Contact Support</button>
             </div>
         </div>
@@ -230,22 +227,16 @@
 
     <div class="bottom-banner">
         <div>
-            <button class="button" onclick="window.location.href='dashboard.html'">
-                <i class="fas fa-home"></i>
-            </button>
-            <span class="button-label">Dashboard</span>
+            <a href="dashboard.html" aria-label="Home"><i class="fas fa-home"></i></a>
+            <span class="button-label">Home</span>
         </div>
         <div>
-            <button class="button" onclick="window.location.href='withdraw.html'">
-                <i class="fas fa-wallet"></i>
-            </button>
+            <a href="withdraw.html" aria-label="Wallet"><i class="fas fa-wallet"></i></a>
             <span class="button-label">Withdraw</span>
         </div>
         <div>
-            <button class="button" onclick="window.location.href='friends.html'">
-                <i class="fas fa-user-friends"></i>
-            </button>
-            <span class="button-label">Friends</span>
+            <a href="friends.html" aria-label="friends"><i class="fas fa-user-friends"></i></a>
+            <span class="button-label">Profile</span>
         </div>
     </div>
 
