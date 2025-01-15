@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews - MyDaily2k</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #19e2b0;
+        }
+
+        .review-form {
+            margin-bottom: 40px;
+        }
+
+        .review-form label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        .review-form input,
+        .review-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .review-form .rating {
+            display: flex;
+            gap: 5px;
+            margin: 10px 0;
+        }
+
+        .review-form .rating label {
+            font-size: 1.2rem;
+            color: #FFD700;
+            cursor: pointer;
+        }
+
+        .review-form .rating input {
+            display: none;
+        }
+
+        .rating-display {
+            margin-top: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .review-form button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #19e2b0;
+            border: none;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .review-form button:hover {
+            background: #17c4a0;
+        }
+
+        .reviews {
+            margin-top: 20px;
+        }
+
+        .review {
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+
+        .review:last-child {
+            border-bottom: none;
+        }
+
+        .review h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #19e2b0;
+        }
+
+        .review p {
+            margin: 5px 0 0;
+            color: #555;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .overlay-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: #333;
+        }
+
+        .overlay-content button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #19e2b0;
+            border: none;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .overlay-content button:hover {
+            background: #17c4a0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>User Reviews</h1>
+
+        <!-- Review Form -->
+        <form class="review-form" id="reviewForm">
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter your name" required>
+
+            <label for="review">Your Review:</label>
+            <textarea id="review" name="review" rows="5" placeholder="Write your review here..." required></textarea>
+
+            <label>Rate Us:</label>
+            <div class="rating">
+                <label>
+                    <input type="radio" name="rating" value="1">
+                    ★
+                </label>
+                <label>
+                    <input type="radio" name="rating" value="2">
+                    ★
+                </label>
+                <label>
+                    <input type="radio" name="rating" value="3">
+                    ★
+                </label>
+                <label>
+                    <input type="radio" name="rating" value="4">
+                    ★
+                </label>
+                <label>
+                    <input type="radio" name="rating" value="5">
+                    ★
+                </label>
+            </div>
+            <div class="rating-display"></div>
+
+            <button type="submit">Submit Review</button>
+        </form>
+
+        <!-- Reviews Section -->
+        <div class="reviews" id="reviewsContainer">
+            <h2>All Reviews</h2>
+        </div>
+
+        <!-- Success Overlay -->
+        <div class="overlay" id="successOverlay">
+            <div class="overlay-content">
+                <p>Your review has been submitted successfully!</p>
+                <button id="overlayOkButton">OK</button>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCC0cGcsdiMmeTYp2gNCjpO_XrJFE4Uj-g",
+            authDomain: "trustpay-d9d40.firebaseapp.com",
+            projectId: "trustpay-d9d40",
+            storageBucket: "trustpay-d9d40.appspot.com",
+            messagingSenderId: "835444953806",
+            appId: "1:835444953806:web:9231281cd19c075b7a769f",
+            measurementId: "G-5LRE3395RT"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const reviewsCollection = collection(db, "reviews");
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const reviewForm = document.getElementById("reviewForm");
+            const reviewsContainer = document.getElementById("reviewsContainer");
+            const successOverlay = document.getElementById("successOverlay");
+
+            // Fetch and display reviews
+            onSnapshot(reviewsCollection, (snapshot) => {
+                reviewsContainer.innerHTML = "<h2>All Reviews</h2>";
+                snapshot.docs.forEach((doc) => {
+                    const review = doc.data();
+                    renderReview(review.name, review.text, review.rating);
+                });
+            });
+
+            // Add a review
+            reviewForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const name = document.getElementById("name").value.trim() || "Anonymous";
+                const reviewText = document.getElementById("review").value.trim();
+                const rating = parseInt(document.querySelector("input[name='rating']:checked")?.value || "0", 10);
+
+                if (reviewText && rating > 0) {
+                    try {
+                        await addDoc(reviewsCollection, { name, text: reviewText, rating });
+                        reviewForm.reset();
+                        document.querySelector(".rating-display").textContent = "";
+                        successOverlay.style.display = "flex";
+                    } catch (error) {
+                        console.error("Error adding review: ", error);
+                    }
+                } else {
+                    alert("Please provide a rating and review text.");
+                }
+            });
+
+            document.querySelector(".rating").addEventListener("input", (event) => {
+                const ratingValue = event.target.value;
+                document.querySelector(".rating-display").textContent = `Rating: ${ratingValue} star${ratingValue > 1 ? 's' : ''}`;
+            });
+
+            document.getElementById("overlayOkButton").addEventListener("click", () => {
+                successOverlay.style.display = "none";
+            });
+        });
+
+        function renderReview(name, text, rating) {
+            const reviewDiv = document.createElement("div");
+            reviewDiv.classList.add("review");
+
+            const reviewTitle = document.createElement("h3");
+            reviewTitle.textContent = name;
+            reviewDiv.appendChild(reviewTitle);
+
+            const reviewStars = document.createElement("div");
+            reviewStars.innerHTML = "★".repeat(rating) + "☆".repeat(5 - rating);
+            reviewStars.style.color = "#FFD700";
+            reviewDiv.appendChild(reviewStars);
+
+            const reviewContent = document.createElement("p");
+            reviewContent.textContent = text;
+            reviewDiv.appendChild(reviewContent);
+
+            document.getElementById("reviewsContainer").appendChild(reviewDiv);
+        }
+    </script>
+</body>
+</html>
