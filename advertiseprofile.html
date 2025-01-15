@@ -138,7 +138,7 @@
             background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: var(--dark-bg);
             padding: 0.5rem 2rem;
-            border-radius: 10px;
+            border-radius: 20px;
             border: none;
             font-weight: bold;
             cursor: pointer;
@@ -202,6 +202,24 @@
             border-radius: 20px;
             text-decoration: none; 
         } 
+        .switch {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .switch a{
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: var(--dark-bg);
+            padding: 0.5rem 2rem;
+            border-radius: 20px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 100%;
+            margin-top: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -249,11 +267,21 @@
                 </div>
             </div>
 
-            <a href="mycampaigns.html" class="btn">My Campaigns</a>
-            <a href="terms.html" class="btn">Terms and Conditions</a>
-            <a href="privacy.html" class="btn">Privacy Policy</a>
+        <div class="switch">
+            <a href="Campaigns.html">My Campaigns</a>
+        </div>
+        <div class="switch">     
+            <a href="advertiser-terms.html">Terms and Conditions</a>
+        </div>
+        <div class="switch">
+            <a href="privacy-policy.html" class="btn">Privacy Policy</a>
+        </div>
+       <div class="switch">     
             <a href="faq.html" class="btn">FAQ</a>
+        </div>
+        <div class="switch">
             <a href="contactsupport.html" class="btn">Contact Support</a>
+        </div>    
 
             <button class="btn logout" onclick="logout()">Logout</button>
         </div>
