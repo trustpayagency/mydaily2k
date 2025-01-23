@@ -661,17 +661,17 @@
         }
         .switch {
         position: absolute;
-        top: -20px;
-        right: -20px;
+        top: 10px;
+        right: 20px;
         display: flex;
         align-items: center;
         }
        .switch a {
         margin-left: 10px;
         color: rgb(0, 0, 0);
-        font-size: 20px;
         text-decoration: none;
         padding: 5px 10px;
+        background-color: #555;
         border-radius: 15px;
     }
 
@@ -832,9 +832,7 @@
         <p>Win up to <span class="prize-info">20,000 2KCoins!</span> Compete for amazing prizes and recognition!</p>
     </div>
     <div class="switch">
-        <div class="switch">
-        <a href="dashboard.html"><i class="fa-solid fa-chevron-right"></i></a> 
-    </div>
+        <a href="dashboard.html" style="background-color: #ec8f04; "><i class="fa-solid fa-chevron-right"></i></a> 
     </div>
     <div class="weekly-theme">
         <div class="theme-container">
@@ -1824,22 +1822,39 @@
         async function loadWeeklyTheme() {
             try {
                 const weekNumber = getCurrentWeekNumber();
-                const themeDoc = await getDoc(doc(db, 'weeklyThemes', weekNumber.toString()));
                 
-                if (themeDoc.exists()) {
-                    const theme = themeDoc.data();
-                    document.getElementById('themeTitle').textContent = theme.title;
-                    document.getElementById('themeDescription').textContent = theme.description;
+                // First check contestBookings collection
+                const bookingDoc = await getDoc(doc(db, 'contestBookings', weekNumber.toString()));
+                
+                if (bookingDoc.exists()) {
+                    // Use the booked contest theme
+                    const booking = bookingDoc.data();
+                    document.getElementById('themeTitle').textContent = booking.theme;
+                    document.getElementById('themeDescription').textContent = booking.prizeDescription;
                     
                     // Update requirements list
                     const requirementsList = document.getElementById('themeRequirements');
-                    requirementsList.innerHTML = theme.requirements
+                    requirementsList.innerHTML = booking.requirements
                         .map(req => `<li>${req}</li>`)
                         .join('');
                 } else {
-                    document.getElementById('themeTitle').textContent = 'Theme not yet announced';
-                    document.getElementById('themeDescription').textContent = 'Please check back later for this week\'s challenge details.';
-                    document.getElementById('themeRequirements').innerHTML = '<li>Requirements will be posted soon</li>';
+                    // Fallback to default weekly themes
+                    const themeDoc = await getDoc(doc(db, 'weeklyThemes', weekNumber.toString()));
+                    
+                    if (themeDoc.exists()) {
+                        const theme = themeDoc.data();
+                        document.getElementById('themeTitle').textContent = theme.title;
+                        document.getElementById('themeDescription').textContent = theme.description;
+                        
+                        const requirementsList = document.getElementById('themeRequirements');
+                        requirementsList.innerHTML = theme.requirements
+                            .map(req => `<li>${req}</li>`)
+                            .join('');
+                    } else {
+                        document.getElementById('themeTitle').textContent = 'Theme not yet announced';
+                        document.getElementById('themeDescription').textContent = 'Please check back later for this week\'s challenge details.';
+                        document.getElementById('themeRequirements').innerHTML = '<li>Requirements will be posted soon</li>';
+                    }
                 }
             } catch (error) {
                 console.error('Error loading weekly theme:', error);
