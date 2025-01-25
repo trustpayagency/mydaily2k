@@ -221,6 +221,27 @@
                 padding: 1rem;
             } 
         }
+
+        .ad-button {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: var(--dark-bg);
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            font-size: 1rem;
+            margin-top: 10px; /* Add some space above the button */
+        }
+
+        .ad-button:hover {
+            background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+            transform: translateY(-2px); /* Slight lift effect on hover */
+        }
+
+        .ad-button:focus {
+            outline: none; /* Remove default focus outline */
+        }
     </style>
     <!-- Add Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -242,11 +263,11 @@
     </div>
 
     <div class="hero">
-        <h1>MY DAILY2K: Smart Advertising Solutions for Maximum Engagement</h1>
+        <h1>USE MY DAILY2K TO DRIVE MAXIMUM ENGAGEMENT TO YOUR BRAND</h1>
         <p>
-           Boost your brand’s visibility with <strong>MY DAILY2K</strong>'s innovative advertising platform. 
+           Boost your brand's visibility with <strong>MY DAILY2K</strong>'s innovative advertising platform. 
            Connect with a highly engaged audience, run targeted campaigns, and achieve measurable results.
-           Whether it’s driving traffic, increasing conversions, or building brand loyalty, <strong>MY DAILY2K</strong> delivers powerful tools to help you succeed in the digital space.
+           Whether it's driving traffic, increasing conversions, or building brand loyalty, <strong>MY DAILY2K</strong> delivers powerful tools to help you succeed in the digital space.
         </p>
         <div class="btn-container">
             <a href="#ad-types" class="btn">Explore Ad Types <i class="fas fa-arrow-down"></i></a>
@@ -254,30 +275,40 @@
     </div>
     <section id="ad-types" 
         <div class="ad-types-container">
-            <div class="ad-types-card " onclick="showInfo('createCampaign')">
+            <div class="ad-types-card" onclick="showInfo('createCampaign')">
                 <i class="fas fa-plus"></i>
-                <h3>Create Campaign</h3>
-                <p class="info" id="createCampaign" style="display:none;"> Create an ads campaign and gain thousand of traffic on your app and website.  <button onclick="window.location.href='createcampaign.html'">Create Campaign</button></p>
+                <h3>Rewarded ads</h3>
+                <p class="info" id="createCampaign" style="display:none;"> Create an ads campaign and gain thousand of traffic on your app and website while rewarding users.  
+                    <button class="ad-button" onclick="window.location.href='createcampaign.html'">Create Campaign</button>
+                </p>
             </div>
-            <div class="ad-types-card " onclick="showInfo('bannerads')">
+            <div class="ad-types-card" onclick="showInfo('bannerads')">
                 <i class="fas fa-image"></i>
                 <h3>Bannerads</h3>
-                <p class="info" id="bannerads" style="display:none;"> <strong>OWN A SPACE ON OUR PLATFORM DASHBOARD:</strong> Show cash your product on out homepage visited by thousands of users<button onclick="window.location.href='createbanner.html'">Create Banner Ads</button></p>
+                <p class="info" id="bannerads" style="display:none;"> <strong>OWN A SPACE ON OUR PLATFORM DASHBOARD:</strong> Show cash your product on our homepage visited by thousands of users
+                    <button class="ad-button" onclick="window.location.href='createbanner.html'">Create Banner Ads</button>
+                </p>
             </div>
-            <div class="ad-types-card " onclick="showInfo('hostAuction')">
-                <i class="fas fa-gavel"></i>
-                <h3>Host Auction</h3>
-                <p class="info" id="hostAuction" style="display:none;"><strong>HOW IT WORK:</strong> Host an auction the items could be anything giving u free advertisment for short period of time.<button onclick="window.location.href='createcampaign.html'">Go to Create Campaign</button></p></p>
-            </div>
-            <div class="ad-types-card " onclick="showInfo('hostContest')">
-                <i class="fas fa-trophy"></i>
-                <h3>Host Weekly Contest</h3>
-                <p class="info" id="hostContest" style="display:none;"> <strong>HOW IT WORK:</strong> Users create and share videos about your brand on TikTok and Facebook, increasing visibility. They’ll also upload the videos to our platform for rewards. The video with the most votes earns <strong>2,000 2KCoins</strong>, while the Admin’s Choice Award (optional) costs <strong>10,000 2KCoins</strong> and grants you usage rights for the video elsewhere.<button onclick="window.location.href='contestbooking.html'">Host Contest</button></p>
-            </div>
-            <div class="ad-types-card " onclick="showInfo('buyTraffic')">
+            <div class="ad-types-card" onclick="showInfo('buyTraffic')">
                 <i class="fas fa-shopping-cart"></i>
                 <h3>Buy social media Traffic</h3>
-                <p class="info" id="buyTraffic" style="display:none;">Buy likes, Views,Streams,Votes,Followers Sub. At very low cost<button onclick="window.location.href='advertise.html'">Go to Buy Traffic</button></p>
+                <p class="info" id="buyTraffic" style="display:none;">Buy likes, Views, Streams, Votes, Followers Sub. At a very low cost
+                    <button class="ad-button" onclick="window.location.href='advertise.html'">Go to Buy Traffic</button>
+                </p>
+            </div>
+            <div class="ad-types-card" onclick="showInfo('hostContest')">
+                <i class="fas fa-trophy"></i>
+                <h3>Host Weekly Contest</h3>
+                <p class="info" id="hostContest" style="display:none;"> <strong>HOW IT WORK:</strong> Users create and share videos about your brand on TikTok and Facebook, increasing visibility. They'll also upload the videos to our platform for rewards. The video with the most votes earns <strong>2,000 2KCoins</strong>, while the Admin's Choice Award (optional) costs <strong>10,000 2KCoins</strong> and grants you usage rights for the video elsewhere.
+                    <button class="ad-button" onclick="window.location.href='contestbooking.html'">Host Contest</button>
+                </p>
+            </div>
+            <div class="ad-types-card" onclick="showInfo('hostAuction')">
+                <i class="fas fa-gavel"></i>
+                <h3>Host Auction</h3>
+                <p class="info" id="hostAuction" style="display:none;"><strong>HOW IT WORK:</strong> Host an auction; the items could be anything giving you free advertisement for a short period of time.
+                    <button class="ad-button" onclick="window.location.href='request-auction.html'">Request to Host Auction</button>
+                </p>
             </div>
         </div>
     </section> 
@@ -299,6 +330,17 @@
             <p>Advanced security measures to protect your campaigns and data.</p>
         </div>
     </section> 
+
+    <section class="reviews" style="padding: 4rem 2rem; background: rgba(255, 255, 255, 0.05);">
+        <h2 style="text-align: center; color: var(--primary-color);">User Reviews</h2>
+        <div id="reviewsContainer" style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
+            <!-- Reviews will be injected here -->
+        </div>
+        <div style="text-align: center; margin-top: 1rem;">
+            <a href="reviews.html" class="btn" style="background: var(--primary-color); color: var(--dark-bg); padding: 10px 20px; border-radius: 5px; text-decoration: none;">See All Reviews</a>
+        </div>
+    </section>
+
     <footer>
         <div class="footer-content">
             <div class="footer-section">
@@ -336,5 +378,62 @@
             document.getElementById(id).style.display = 'block'; // Show selected info
         }
     </script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCC0cGcsdiMmeTYp2gNCjpO_XrJFE4Uj-g",
+        authDomain: "trustpay-d9d40.firebaseapp.com",
+        projectId: "trustpay-d9d40",
+        storageBucket: "trustpay-d9d40.appspot.com",
+        messagingSenderId: "835444953806",
+        appId: "1:835444953806:web:9231281cd19c075b7a769f",
+        measurementId: "G-5LRE3395RT"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const reviewsCollection = collection(db, "reviews");
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const reviewsContainer = document.getElementById("reviewsContainer");
+
+        // Fetch and display reviews
+        onSnapshot(reviewsCollection, (snapshot) => {
+            reviewsContainer.innerHTML = ""; // Clear previous content
+            const reviewsToShow = snapshot.docs.slice(0, 3); // Limit to 3 reviews
+            reviewsToShow.forEach((doc) => {
+                const review = doc.data();
+                renderReview(review.name, review.text, review.rating);
+            });
+        });
+
+        function renderReview(name, text, rating) {
+            const reviewDiv = document.createElement("div");
+            reviewDiv.classList.add("review");
+            reviewDiv.style.background = "rgba(255, 255, 255, 0.1)"; // Subtle background
+            reviewDiv.style.padding = "1rem"; // Padding for the review card
+            reviewDiv.style.borderRadius = "10px"; // Rounded corners
+            reviewDiv.style.textAlign = "center"; // Center text
+
+            const reviewTitle = document.createElement("h3");
+            reviewTitle.textContent = name;
+            reviewDiv.appendChild(reviewTitle);
+
+            const reviewStars = document.createElement("div");
+            reviewStars.innerHTML = "★".repeat(rating) + "☆".repeat(5 - rating);
+            reviewStars.style.color = "#FFD700";
+            reviewDiv.appendChild(reviewStars);
+
+            const reviewContent = document.createElement("p");
+            reviewContent.textContent = text;
+            reviewDiv.appendChild(reviewContent);
+
+            reviewsContainer.appendChild(reviewDiv);
+        }
+    });
+</script>
 </body>
 </html>
